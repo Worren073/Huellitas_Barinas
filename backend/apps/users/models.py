@@ -11,6 +11,18 @@ class User(AbstractUser):
         VOLUNTEER = 'voluntario', 'Voluntario'
         ADOPTER = 'adoptante', 'Adoptante'
 
+    class Country(models.TextChoices):
+        VENEZUELA = 'VE', 'Venezuela (+58)'
+        COLOMBIA = 'CO', 'Colombia (+57)'
+        ECUADOR = 'EC', 'Ecuador (+593)'
+        PERU = 'PE', 'Perú (+51)'
+        CHILE = 'CL', 'Chile (+56)'
+        ARGENTINA = 'AR', 'Argentina (+54)'
+        BRAZIL = 'BR', 'Brasil (+55)'
+        MEXICO = 'MX', 'México (+52)'
+        SPAIN = 'ES', 'España (+34)'
+        USA = 'US', 'Estados Unidos (+1)'
+
     email = models.EmailField(
         unique=True,
         verbose_name='correo electrónico',
@@ -25,6 +37,14 @@ class User(AbstractUser):
         default=Role.ADOPTER,
         verbose_name='rol'
     )
+    
+    country = models.CharField(
+        max_length=2,
+        choices=Country.choices,
+        default=Country.VENEZUELA,
+        verbose_name='país'
+    )
+    
     phone = models.CharField(max_length=20, blank=True, verbose_name='teléfono')
     address = models.TextField(blank=True, verbose_name='dirección')
     avatar = models.ImageField(
@@ -62,3 +82,13 @@ class User(AbstractUser):
     @property
     def is_adopter(self):
         return self.role == self.Role.ADOPTER
+
+    @property
+    def phone_with_country(self):
+        """Returns phone number with country prefix"""
+        country_code = dict(self.Country.choices).get(self.country, '')
+        if self.phone:
+            # Extract prefix from country_code string like "Venezuela (+58)"
+            prefix = country_code.split('(')[1].rstrip(')') if '(' in country_code else ''
+            return f"{prefix}{self.phone}"
+        return None

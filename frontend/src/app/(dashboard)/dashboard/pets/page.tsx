@@ -6,6 +6,7 @@ import AdminLayout from '@/components/AdminLayout';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
 import api from '@/lib/api';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface Pet {
   id: number;
@@ -96,7 +97,7 @@ export default function PetsPage() {
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center overflow-hidden">
                             {pet.images?.[0]?.image ? (
-                              <img src={pet.images[0].image} alt="" className="w-full h-full object-cover" />
+                              <img src={normalizeImageUrl(pet.images[0].image)} alt="" className="w-full h-full object-cover" />
                             ) : (
                               <Icon name="pets" className="w-5 h-5 text-primary-container" />
                             )}

@@ -12,13 +12,14 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model."""
     full_name = serializers.SerializerMethodField()
+    country_display = serializers.CharField(source='get_country_display', read_only=True)
 
     class Meta:
         model = User
         fields = (
             'id', 'username', 'email', 'first_name', 'last_name',
-            'full_name', 'role', 'phone', 'address', 'avatar',
-            'is_verified', 'center', 'date_joined'
+            'full_name', 'role', 'country', 'country_display', 'phone', 
+            'address', 'avatar', 'is_verified', 'center', 'date_joined'
         )
         read_only_fields = ('id', 'date_joined', 'is_verified')
 
@@ -38,7 +39,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'username', 'email', 'password', 'password_confirm',
-            'first_name', 'last_name', 'role', 'phone', 'address'
+            'first_name', 'last_name', 'country', 'phone', 'address'
         )
 
     def validate(self, attrs):
@@ -60,13 +61,14 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserListSerializer(serializers.ModelSerializer):
     """Serializer for listing users."""
     center_name = serializers.CharField(source='center.name', read_only=True, default='')
+    country_display = serializers.CharField(source='get_country_display', read_only=True)
 
     class Meta:
         model = User
         fields = (
             'id', 'username', 'email', 'first_name', 'last_name',
-            'role', 'phone', 'is_active', 'is_verified', 'center',
-            'center_name', 'date_joined'
+            'role', 'country', 'country_display', 'phone', 'is_active', 
+            'is_verified', 'center', 'center_name', 'date_joined'
         )
 
 

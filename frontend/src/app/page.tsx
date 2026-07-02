@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PetCard from '@/components/PetCard';
 import Icon from '@/components/Icon';
+import { normalizeImageUrl } from '@/lib/utils';
 import { serverApi } from '@/lib/server';
 
 interface Pet {
@@ -138,7 +139,7 @@ export default async function HomePage() {
                 >
                   <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden">
                     {center.logo ? (
-                      <img src={center.logo} alt={center.name} className="w-full h-full object-cover" />
+                      <img src={normalizeImageUrl(center.logo)} alt={center.name} className="w-full h-full object-cover" />
                     ) : (
                       <Icon name="location" className="w-8 h-8 text-primary m-6" />
                     )}

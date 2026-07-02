@@ -7,6 +7,8 @@ import StatusBadge from './StatusBadge';
 import Icon from './Icon';
 import PetSilhouette from './PetSilhouette';
 
+import { normalizeImageUrl } from '@/lib/utils';
+
 interface Pet {
   id: number;
   name: string;
@@ -50,7 +52,7 @@ function getAgeBadge(months?: number): string {
 
 export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
   const [imgError, setImgError] = useState(false);
-  const imageUrl = pet.images?.[0]?.image || '';
+  const imageUrl = normalizeImageUrl(pet.images?.[0]?.image || '');
 
   if (variant === 'compact') {
     return (

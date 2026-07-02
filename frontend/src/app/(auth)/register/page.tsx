@@ -6,10 +6,24 @@ import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
 
+const COUNTRIES = [
+  { code: 'VE', name: 'Venezuela', prefix: '+58' },
+  { code: 'CO', name: 'Colombia', prefix: '+57' },
+  { code: 'EC', name: 'Ecuador', prefix: '+593' },
+  { code: 'PE', name: 'Perú', prefix: '+51' },
+  { code: 'CL', name: 'Chile', prefix: '+56' },
+  { code: 'AR', name: 'Argentina', prefix: '+54' },
+  { code: 'BR', name: 'Brasil', prefix: '+55' },
+  { code: 'MX', name: 'México', prefix: '+52' },
+  { code: 'ES', name: 'España', prefix: '+34' },
+  { code: 'US', name: 'Estados Unidos', prefix: '+1' },
+];
+
 export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState('VE');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,14 +47,33 @@ export default function RegisterPage() {
         password,
         first_name: formData.get('firstName') as string,
         last_name: formData.get('lastName') as string,
+        country: selectedCountry,
+        phone: formData.get('phone') as string,
       });
       router.push('/login');
-    } catch {
-      setError('Error al registrar. Intenta de nuevo.');
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { data?: Record<string, any> } };
+      const errorData = apiErr?.response?.data;
+      
+      if (errorData) {
+        // Extract first error message from API response
+        const firstError = Object.values(errorData)[0];
+        if (Array.isArray(firstError)) {
+          setError(firstError[0] as string);
+        } else if (typeof firstError === 'string') {
+          setError(firstError);
+        } else {
+          setError('Error al registrar. Intenta de nuevo.');
+        }
+      } else {
+        setError('Error al registrar. Intenta de nuevo.');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const selectedCountryObj = COUNTRIES.find(c => c.code === selectedCountry);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-off-white py-12 px-4">
@@ -118,6 +151,45 @@ export default function RegisterPage() {
                 required
                 className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
               />
+            </div>
+
+            {/* Country + Phone */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="country" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
+                  País
+                </label>
+                <select
+                  id="country"
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all cursor-pointer"
+                >
+                  {COUNTRIES.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
+                  Teléfono
+                </label>
+                <div className="flex items-center">
+                  <span className="px-3 py-2 border border-outline-variant border-r-0 rounded-l-lg bg-surface-container-lowest font-body-sm text-on-surface-variant">
+                    {selectedCountryObj?.prefix}
+                  </span>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Número"
+                    className="flex-1 px-3 py-2 border border-outline-variant rounded-r-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                  />
+                </div>
+              </div>
             </div>
 
             <div>

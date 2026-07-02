@@ -1,21 +1,55 @@
+# Multi-stage build for Next.js production
+# Stage 1: Builder
 FROM node:20-alpine AS builder
 
 WORKDIR /app
-COPY package.json package-lock.json* ./
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
 RUN npm ci
 
+# Copy source code
 COPY . .
+
+# Build Next.js app
 RUN npm run build
 
-FROM node:20-alpine AS runner
+# Stage 2: Runtime
+FROM node:20-alpine
+
 WORKDIR /app
 
-ENV NODE_ENV=production
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
 
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./static
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only
+RUN npm ci --production && npm cache clean --force
+
+# Copy built application from builder
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.js ./next.config.js
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001 && \
+    chown -R nextjs:nodejs /app
+
+USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start Next.js production server
+CMD ["npm", "start"]

@@ -13,10 +13,10 @@ function isTokenExpired(token: string): boolean {
 
 export default function TokenCleanup() {
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('accessToken');
     if (token && isTokenExpired(token)) {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
     }
   }, []);
 

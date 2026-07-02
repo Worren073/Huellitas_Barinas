@@ -1,19 +1,54 @@
 services:
+  # PostgreSQL Database
+  - type: pserv
+    name: huellitas-db
+    dbName: huellitas_barinas
+    user: neondb_owner
+    plan: free
+    region: virginia
+
+  # Redis Cache & Celery Broker
+  - type: redis
+    name: huellitas-redis
+    plan: free
+    region: virginia
+    ipAllowList: []
+
+  # Django API Server
   - type: web
     name: huellitas-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: ./entrypoint.sh
+    healthCheckPath: /api/health/
+    plan: free
+    region: virginia
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.production
+      - key: DEBUG
+        value: "false"
       - key: SECRET_KEY
         generateValue: true
-      - key: DEBUG
-        value: false
+      - key: ALLOWED_HOSTS
+        scope: runtime
+        value: huellitas-api.onrender.com
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: huellitas-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: huellitas-redis
+          type: redis
+          property: connectionString
       - key: CELERY_BROKER_URL
-        sync: false
+        fromService:
+          name: huellitas-redis
+          type: redis
+          property: connectionString
+      # AWS / Cloudflare R2 Credentials
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY
@@ -24,33 +59,61 @@ services:
         sync: false
       - key: AWS_S3_REGION_NAME
         value: auto
+      # Email Configuration
       - key: EMAIL_HOST
-        sync: false
+        value: smtp.gmail.com
       - key: EMAIL_PORT
-        value: 587
+        value: "587"
       - key: EMAIL_HOST_USER
         sync: false
       - key: EMAIL_HOST_PASSWORD
         sync: false
-      - key: EMAIL_USE_TLS
-        value: true
       - key: DEFAULT_FROM_EMAIL
         value: "Huellitas Barinas <noreply@huellitasbarinas.com>"
-    healthCheckPath: /api/health/
-    plan: free
+      # CORS Configuration
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://huellitas-web.onrender.com
+      # Frontend API URL
+      - key: NEXT_PUBLIC_API_URL
+        value: https://huellitas-api.onrender.com
+      # Monitoring
+      - key: SENTRY_DSN
+        sync: false
+      - key: ENVIRONMENT
+        value: production
 
+  # Celery Worker
   - type: worker
     name: huellitas-worker
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    dockerCommand: celery -A config worker -l info
+    dockerCommand: celery -A config worker -l info --concurrency=4
+    plan: free
+    region: virginia
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.production
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        fromService:
+          name: huellitas-api
+          type: web
+          property: env.SECRET_KEY
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: huellitas-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: huellitas-redis
+          type: redis
+          property: connectionString
       - key: CELERY_BROKER_URL
-        sync: false
+        fromService:
+          name: huellitas-redis
+          type: redis
+          property: connectionString
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY
@@ -59,35 +122,58 @@ services:
         value: huellitas-barinas
       - key: AWS_S3_ENDPOINT_URL
         sync: false
-      - key: AWS_S3_REGION_NAME
-        value: auto
-    plan: free
 
+  # Celery Beat (Scheduler)
   - type: worker
     name: huellitas-beat
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    dockerCommand: celery -A config beat -l info
+    dockerCommand: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    plan: free
+    region: virginia
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.production
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        fromService:
+          name: huellitas-api
+          type: web
+          property: env.SECRET_KEY
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: huellitas-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: huellitas-redis
+          type: redis
+          property: connectionString
       - key: CELERY_BROKER_URL
-        sync: false
-    plan: free
+        fromService:
+          name: huellitas-redis
+          type: redis
+          property: connectionString
 
-  - type: redis
-    name: huellitas-redis
+  # Next.js Frontend
+  - type: web
+    name: huellitas-web
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile.prod
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /
     plan: free
-    ipAllowList: []
+    region: virginia
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://huellitas-api.onrender.com
+      - key: NODE_ENV
+        value: production
 
-   - type: web
-     name: huellitas-web
-     runtime: docker
-     dockerfilePath: ./frontend/Dockerfile.prod
-     buildCommand: docker build --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t huellitas-web .
-     envVars:
-       - key: NEXT_PUBLIC_API_URL
-         sync: false
-     plan: free
+# Environment: Production
+# Autoscaling: Not available on free tier
+# Backups: Configure in Neon dashboard
+# Monitoring: Sentry (optional, set SENTRY_DSN)
+# Logging: Check Render logs dashboard

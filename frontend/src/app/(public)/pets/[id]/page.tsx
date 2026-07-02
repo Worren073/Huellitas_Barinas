@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
 import { serverApi } from '@/lib/server';
+import { normalizeImageUrl } from '@/lib/utils';
 
 interface PetImage {
   id: number;
@@ -81,7 +82,7 @@ export default async function PetDetailPage({
     );
   }
 
-  const images = pet.images || [];
+  const images = (pet.images || []).map(img => ({ ...img, image: normalizeImageUrl(img.image) }));
   const mainImage = images[0]?.image || '';
 
   return (

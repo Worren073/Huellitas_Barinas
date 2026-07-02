@@ -1,0 +1,77 @@
+#!/bin/bash
+# Pre-push hook: Validate production settings before pushing to production branches
+# Install: cp scripts/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}🔍 Running pre-push checks...${NC}"
+
+# Get branch name
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Only run checks on production branches
+if [[ "$BRANCH" == "main" || "$BRANCH" == "master" || "$BRANCH" == "production" ]]; then
+    echo -e "${YELLOW}⚠️  Pushing to production branch: $BRANCH${NC}"
+    
+    # Check 1: Validate production settings
+    echo -e "\n${YELLOW}[1/5] Validating production settings...${NC}"
+    if ! python scripts/validate_production_settings.py --check-secrets; then
+        echo -e "${RED}❌ Production settings validation failed!${NC}"
+        echo -e "${RED}Fix errors before pushing to production.${NC}"
+        exit 1
+    fi
+    
+    # Check 2: Check for hardcoded secrets
+    echo -e "\n${YELLOW}[2/5] Scanning for hardcoded secrets...${NC}"
+    if git diff-index --check --cached HEAD -- | grep -E 'password|secret|token|key'; then
+        echo -e "${RED}❌ Potential secrets found in staged files!${NC}"
+        echo -e "${RED}Do not commit secrets. Use environment variables instead.${NC}"
+        exit 1
+    fi
+    
+    # Check 3: Verify .env is not committed
+    echo -e "\n${YELLOW}[3/5] Checking for .env files...${NC}"
+    if git diff --cached --name-only | grep -E '\.env$|\.env\.production|\.env\.local'; then
+        echo -e "${RED}❌ .env file about to be committed!${NC}"
+        echo -e "${RED}Never commit .env files with secrets.${NC}"
+        exit 1
+    fi
+    
+    # Check 4: Backend tests
+    echo -e "\n${YELLOW}[4/5] Running backend tests...${NC}"
+    if ! python backend/manage.py test --failfast --no-input 2>/dev/null; then
+        echo -e "${YELLOW}⚠️  Some backend tests failed. Continue anyway? (y/n)${NC}"
+        read -r RESPONSE
+        if [[ ! "$RESPONSE" =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}✅ Backend tests passed${NC}"
+    fi
+    
+    # Check 5: Frontend build
+    echo -e "\n${YELLOW}[5/5] Checking frontend build...${NC}"
+    if ! cd frontend && npm run build >/dev/null 2>&1; then
+        echo -e "${YELLOW}⚠️  Frontend build failed. Continue anyway? (y/n)${NC}"
+        read -r RESPONSE
+        if [[ ! "$RESPONSE" =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}✅ Frontend build successful${NC}"
+    fi
+    cd - >/dev/null
+    
+    echo -e "\n${GREEN}✅ All pre-push checks passed!${NC}"
+    echo -e "${GREEN}Ready to push to $BRANCH${NC}\n"
+else
+    echo -e "${GREEN}✅ Pushing to development branch: $BRANCH (skipping production checks)${NC}"
+fi
+
+exit 0
