@@ -4,6 +4,7 @@ Production settings for Huellitas Barinas project.
 
 import os
 from .base import *
+from .database import parse_database_url
 
 # Security
 DEBUG = False
@@ -23,13 +24,17 @@ CSRF_COOKIE_SECURE = True
 X_FRAME_OPTIONS = 'DENY'
 
 # Database
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
-    import re
-    match = re.match(
-        r'postgres(?:ql)?://(.+?):(.+?)@(.+?)(?::(\d+))?/(.+)',
-        DATABASE_URL
-    )
+DATABASES = parse_database_url(
+    'DATABASE_URL',
+    [
+        ('DB_NAME', 'huellitas_barinas'),
+        ('DB_USER', 'neondb_owner'),
+        ('DB_PASSWORD', 'npg_aiXy4NJFqSe5'),
+        ('DB_HOST', 'ep-royal-snow-atfogk2r.c-9.us-east-1.aws.neon.tech'),
+        ('DB_PORT', '5432'),
+    ],
+    sslmode='require'
+)
     if match:
         DATABASES = {
             'default': {

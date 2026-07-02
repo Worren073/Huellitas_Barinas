@@ -31,16 +31,18 @@ else:
     DB_HOST = os.environ.get('DB_HOST', 'localhost')
     DB_PORT = os.environ.get('DB_PORT', '5432')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
-    }
-}
+from .database import parse_database_url
+
+DATABASES = parse_database_url(
+    'DATABASE_URL',
+    [
+        ('DB_NAME', 'huellitas_barinas'),
+        ('DB_USER', 'postgres'),
+        ('DB_PASSWORD', 'postgres'),
+        ('DB_HOST', 'localhost'),
+        ('DB_PORT', '5432'),
+    ]
+)
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True

@@ -82,12 +82,12 @@ services:
     plan: free
     ipAllowList: []
 
-  - type: web
-    name: huellitas-web
-    runtime: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/.next
-    envVars:
-      - key: NEXT_PUBLIC_API_URL
-        sync: false
-    plan: free
+   - type: web
+     name: huellitas-web
+     runtime: docker
+     dockerfilePath: ./frontend/Dockerfile.prod
+     buildCommand: docker build --no-cache --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t huellitas-web .
+     envVars:
+       - key: NEXT_PUBLIC_API_URL
+         sync: false
+     plan: free

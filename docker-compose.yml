@@ -102,6 +102,11 @@ services:
       - /app/.next
     depends_on:
       - api
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/api/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
