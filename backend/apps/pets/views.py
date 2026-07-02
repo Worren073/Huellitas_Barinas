@@ -14,7 +14,7 @@ from .services import PetService
 
 class PetViewSet(viewsets.ModelViewSet):
     """ViewSet for managing pets."""
-    queryset = Pet.objects.all()
+    queryset = Pet.objects.select_related('center').prefetch_related('images')
     serializer_class = PetSerializer
     search_fields = ['name', 'breed', 'description']
     ordering_fields = ['created_at', 'name', 'age_months']
@@ -31,23 +31,20 @@ class PetViewSet(viewsets.ModelViewSet):
         return PetSerializer
 
     def get_queryset(self):
-        queryset = Pet.objects.all()
-        
-        # Filter by species
+        queryset = Pet.objects.select_related('center').prefetch_related('images')
+
         species = self.request.query_params.get('species')
         if species:
             queryset = queryset.filter(species=species)
-        
-        # Filter by status
+
         status_filter = self.request.query_params.get('status')
         if status_filter:
             queryset = queryset.filter(status=status_filter)
-        
-        # Filter by center
+
         center = self.request.query_params.get('center')
         if center:
             queryset = queryset.filter(center_id=center)
-        
+
         return queryset
 
     @action(detail=False, methods=['get'])

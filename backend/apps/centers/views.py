@@ -3,6 +3,7 @@ Center views (View layer).
 Delegates to services (Presenter layer).
 """
 
+from django.db.models import Count
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -15,7 +16,7 @@ from .permissions import IsCenterAdminOrReadOnly
 
 class CenterViewSet(viewsets.ModelViewSet):
     """ViewSet for managing adoption centers."""
-    queryset = Center.objects.all()
+    queryset = Center.objects.annotate(pets_count=Count('pets'))
     serializer_class = CenterSerializer
     permission_classes = [IsCenterAdminOrReadOnly]
     search_fields = ['name', 'description', 'address']

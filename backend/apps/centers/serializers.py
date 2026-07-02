@@ -10,7 +10,7 @@ class CenterSerializer(serializers.ModelSerializer):
     """Serializer for Center model."""
     current_capacity = serializers.IntegerField(read_only=True)
     is_full = serializers.BooleanField(read_only=True)
-    pets_count = serializers.SerializerMethodField()
+    pets_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Center
@@ -21,9 +21,6 @@ class CenterSerializer(serializers.ModelSerializer):
             'created_by', 'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'created_by', 'created_at', 'updated_at')
-
-    def get_pets_count(self, obj):
-        return obj.pets.count()
 
 
 class CenterCreateSerializer(serializers.ModelSerializer):

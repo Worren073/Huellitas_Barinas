@@ -25,12 +25,13 @@ class AdoptionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        qs = Adoption.objects.select_related('pet', 'applicant', 'center', 'reviewed_by')
         if user.is_superuser:
-            return Adoption.objects.all()
+            return qs.all()
         elif user.role == 'center_admin':
-            return Adoption.objects.filter(center=user.center)
+            return qs.filter(center=user.center)
         else:
-            return Adoption.objects.filter(applicant=user)
+            return qs.filter(applicant=user)
 
     def get_serializer_class(self):
         if self.action in ['create']:
