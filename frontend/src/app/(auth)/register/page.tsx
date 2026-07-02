@@ -7,16 +7,16 @@ import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
 
 const COUNTRIES = [
-  { code: 'VE', name: 'Venezuela', prefix: '+58' },
-  { code: 'CO', name: 'Colombia', prefix: '+57' },
-  { code: 'EC', name: 'Ecuador', prefix: '+593' },
-  { code: 'PE', name: 'Perú', prefix: '+51' },
-  { code: 'CL', name: 'Chile', prefix: '+56' },
-  { code: 'AR', name: 'Argentina', prefix: '+54' },
-  { code: 'BR', name: 'Brasil', prefix: '+55' },
-  { code: 'MX', name: 'México', prefix: '+52' },
-  { code: 'ES', name: 'España', prefix: '+34' },
-  { code: 'US', name: 'Estados Unidos', prefix: '+1' },
+  { code: 'VE', name: 'Venezuela', prefix: '+58', flag: '🇻🇪', char: 'VE' },
+  { code: 'CO', name: 'Colombia', prefix: '+57', flag: '🇨🇴', char: 'CO' },
+  { code: 'EC', name: 'Ecuador', prefix: '+593', flag: '🇪🇨', char: 'EC' },
+  { code: 'PE', name: 'Perú', prefix: '+51', flag: '🇵🇪', char: 'PE' },
+  { code: 'CL', name: 'Chile', prefix: '+56', flag: '🇨🇱', char: 'CL' },
+  { code: 'AR', name: 'Argentina', prefix: '+54', flag: '🇦🇷', char: 'AR' },
+  { code: 'BR', name: 'Brasil', prefix: '+55', flag: '🇧🇷', char: 'BR' },
+  { code: 'MX', name: 'México', prefix: '+52', flag: '🇲🇽', char: 'MX' },
+  { code: 'ES', name: 'España', prefix: '+34', flag: '🇪🇸', char: 'ES' },
+  { code: 'US', name: 'Estados Unidos', prefix: '+1', flag: '🇺🇸', char: 'US' },
 ];
 
 export default function RegisterPage() {
@@ -154,40 +154,50 @@ export default function RegisterPage() {
             </div>
 
             {/* Country + Phone */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="country" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
-                  País
-                </label>
-                <select
-                  id="country"
-                  value={selectedCountry}
-                  onChange={(e) => setSelectedCountry(e.target.value)}
-                  className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all cursor-pointer"
-                >
-                  {COUNTRIES.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="phone" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
-                  Teléfono
-                </label>
-                <div className="flex items-center">
-                  <span className="px-3 py-2 border border-outline-variant border-r-0 rounded-l-lg bg-surface-container-lowest font-body-sm text-on-surface-variant">
-                    {selectedCountryObj?.prefix}
+            <div className="space-y-2">
+              <label className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
+                País y Teléfono
+              </label>
+              <div className="flex gap-2 items-stretch">
+                <div className="relative w-16">
+                  <select
+                    id="country"
+                    value={selectedCountry}
+                    onChange={(e) => setSelectedCountry(e.target.value)}
+                    className="block w-full px-2 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-white focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all cursor-pointer appearance-none h-10"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 4px center',
+                      paddingRight: '20px',
+                      color: 'transparent',
+                      textShadow: '0 0 0 18px #1a1a1a',
+                    }}
+                  >
+                    {COUNTRIES.map((country) => (
+                      <option key={country.code} value={country.code}>
+                        {country.char}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute left-2 top-1 pointer-events-none text-xl leading-8 font-body-sm">
+                    {selectedCountryObj?.flag}
                   </span>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="Número"
-                    className="flex-1 px-3 py-2 border border-outline-variant rounded-r-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
-                  />
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-stretch h-10">
+                    <span className="px-2 border border-outline-variant border-r-0 rounded-l-lg bg-surface-container-lowest font-body-sm text-on-surface-variant text-xs whitespace-nowrap flex items-center">
+                      {selectedCountryObj?.flag} {selectedCountryObj?.prefix}
+                    </span>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="Número"
+                      className="flex-1 px-3 py-2 border border-outline-variant rounded-r-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
