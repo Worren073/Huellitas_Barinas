@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { auth } from '@/lib/api';
+import { auth } from '@/lib/auth';
+import Icon from '@/components/Icon';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function RegisterPage() {
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setError('Las contrasenas no coinciden');
       setLoading(false);
       return;
     }
@@ -34,7 +35,7 @@ export default function RegisterPage() {
         last_name: formData.get('lastName') as string,
       });
       router.push('/login');
-    } catch (err) {
+    } catch {
       setError('Error al registrar. Intenta de nuevo.');
     } finally {
       setLoading(false);
@@ -42,20 +43,25 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface-off-white py-12 px-4">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-12 h-12 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center">
+              <Icon name="pets" className="w-7 h-7" solid />
+            </div>
+          </div>
+          <h2 className="font-montserrat text-headline-lg text-on-surface">
             Crear Cuenta
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 font-body-sm text-on-surface-variant">
             Huellitas Barinas
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+            <div className="bg-error-container text-on-error-container p-3 rounded-lg font-body-sm">
               {error}
             </div>
           )}
@@ -63,7 +69,7 @@ export default function RegisterPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="firstName" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
                   Nombre
                 </label>
                 <input
@@ -71,11 +77,11 @@ export default function RegisterPage() {
                   name="firstName"
                   type="text"
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="lastName" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
                   Apellido
                 </label>
                 <input
@@ -83,13 +89,13 @@ export default function RegisterPage() {
                   name="lastName"
                   type="text"
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="username" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
                 Usuario
               </label>
               <input
@@ -97,12 +103,12 @@ export default function RegisterPage() {
                 name="username"
                 type="text"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
                 Email
               </label>
               <input
@@ -110,13 +116,13 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Contraseña
+              <label htmlFor="password" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
+                Contrasena
               </label>
               <input
                 id="password"
@@ -124,13 +130,13 @@ export default function RegisterPage() {
                 type="password"
                 required
                 minLength={8}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
               />
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirmar Contraseña
+              <label htmlFor="confirmPassword" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
+                Confirmar Contrasena
               </label>
               <input
                 id="confirmPassword"
@@ -138,7 +144,7 @@ export default function RegisterPage() {
                 type="password"
                 required
                 minLength={8}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
               />
             </div>
           </div>
@@ -146,15 +152,15 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+            className="w-full bg-primary-container text-on-primary-container font-label-md py-3 rounded-lg shadow-sm hover:brightness-105 active:scale-95 transition-all disabled:opacity-50"
           >
             {loading ? 'Creando...' : 'Crear Cuenta'}
           </button>
 
-          <p className="text-center text-sm text-gray-600">
-            ¿Ya tienes cuenta?{' '}
-            <Link href="/login" className="font-medium text-primary-600 hover:text-primary-500">
-              Inicia sesión
+          <p className="text-center font-body-sm text-on-surface-variant">
+            Ya tienes cuenta?{' '}
+            <Link href="/login" className="font-medium text-primary hover:underline">
+              Inicia sesion
             </Link>
           </p>
         </form>

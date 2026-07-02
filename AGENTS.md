@@ -194,6 +194,29 @@ test(centers): add unit tests
 | `docker-compose.yml` | Dev containers |
 | `docker-compose.prod.yml` | Prod containers |
 
+## Próximos Pasos (Pendiente)
+
+| Prioridad | Tarea | Descripción |
+|-----------|-------|-------------|
+| 🔴 Alta | **Imágenes reales** | Reemplazar placeholders de inicial por fotos reales (Unsplash/Pexels) o siluetas de mascota |
+| 🔴 Alta | **Formulario de postulación** | Página `(public)/adoptar/[id]` con formulario (datos personales, motivo, experiencia). POST a `/api/v1/adoptions/` |
+| 🔴 Alta | **Flujo de adopciones** | Dashboard: listar solicitudes, cambiar estado (pending→under_review→approved/rejected→completed), timeline |
+| 🟡 Media | **Mapa de centros** | Agregar `lat`/`lng` a `Center`, `react-leaflet`, página `/centros` |
+| 🟡 Media | **Vista de Contacto** | Modal o página `(public)/contacto` |
+| 🟡 Media | **Vista de Términos** | Modal o página `(public)/terminos` |
+| 🟡 Media | **Vista de Privacidad** | Modal o página `(public)/privacidad` |
+| 🟡 Media | **Vista de Redes Sociales** | Modal o página `(public)/redes` |
+| 🟢 Baja | **Animaciones** | `framer-motion`: fade-in scroll, transiciones de ruta, hover cards, skeleton animado |
+| 🟢 Baja | **Placeholder visual** | Silueta SVG de perro/gato en vez de letras |
+
+### Notas por tarea
+
+- **Postulación**: requiere endpoint `POST /api/v1/adoptions/` con validaciones
+- **Mapa**: `react-leaflet` + OpenStreetMap (gratuito, sin API key)
+- **Modales**: componente `Modal.tsx` reutilizable en `components/ui/` con portal
+- **Animaciones**: instalar `framer-motion`, wrapper `AnimatedSection.tsx`
+- **Imágenes**: seed puede descargar de Unsplash o usar `https://placehold.co` como fallback
+
 ## Contacto
 
 - **Repo**: https://github.com/Worren073/Huellitas_Barinas.git

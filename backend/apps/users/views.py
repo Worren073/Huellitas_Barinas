@@ -30,16 +30,10 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
-        # Generate tokens
-        refresh = RefreshToken.for_user(user)
-        
-        return Response({
-            'user': UserSerializer(user).data,
-            'tokens': {
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-            }
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            UserSerializer(user).data,
+            status=status.HTTP_201_CREATED
+        )
 
 
 class LoginView(APIView):
@@ -50,10 +44,18 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        user = authenticate(
-            username=serializer.validated_data['username'],
-            password=serializer.validated_data['password']
-        )
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+        
+        try:
+            user_obj = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'Credenciales inválidas.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        user = authenticate(username=user_obj.username, password=password)
         
         if user is None:
             return Response(
@@ -70,11 +72,8 @@ class LoginView(APIView):
         refresh = RefreshToken.for_user(user)
         
         return Response({
-            'user': UserSerializer(user).data,
-            'tokens': {
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-            }
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
         })
 
 

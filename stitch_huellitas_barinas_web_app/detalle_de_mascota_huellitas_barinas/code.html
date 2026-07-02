@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detalles de Mascota - Huellitas Barinas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#ccdbf4",
+                        "tertiary-fixed-dim": "#dcc748",
+                        "on-tertiary-fixed-variant": "#514700",
+                        "tertiary": "#6b5f00",
+                        "on-tertiary-container": "#584d00",
+                        "surface": "#f8f9ff",
+                        "status-completed": "#BEE3F8",
+                        "on-secondary-container": "#793d3e",
+                        "status-pending": "#FEFCBF",
+                        "on-primary-container": "#005750",
+                        "on-surface": "#0d1c2e",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-highest": "#d4e4fc",
+                        "status-cancelled": "#E2E8F0",
+                        "primary-container": "#4fd1c5",
+                        "primary": "#006a63",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#5adace",
+                        "primary-fixed": "#79f7ea",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-primary": "#ffffff",
+                        "secondary": "#8c4c4d",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#fae361",
+                        "status-review": "#E6FFFA",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#00504a",
+                        "inverse-primary": "#5adace",
+                        "on-secondary-fixed": "#390b0e",
+                        "outline": "#6c7a77",
+                        "secondary-fixed": "#ffdad9",
+                        "surface-gray": "#EDF2F7",
+                        "on-primary-fixed": "#00201d",
+                        "secondary-fixed-dim": "#ffb3b3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#d3bf40",
+                        "surface-off-white": "#F7FAFC",
+                        "status-rejected": "#FED7D7",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#3c4947",
+                        "surface-variant": "#d4e4fc",
+                        "on-background": "#0d1c2e",
+                        "secondary-container": "#fdacac",
+                        "status-approved": "#C6F6D5",
+                        "on-tertiary-fixed": "#201c00",
+                        "outline-variant": "#bbc9c7",
+                        "background": "#f8f9ff",
+                        "inverse-surface": "#223144",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#006a63",
+                        "on-secondary-fixed-variant": "#703537"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "stack-lg": "2rem",
+                        "margin-mobile": "1rem",
+                        "stack-md": "1rem",
+                        "container-max": "1280px",
+                        "margin-desktop": "2rem",
+                        "gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Montserrat"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "headline-xl": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F7FAFC; /* surface-off-white */ }
+        /* Ambient shadow for level 1 cards */
+        .ambient-shadow { box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+    </style>
+</head>
+<body class="text-on-surface antialiased flex flex-col min-h-screen">
+<!-- TopNavBar Shared Component -->
+<header class="bg-surface border-b border-outline-variant docked full-width top-0 z-50">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto h-20">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">Huellitas Barinas</span>
+</div>
+<nav class="hidden md:flex items-center gap-8 h-full">
+<a class="font-label-md text-label-md h-full flex items-center text-primary border-b-2 border-primary font-bold pb-1 opacity-80 scale-95 transition-all" href="#">Mascotas</a>
+<a class="font-label-md text-label-md h-full flex items-center text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-2" href="#">Centros</a>
+<a class="font-label-md text-label-md h-full flex items-center text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors px-2" href="#">Sobre Nosotros</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-transparent border-none outline-none text-sm font-body-sm text-on-surface w-32 focus:ring-0 p-0" placeholder="Buscar..." type="text"/>
+</div>
+<button class="font-label-md text-label-md text-primary hover:bg-surface-container-low px-4 py-2 rounded-lg transition-colors">Login</button>
+<button class="font-label-md text-label-md bg-primary text-on-primary px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">Registro</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
+<!-- Header Info -->
+<div class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-2">Luna</h1>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-md text-label-md px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">pets</span> Mestizo
+                    </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-md text-label-md px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">cake</span> 2 Años
+                    </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-md text-label-md px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">female</span> Hembra
+                    </span>
+<span class="inline-flex items-center gap-1 bg-status-approved text-on-surface font-label-md text-label-md px-3 py-1 rounded-full border border-[#9ae6b4]">
+<span class="material-symbols-outlined text-[16px]">check_circle</span> Lista para Adopción
+                    </span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full border border-outline-variant hover:bg-surface-container-low transition-colors text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="p-2 rounded-full border border-outline-variant hover:bg-secondary-container hover:text-on-secondary-container hover:border-secondary-container transition-colors text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Details & Gallery -->
+<div class="lg:col-span-8 flex flex-col gap-stack-lg">
+<!-- Bento Image Gallery -->
+<div class="grid grid-cols-4 grid-rows-2 gap-4 h-[500px] rounded-2xl overflow-hidden bg-surface">
+<div class="col-span-4 row-span-2 md:col-span-3 md:row-span-2 relative group cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A striking, high-resolution professional photograph of a happy, mixed-breed medium-sized dog named Luna. She has soft golden fur, expressive brown eyes, and is looking brightly towards the camera. The background is a clean, softly lit outdoor park setting with bokeh effect. The image is bright, warm, and fits perfectly within a modern, light-mode pet adoption web interface, emphasizing compassion, warmth, and high trust. Soft natural lighting, sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNEdkNADGSvhmT3bW44bOKnmHdnClLJDIj8B92NbHDmAFNPCTx2Q4NRW0XN_YY_KGRe6lxe2mwg81uPkaQfDCP0WSvQSbjcFD0I2g51XmId87k8U4O71_WMf_YCwglvAqHPDFYABgNf6hNXlNE7Odc_Ef5hCHLFCaMesTr1u5h78ALF9k_rhW6AAD5T3bKiw71LjygEI4wqRRF72Q9ZCZrDekDSTSPyFHg3LJU2ypKDFy_znh5txqa"/>
+</div>
+<div class="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-bl-lg">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A close-up, high-quality portrait of the golden mixed-breed dog Luna, focusing on her friendly face and gentle eyes. Soft, high-key white lighting creates a modern, light-mode aesthetic. The background is a soft, out-of-focus pristine white environment. The mood is serene, approachable, and compassionate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBf0zOGxqoBCunhuQTa-U-aGicdz5CaiByGce_5splzPRj1mOEsp9paiT6FPiPVC-N-LCOqeIUIRrZ9AzBumjYgHeia8BwydsM9WoTZi6C93lDENbKcvZL4KGV9ZtzMEbWSlQq9RoGtw6VqjYoQSHXScCx9PB87aEt4MVoCmCohVHQDbp7KB-huaXJOCL7mmUllI2CbMemywZJpz_bx2wVPTSm59PK2UXwRzvX0B_zs7qpDjMvK6Vl"/>
+</div>
+<div class="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-tl-lg">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A lively action shot of the golden mixed-breed dog Luna playing with a subtle, muted-colored toy in a bright, minimalist setting. The lighting is soft and even, maintaining the light-mode UI aesthetic. The overall palette is neutral with soft warmth, avoiding harsh shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcliyfGzh3C7oi_w_5-Nh2JTGgFPcbhNfUiCZqQBdgr-Zh-rV__hdGcNotSV4vBeNKio11XU05zxubAdXEsd8GDenxMitbLgfP1htSAOb5cg38NeZhJF-EoO4fEYlrmdakuCMuprOw7NxRLLs1toiEpMr5EvRE93qJKt0T52JSGDKmldHzm-Qe75VMvJgFHZ8NYwj6QA__uvg8yGWw1MImCIKnbWGOGvXJvFTubpl3ike9CtwY7-QW"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center transition-opacity hover:bg-black/10">
+<span class="text-white font-label-md text-label-md flex items-center gap-1"><span class="material-symbols-outlined">photo_library</span> +4 Fotos</span>
+</div>
+</div>
+</div>
+<!-- Description -->
+<section class="bg-surface p-stack-lg rounded-2xl ambient-shadow">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-stack-sm">Sobre Luna</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Luna es una perrita excepcionalmente dulce y cariñosa que fue rescatada hace unos meses. Al principio era un poco tímida, pero rápidamente demostró tener un corazón de oro. Le encanta salir a pasear, olfatear cada rincón del parque y recostarse al sol por las tardes. Es muy inteligente y aprende comandos con facilidad, especialmente si hay premios de por medio.
+                        <br/><br/>
+                        Buscamos una familia paciente y amorosa que esté dispuesta a darle el tiempo que necesita para adaptarse a su nuevo hogar. Ideal para familias con niños mayores o parejas activas.
+                    </p>
+</section>
+<!-- Traits & Health Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Personality -->
+<section class="bg-surface p-stack-lg rounded-2xl ambient-shadow flex flex-col h-full">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">mood</span> Personalidad
+                        </h3>
+<div class="flex flex-wrap gap-3">
+<span class="bg-surface-container-low text-on-surface border border-outline-variant font-body-sm text-body-sm px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">sentiment_very_satisfied</span> Cariñosa
+                            </span>
+<span class="bg-surface-container-low text-on-surface border border-outline-variant font-body-sm text-body-sm px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">directions_run</span> Activa
+                            </span>
+<span class="bg-surface-container-low text-on-surface border border-outline-variant font-body-sm text-body-sm px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">school</span> Inteligente
+                            </span>
+<span class="bg-surface-container-low text-on-surface border border-outline-variant font-body-sm text-body-sm px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">family_restroom</span> Buena con niños
+                            </span>
+</div>
+</section>
+<!-- Health -->
+<section class="bg-surface p-stack-lg rounded-2xl ambient-shadow flex flex-col h-full">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">health_and_safety</span> Estado de Salud
+                        </h3>
+<ul class="flex flex-col gap-3 font-body-md text-body-md text-on-surface-variant">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span> Vacunación al día
+                            </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span> Esterilizada
+                            </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span> Desparasitada
+                            </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span> Microchip (Pendiente)
+                            </li>
+</ul>
+</section>
+</div>
+</div>
+<!-- Right Column: Sticky Action Sidebar -->
+<div class="lg:col-span-4 relative">
+<div class="sticky top-28 flex flex-col gap-stack-md">
+<!-- Main Action Card -->
+<div class="bg-surface rounded-2xl p-stack-lg ambient-shadow border border-outline-variant">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Adopta a Luna</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md">
+                            El proceso de adopción incluye una entrevista, verificación de hogar y firma de compromiso.
+                        </p>
+<button class="w-full bg-primary-container hover:bg-[#3dbdb1] text-on-primary-container font-label-md text-label-md py-4 rounded-lg flex items-center justify-center gap-2 transition-all mb-3 shadow-sm hover:shadow-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                            Iniciar Solicitud de Adopción
+                        </button>
+<button class="w-full bg-transparent border-2 border-primary-container text-on-primary-container hover:bg-surface-container-low font-label-md text-label-md py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined">help</span>
+                            Hacer una pregunta
+                        </button>
+</div>
+<!-- Center Info Card -->
+<div class="bg-surface rounded-2xl overflow-hidden ambient-shadow border border-outline-variant">
+<!-- Location Map Image -->
+<div class="h-32 w-full bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="A clean, modern, simplified digital map illustration focusing on Barinas, Venezuela. The map style uses light-mode UI colors: pale off-whites, soft light grays for roads, and subtle teal or green accents for parks. A distinct, elegant marker icon pinpoints a specific location. The design is minimalist, professional, and visually coherent with a soft-functional web interface." data-location="Barinas, Venezuela" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBtzs1FuKsBeB-FKiS1TZY-MNc5bCYSck33kWIpE7bOeo_y4lWTsDCaUwxsiXBjS7CSQTWYfcZumiBG8-4YpdDIWCooeDTE7mCRwKrgwzfTmVk0l8cEzs5vCp2WFKL8UoMcmNrlgAY6DlbQBdPhnEALT0OhOeP8qx1EMgbnO_tHPauzzkK9n3KSvtX7v83PpbJ7CfYzho41_oPdt3qtTooIq-Kobr1jChZfB16ZRjNkfoO4nQNLKZu"/>
+</div>
+<div class="p-stack-md flex flex-col gap-4">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">location_away</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Refugio Esperanza</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Av. Los Andes, Sector Alto Barinas, Barinas.</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">call</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">+58 414-1234567</p>
+</div>
+</div>
+<a class="font-label-md text-label-md text-primary hover:underline mt-2 inline-block" href="#">Ver perfil del centro →</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Success Stories Section -->
+<section class="mt-24 mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-stack-md">Historias de Éxito Similares</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Story Card 1 -->
+<div class="bg-surface rounded-2xl overflow-hidden ambient-shadow group cursor-pointer border border-transparent hover:border-outline-variant transition-colors">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A bright, heartwarming portrait of a medium-sized terrier mix dog smiling happily next to its new owner in a sunlit park. The lighting is soft and natural, enhancing the warm, compassionate mood of a light-mode adoption website. The colors are gentle and inviting, with soft greens and pristine whites dominating the palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAVzB4WqXYnfmk-OYObejjC1o-WeirZzYGJL1ncWjTae3stawn5mt0NqRR9_hNtmLhIzV2lZAQT4YmpRqfZu-tsVPGV-CO1yOLHk-Da56oWruopUCTul3qJo6K2jwGMLxF59LBnwY13NhDQco8bHS9LS_IwbZmhbr7dPmrrHnXZy4C3MylP_VvdPahBdJtzntIibiyuelplDyk_sd5ZO6U6jdP9wJYFU4KT50IcOHjLCmtA-RrsoDm"/>
+<div class="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full">
+<span class="font-label-sm text-label-sm text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary-container" style="font-variation-settings: 'FILL' 1;">favorite</span> Adoptado</span>
+</div>
+</div>
+<div class="p-stack-md">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Max</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 line-clamp-2">"Max llenó nuestra casa de alegría desde el primer día. Adoptarlo fue la mejor decisión..."</p>
+</div>
+</div>
+<!-- Story Card 2 -->
+<div class="bg-surface rounded-2xl overflow-hidden ambient-shadow group cursor-pointer border border-transparent hover:border-outline-variant transition-colors">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A beautiful, soft-focus image of a serene grey cat resting comfortably on a modern, neutral-toned sofa. The scene is illuminated by soft, diffused indoor light, creating a calm and secure atmosphere appropriate for a high-end, light-mode pet adoption interface. The aesthetic is clean, minimal, and highly professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKmUcNtGOSX628WjMpSiye51jSx0zArGlJnc8OVcqcPZvM8oJDXldv3IT6oYh9mdyl62qx4O_IIlSAz374lXui1KRRrnRWeU_GHsFNU4EMsOdDZK1x93K0PDmMvlOrqQ0fNsIlAkClugM0VgQr0pteHukldB8R3LY6sCQouWom0zD560ZIw7krOP9jubLAAAvgRe-2Y7lr0SJOgPYFnTUDZOarRbCaXH8zuZMfR2hNHV6WTFBLSx2J"/>
+<div class="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full">
+<span class="font-label-sm text-label-sm text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary-container" style="font-variation-settings: 'FILL' 1;">favorite</span> Adoptada</span>
+</div>
+</div>
+<div class="p-stack-md">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Mila</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 line-clamp-2">"Mila era muy tímida en el refugio, pero en casa se ha convertido en la dueña del sillón..."</p>
+</div>
+</div>
+<!-- Story Card 3 -->
+<div class="bg-surface rounded-2xl overflow-hidden ambient-shadow group cursor-pointer border border-transparent hover:border-outline-variant transition-colors hidden md:block">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A delightful, vibrant photograph of an older golden retriever running joyfully on a grassy lawn with a frisbee. The image is taken during the golden hour, providing soft, warm light that perfectly complements a compassionate, professional light-mode web interface. The mood is triumphant and heartwarming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFIojFNxPcEGt705eSDdtdwVOy8s1t-1WW5RnBLKtz3YsKs8ko5n9Qfp0Bfds3zBKTLm1qvBJ7-UnHKhxcngNQ75VmGZSjBA0mxVFdJfICssfsT5mCM5W6M1iatzOpocWFRflaEHSLqeLQ3RiWfhECCUCIZzTDHwZzQaAdzFgzniSel2aiHqYEByhUsNa0Onx1FVLUnFF2bvEav6XnhpVwd7tRHod_t3psnCHdUjAYvQcGOpN4DChE"/>
+<div class="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full">
+<span class="font-label-sm text-label-sm text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary-container" style="font-variation-settings: 'FILL' 1;">favorite</span> Adoptado</span>
+</div>
+</div>
+<div class="p-stack-md">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Bruno</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 line-clamp-2">"No queríamos un perro cachorro, y Bruno resultó ser el compañero perfecto para nuestras tardes tranquilas."</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shared Component -->
+<footer class="bg-surface-dim mt-stack-lg full-width">
+<div class="w-full py-stack-lg px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-gutter max-w-container-max mx-auto">
+<div class="flex flex-col gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Huellitas Barinas</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">© 2024 Huellitas Barinas. Compassion in every adoption.</p>
+</div>
+<div class="flex flex-col gap-2 md:col-start-3 md:items-end">
+<nav class="flex flex-wrap gap-4">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contacto</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terminos</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacidad</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Redes Sociales</a>
+</nav>
+</div>
+</div>
+</footer>
+</body></html>

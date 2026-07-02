@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Huellitas Barinas - Encuentra a tu mejor amigo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#ccdbf4",
+                    "tertiary-fixed-dim": "#dcc748",
+                    "on-tertiary-fixed-variant": "#514700",
+                    "tertiary": "#6b5f00",
+                    "on-tertiary-container": "#584d00",
+                    "surface": "#f8f9ff",
+                    "status-completed": "#BEE3F8",
+                    "on-secondary-container": "#793d3e",
+                    "status-pending": "#FEFCBF",
+                    "on-primary-container": "#005750",
+                    "on-surface": "#0d1c2e",
+                    "surface-container-high": "#dce9ff",
+                    "surface-container-highest": "#d4e4fc",
+                    "status-cancelled": "#E2E8F0",
+                    "primary-container": "#4fd1c5",
+                    "primary": "#006a63",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#5adace",
+                    "primary-fixed": "#79f7ea",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary": "#ffffff",
+                    "secondary": "#8c4c4d",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#fae361",
+                    "status-review": "#E6FFFA",
+                    "surface-container": "#e5eeff",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#00504a",
+                    "inverse-primary": "#5adace",
+                    "on-secondary-fixed": "#390b0e",
+                    "outline": "#6c7a77",
+                    "secondary-fixed": "#ffdad9",
+                    "surface-gray": "#EDF2F7",
+                    "on-primary-fixed": "#00201d",
+                    "secondary-fixed-dim": "#ffb3b3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#eff4ff",
+                    "surface-bright": "#f8f9ff",
+                    "tertiary-container": "#d3bf40",
+                    "surface-off-white": "#F7FAFC",
+                    "status-rejected": "#FED7D7",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#3c4947",
+                    "surface-variant": "#d4e4fc",
+                    "on-background": "#0d1c2e",
+                    "secondary-container": "#fdacac",
+                    "status-approved": "#C6F6D5",
+                    "on-tertiary-fixed": "#201c00",
+                    "outline-variant": "#bbc9c7",
+                    "background": "#f8f9ff",
+                    "inverse-surface": "#223144",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#006a63",
+                    "on-secondary-fixed-variant": "#703537"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "0.5rem",
+                    "stack-lg": "2rem",
+                    "margin-mobile": "1rem",
+                    "stack-md": "1rem",
+                    "container-max": "1280px",
+                    "margin-desktop": "2rem",
+                    "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": [
+                            "Montserrat"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Montserrat"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Montserrat"
+                    ],
+                    "headline-xl": [
+                            "Montserrat"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Montserrat"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "11px",
+                            {
+                                    "lineHeight": "14px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-sm": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-xl": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-md": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col">
+<!-- TopNavBar Component -->
+<header class="bg-surface border-b border-outline-variant flat no shadows docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center px-margin-desktop w-full max-w-container-max mx-auto h-20">
+<div class="text-headline-md font-headline-md font-bold text-primary">
+                Huellitas Barinas
+            </div>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Mascotas</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Centros</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors" href="#">Sobre Nosotros</a>
+</nav>
+<div class="flex items-center gap-stack-sm">
+<button class="font-label-md text-label-md text-primary hover:bg-surface-container-low px-4 py-2 rounded-lg transition-colors border border-transparent">Login</button>
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-sm">Registro</button>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative pt-24 pb-32 px-margin-desktop lg:px-0 flex flex-col lg:flex-row items-center max-w-container-max mx-auto gap-stack-lg">
+<div class="w-full lg:w-1/2 flex flex-col gap-stack-md z-10">
+<h1 class="font-headline-xl text-headline-xl text-on-surface">
+                    Encuentra a tu mejor amigo en Barinas
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                    Conectamos corazones con patas. Descubre mascotas en adopción en los centros de rescate de Barinas y dale un hogar lleno de amor a quien más lo necesita.
+                </p>
+<div class="flex gap-stack-sm mt-stack-sm">
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pets</span>
+                        Ver Mascotas
+                    </button>
+<button class="bg-transparent border border-primary text-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-surface-container-low transition-colors">
+                        Cómo Ayudar
+                    </button>
+</div>
+</div>
+<div class="w-full lg:w-1/2 relative">
+<div class="relative w-full aspect-square md:aspect-video lg:aspect-square rounded-[2rem] overflow-hidden shadow-lg bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A high-quality, heartwarming photograph of a golden retriever dog and a tabby cat sitting close together on a sunlit grassy patch. The lighting is soft and golden hour, creating a warm, inviting, and compassionate mood. The background is slightly blurred to keep focus on the animals. The aesthetic aligns with a modern, high-end pet rescue website, utilizing bright, clean, and optimistic visual tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVEurrlysz9s-ApGdVJQjICVyYnO5WGqyym2ZcZPNmCe2-UAEbYaxtpgEOcx0_NUdrhADmt3vuaPiFddxb8gZWtpcOCB6-9KZ7iAmB-isvYrrgHTGXna_LuSRnGC2Z5lWRGbANAWkn4a5IJEN0duRORGX-Twc_FahChvTZVcBw5zZyHg0C89afIdLr9hmCUO6_y-NAMKYxROsfTebiNggB2o64Qj-v0BgiwYvyWjBsW1S2H0pBO1bA"/>
+</div>
+<!-- Decorative elements -->
+<div class="absolute -top-8 -left-8 w-24 h-24 bg-tertiary-container rounded-full opacity-50 blur-2xl"></div>
+<div class="absolute -bottom-8 -right-8 w-32 h-32 bg-primary-container rounded-full opacity-50 blur-2xl"></div>
+</div>
+</section>
+<!-- Cómo Funciona (Bento Grid) -->
+<section class="py-24 bg-surface-gray px-margin-desktop">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">¿Cómo Funciona?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Un proceso simple y transparente para asegurar que cada adopción sea un éxito para la mascota y la familia.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Step 1 -->
+<div class="bg-surface p-8 rounded-2xl shadow-sm border border-surface-container-high hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-bl-full -z-0 group-hover:bg-primary-container/30 transition-colors"></div>
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center mb-6 relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">search</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3 relative z-10">1. Explora</h3>
+<p class="font-body-md text-body-md text-on-surface-variant relative z-10">
+                            Navega por nuestro catálogo de mascotas rescatadas en los distintos centros aliados de Barinas. Utiliza filtros para encontrar a tu compañero ideal.
+                        </p>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface p-8 rounded-2xl shadow-sm border border-surface-container-high hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary-container/20 rounded-bl-full -z-0 group-hover:bg-tertiary-container/30 transition-colors"></div>
+<div class="w-12 h-12 bg-tertiary-container text-on-tertiary-container rounded-lg flex items-center justify-center mb-6 relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3 relative z-10">2. Conecta</h3>
+<p class="font-body-md text-body-md text-on-surface-variant relative z-10">
+                            Envía una solicitud de adopción al centro correspondiente. Ellos revisarán tu perfil para asegurar una buena compatibilidad con la mascota.
+                        </p>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface p-8 rounded-2xl shadow-sm border border-surface-container-high hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-bl-full -z-0 group-hover:bg-secondary-container/30 transition-colors"></div>
+<div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-lg flex items-center justify-center mb-6 relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3 relative z-10">3. Adopta</h3>
+<p class="font-body-md text-body-md text-on-surface-variant relative z-10">
+                            Una vez aprobada la solicitud, coordina la recogida o entrega. ¡Prepárate para darle la bienvenida a un nuevo miembro de la familia!
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Últimos Rescatados (Glassmorphism Cards) -->
+<section class="py-24 px-margin-desktop bg-surface relative overflow-hidden">
+<!-- Background Decoration -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary-container/10 rounded-full blur-[100px] -z-10"></div>
+<div class="max-w-container-max mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Últimos Rescatados</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Ellos están esperando por una segunda oportunidad.</p>
+</div>
+<a class="hidden md:flex items-center gap-2 text-primary font-label-md text-label-md hover:underline" href="#">
+                        Ver todos <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Pet Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="relative h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A portrait of a happy medium-sized mixed-breed dog with floppy ears, looking directly at the camera with a soft, hopeful expression. The background is a clean, softly lit outdoor setting, conveying a sense of optimism and high-quality modern rescue photography. The lighting is bright and airy, matching a light-mode UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBprCyn_K9fn3rLL0lZpmEZkotlvtUZOnhK3F8ZFyo5_1k2IGkCCOTZaDSjTXQDDkASenplIoRmUyO--SdKCaZlyYIhr2r8yWU920z1UpHc5VPxuS0_b8lRmLbE_kF0sc_opSLpFvlvGOVU2OmTwo1teijRFandrNU9-HwxCQFlSuwfz0bqtTkMH_7MH9uVA2Af7a5gVF73wUXmPWUSq-uIv5WXfySW6LefTPbgaRNAT4fNmdCmKr7O"/>
+<div class="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-status-approved"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Disponible</span>
+</div>
+</div>
+<div class="p-5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Max</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Mestizo • 2 Años • Macho</p>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Refugio Esperanza</span>
+<button class="w-8 h-8 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center hover:bg-secondary-container hover:text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pet Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="relative h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A close-up photo of a curious orange tabby kitten playing with a soft toy in a bright, clean indoor environment. The lighting is soft and natural, emphasizing the kitten's fluffy texture and bright eyes. The mood is playful and endearing, fitting for a modern pet adoption platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDugAbnHgPTYKOSN1uOpuDrvQr8DCn_7SzTG1wEyFSXaBbWRsNuQDXVMHZ3rdWeEWmofNHC4fVojSbAbrN-iJ2OhR72bEXQS-eZxygQ-U6Wtt0vV91igx0-eQQNzzITulvaOkQcAQJ6mKUy9yBwPKdD3qiCQfSU2ZWSbsjBY8rL1yZy5RxokGzx0ZGDMeQto6tGlOOvUimLcvhi5NmM4ytMeFg3w07ZqjAX-VrQqVIq7CVhu7K_G8N-"/>
+<div class="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-status-approved"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Disponible</span>
+</div>
+</div>
+<div class="p-5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Luna</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Gato • 3 Meses • Hembra</p>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Corazones Peludos</span>
+<button class="w-8 h-8 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center hover:bg-secondary-container hover:text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pet Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="relative h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A dignified portrait of an older, calm black labrador dog sitting patiently. The lighting is soft and studio-like, highlighting the subtle greying around the muzzle. The aesthetic is respectful and touching, promoting senior pet adoption in a professional, light-themed modern UI context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBumse3Is4vrNWNhSjvmuvBh8FOSd5ovIxdXKbt3_WuY5_vJnfgskD0hd_047IvYQL5NVd51hU90CbD70yAZWFyW4YoLRR1GpTbGAgu_jpcKV_z1U2eFtQ2ZAQNAhhEJUNu8XHAeZ7mvJoT5zf2dqJuf02OtDWFmd18ppMnk-Qthz_8TbIq1ApdTAKY2OiVq6aPJnYzvKG1953H1RakcGSrUgQ0zG4smzYCxNd4WzxBaeWHEihjUz4"/>
+<div class="absolute top-3 right-3 bg-status-pending px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container">En Proceso</span>
+</div>
+</div>
+<div class="p-5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Toby</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Labrador • 8 Años • Macho</p>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Refugio Esperanza</span>
+<button class="w-8 h-8 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center hover:bg-secondary-container hover:text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pet Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-high overflow-hidden group hover:shadow-md transition-all duration-300">
+<div class="relative h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A photo of a small white poodle mix standing alert on a clean, light-colored floor. The image is brightly lit, conveying cleanliness and care. The mood is optimistic and inviting, suitable for a premium pet rescue website aiming to present animals in the best possible light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB4ZhCv49lvruJAW_gifq3jsO-VlgYLfL--etyFQOIi2uzoyYLhHGSydF2tYL3Ax28ouwDtLRlw71SDhL5eOXn5FVaCLpTBQfmxqUtDcgNrtqbOZixr479yfukmeWIpVRtTU5rkWZhYFzuzVnL9ni7zWSrWudcbjJFc753Jz11UjKbVqFZSmHzf7zHpJ3ndr54LYn1Sr5mp8NVU0aT4UCGtV30gQmXP7bzXESj7mL1UMGpBWWzWzsr"/>
+<div class="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-status-approved"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Disponible</span>
+</div>
+</div>
+<div class="p-5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Pelusa</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Poodle Mix • 1 Año • Hembra</p>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Patitas Barinas</span>
+<button class="w-8 h-8 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center hover:bg-secondary-container hover:text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center md:hidden">
+<a class="inline-flex items-center gap-2 text-primary font-label-md text-label-md hover:underline" href="#">
+                        Ver todos <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Centros Aliados -->
+<section class="py-24 bg-surface-gray px-margin-desktop">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">Centros Aliados en Barinas</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Trabajamos junto a refugios locales para centralizar la información y facilitar el proceso de adopción en la ciudad.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Center 1 -->
+<div class="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer">
+<div class="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist logo graphic for an animal shelter named 'Refugio Esperanza', featuring a stylized green leaf and a paw print, placed on a crisp white background. The aesthetic is corporate, modern, and compassionate, fitting for a professional rescue organization." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKV2qCyzvHMAx4QvWojp6BSndS8odp8KZwhGC_EFFWkjRc90NxBn90VcNm71c-mk1DmEj-_bwhJaBcF17NT3wgdMFVv9JSLzWMxyk4-oY6Wdx7-945SWFW_g2B5yCUtzOkLHjG1mdbwSN59rtzdrmMkCPKYwQSKrsH9RiFCf8rexzZYh9uKEPAFHELl-KwvdUtBrapQItrHIpOWg1KwnjL2cmgmLzDqbizNcO0DNNakRdPEpjpknnV"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Refugio Esperanza</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Alto Barinas, Barinas</p>
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">pets</span>
+                                12 Mascotas disponibles
+                            </div>
+</div>
+</div>
+<!-- Center 2 -->
+<div class="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer">
+<div class="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist logo graphic for an animal shelter named 'Corazones Peludos', featuring a soft pink heart intertwined with a cat silhouette, placed on a crisp white background. The aesthetic is warm, modern, and trustworthy, fitting for a professional rescue organization." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwHSbWD9m48j5jsrcIsDcPMSUUMFxmbZmgr0Pc3esAyd5Nc4JmuDxxf6Sr--fv384MbwdrRhEcq8D5fnuGFzcNUnd_2BgWDkUl1xkIx24AxXzF0xg2wtyMzvE6LA6qFJPELF8v4Ta6YFrTev_ayPqhmnIk47vRY_WZF26WCY-hXAAIJAOfjNT1Jr68io-cUv4I0BuwHr0TzwlAksjtQkbEKAjDQ-1Q7lQwe4Fco8q757qatc9nivN_"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Corazones Peludos</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Centro, Barinas</p>
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">pets</span>
+                                8 Mascotas disponibles
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="bg-surface-dim mt-stack-lg flat no shadows full-width">
+<div class="w-full py-stack-lg px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-gutter max-w-container-max mx-auto">
+<div class="flex flex-col gap-4">
+<span class="font-headline-sm text-headline-sm text-on-surface">Huellitas Barinas</span>
+<p class="font-body-sm text-body-sm text-secondary">
+                    © 2024 Huellitas Barinas. Compassion in every adoption.
+                </p>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2 md:items-end justify-center">
+<nav class="flex flex-wrap gap-4 md:gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contacto</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terminos</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacidad</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Redes Sociales</a>
+</nav>
+</div>
+</div>
+</footer>
+</body></html>

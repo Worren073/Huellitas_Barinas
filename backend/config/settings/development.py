@@ -8,7 +8,7 @@ from .base import *
 DEBUG = True
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'api']
 
 # Database - Support both DATABASE_URL and individual vars
 DATABASE_URL = os.environ.get('DATABASE_URL', '')

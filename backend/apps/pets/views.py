@@ -20,6 +20,11 @@ class PetViewSet(viewsets.ModelViewSet):
     ordering_fields = ['created_at', 'name', 'age_months']
     ordering = ['-created_at']
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'available']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return PetCreateSerializer

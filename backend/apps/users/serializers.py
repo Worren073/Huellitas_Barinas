@@ -74,5 +74,5 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class LoginSerializer(serializers.Serializer):
     """Serializer for login."""
-    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True, write_only=True)

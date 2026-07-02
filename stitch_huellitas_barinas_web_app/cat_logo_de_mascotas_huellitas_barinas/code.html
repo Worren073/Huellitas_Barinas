@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Catálogo de Mascotas - Huellitas Barinas</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#ccdbf4",
+                        "tertiary-fixed-dim": "#dcc748",
+                        "on-tertiary-fixed-variant": "#514700",
+                        "tertiary": "#6b5f00",
+                        "on-tertiary-container": "#584d00",
+                        "surface": "#f8f9ff",
+                        "status-completed": "#BEE3F8",
+                        "on-secondary-container": "#793d3e",
+                        "status-pending": "#FEFCBF",
+                        "on-primary-container": "#005750",
+                        "on-surface": "#0d1c2e",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-highest": "#d4e4fc",
+                        "status-cancelled": "#E2E8F0",
+                        "primary-container": "#4fd1c5",
+                        "primary": "#006a63",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#5adace",
+                        "primary-fixed": "#79f7ea",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-primary": "#ffffff",
+                        "secondary": "#8c4c4d",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#fae361",
+                        "status-review": "#E6FFFA",
+                        "surface-container": "#e5eeff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#00504a",
+                        "inverse-primary": "#5adace",
+                        "on-secondary-fixed": "#390b0e",
+                        "outline": "#6c7a77",
+                        "secondary-fixed": "#ffdad9",
+                        "surface-gray": "#EDF2F7",
+                        "on-primary-fixed": "#00201d",
+                        "secondary-fixed-dim": "#ffb3b3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#d3bf40",
+                        "surface-off-white": "#F7FAFC",
+                        "status-rejected": "#FED7D7",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#3c4947",
+                        "surface-variant": "#d4e4fc",
+                        "on-background": "#0d1c2e",
+                        "secondary-container": "#fdacac",
+                        "status-approved": "#C6F6D5",
+                        "on-tertiary-fixed": "#201c00",
+                        "outline-variant": "#bbc9c7",
+                        "background": "#f8f9ff",
+                        "inverse-surface": "#223144",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#006a63",
+                        "on-secondary-fixed-variant": "#703537"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "stack-lg": "2rem",
+                        "margin-mobile": "1rem",
+                        "stack-md": "1rem",
+                        "container-max": "1280px",
+                        "margin-desktop": "2rem",
+                        "gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Montserrat"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "headline-xl": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-off-white text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<nav class="sticky z-50 docked full-width top-0 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flat no shadows">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto h-20">
+<!-- Brand -->
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim icon-fill">pets</span>
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim hidden sm:block">Huellitas Barinas</span>
+</div>
+<!-- Navigation Links (Web) -->
+<div class="hidden md:flex items-center gap-6">
+<!-- Active Link: Mascotas (Based on page intent) -->
+<a class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary font-bold pb-1 text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-low transition-colors px-2 rounded-t-sm" href="#">Mascotas</a>
+<a class="text-on-surface-variant dark:text-surface-variant text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-low transition-colors px-2 py-1 rounded-sm" href="#">Centros</a>
+<a class="text-on-surface-variant dark:text-surface-variant text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed hover:bg-surface-container-low transition-colors px-2 py-1 rounded-sm" href="#">Sobre Nosotros</a>
+</div>
+<!-- Search & Actions -->
+<div class="flex items-center gap-4">
+<!-- Search Bar (on_right) -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm text-body-sm focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all w-48 lg:w-64" placeholder="Buscar..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md px-4 py-2 hover:bg-surface-container-low transition-colors rounded-lg">Login</button>
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md px-4 py-2 rounded-lg hover:shadow-md transition-all active:opacity-80 active:scale-95">Registro</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar / Filters -->
+<aside class="w-full md:w-64 shrink-0 flex flex-col gap-stack-md">
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
+<div class="flex items-center gap-2 mb-4 border-b border-surface-gray pb-3">
+<span class="material-symbols-outlined text-primary">filter_list</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Filtros</h2>
+</div>
+<!-- Species Filter -->
+<div class="mb-6">
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Especie</h3>
+<div class="flex flex-col gap-2">
+<label class="flex items-center gap-3 group cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Perro</span>
+</label>
+<label class="flex items-center gap-3 group cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Gato</span>
+</label>
+<label class="flex items-center gap-3 group cursor-pointer">
+<input class="rounded border-outline-variant text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Conejo</span>
+</label>
+</div>
+</div>
+<!-- Size Filter -->
+<div class="mb-6">
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Tamaño</h3>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1 bg-primary text-on-primary rounded-full font-label-sm text-label-sm border border-primary transition-colors">Pequeño</button>
+<button class="px-3 py-1 bg-surface-gray text-on-surface-variant hover:bg-surface-container-high rounded-full font-label-sm text-label-sm border border-transparent transition-colors">Mediano</button>
+<button class="px-3 py-1 bg-surface-gray text-on-surface-variant hover:bg-surface-container-high rounded-full font-label-sm text-label-sm border border-transparent transition-colors">Grande</button>
+</div>
+</div>
+<!-- Gender Filter -->
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Sexo</h3>
+<div class="flex flex-col gap-2">
+<label class="flex items-center gap-3 group cursor-pointer">
+<input class="text-primary-container focus:ring-primary-container" name="gender" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Macho</span>
+</label>
+<label class="flex items-center gap-3 group cursor-pointer">
+<input class="text-primary-container focus:ring-primary-container" name="gender" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Hembra</span>
+</label>
+<label class="flex items-center gap-3 group cursor-pointer">
+<input checked="" class="text-primary-container focus:ring-primary-container" name="gender" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Cualquiera</span>
+</label>
+</div>
+</div>
+</div>
+</aside>
+<!-- Catalog Grid -->
+<section class="flex-1 flex flex-col gap-stack-md">
+<!-- Grid Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Mascotas Disponibles</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">24 amiguitos esperando un hogar</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md text-on-surface-variant">Ordenar por:</span>
+<select class="bg-surface border border-outline-variant rounded-lg font-body-sm text-body-sm py-1.5 pl-3 pr-8 focus:ring-primary-container focus:border-primary-container">
+<option>Más recientes</option>
+<option>Urgentes</option>
+<option>Edad (Menor a Mayor)</option>
+</select>
+</div>
+</div>
+<!-- Bento/Auto-fit Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Pet Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col group transition-all duration-300">
+<div class="relative h-56 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="A heartwarming, professional studio portrait of a young Golden Retriever mix puppy with soft, floppy ears and bright, hopeful eyes. The lighting is high-key and diffused, creating a pristine, light-mode aesthetic against a seamless soft-white background. The color palette emphasizes the dog's warm sandy fur complementing subtle teal accents in the environment. The overall mood is compassionate, clean, and optimistic, perfectly suited for a premium pet adoption platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOY9XwA35h4L5DC9Xi-La5I_liyafIjdYiibZFByNck_oHkjmJukDWWBGO6KKXr8-YUxwUuoZoOThkEk8QGQZ6OOun1q0ZRYsTuVQd1nU2w9Z2E7FRt9B1zbkNBSJFidn6_G0R13VsTrH7bneOb3YFQCNujDEuRXL2p-3-iSUFkSi-YCsuQMUg2PRk0fcOqRMgtVJEK-14hxt9CNqOfRcQBYCl54tEsMdA5BaT3KLKXBYUbhK0JtoZ"/>
+<!-- Status Badge -->
+<div class="absolute top-3 right-3 bg-status-approved text-on-primary-container font-label-sm text-label-sm px-3 py-1 rounded-full shadow-sm flex items-center gap-1 backdrop-blur-sm bg-opacity-90">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            Disponible
+                        </div>
+<!-- Favorite Button Overlay -->
+<button class="absolute top-3 left-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-secondary hover:text-secondary-container hover:bg-surface-container-lowest flex items-center justify-center transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1">Max</h3>
+<span class="font-label-md text-label-md text-primary bg-primary-container/20 px-2 py-0.5 rounded-lg">Cachorro</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                            Centro Principal Barinas
+                        </p>
+<!-- Vital Stats Chips -->
+<div class="flex flex-wrap gap-2 mb-5 mt-auto">
+<span class="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">pets</span>
+                                Perro Mestizo
+                            </span>
+<span class="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">male</span>
+                                Macho
+                            </span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-label-md text-label-md py-2.5 rounded-lg hover:brightness-105 active:scale-95 transition-all text-center">
+                                Conocer a Max
+                            </button>
+</div>
+</div>
+</article>
+<!-- Pet Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col group transition-all duration-300">
+<div class="relative h-56 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="An elegant, close-up photograph of a sleek, medium-haired black and white tuxedo cat resting gracefully on a textured, light gray cushion. The composition is modern and uncluttered, utilizing shallow depth of field to focus entirely on the cat's expressive green eyes. Soft, natural window light casts gentle highlights, reinforcing a clean, contemporary user interface style. The mood is calm and inviting, avoiding any sterile or industrial feelings." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuavsA1mTcBvC-9klmdFyL866muv-4tmjqLAoIvIer6OZul5wc2dvt6IpnOGXtWdtzgcvXfAl5-DHJDfboZ0sK37SqePZ4iD-k6-3oCRuzi3-ucisrlK7skeXglfk0H9DOfCEp2nr6VR9hHsws_a0ea5w8L9lc-O_j9ybjGJkx5WMSa6MlnQtOHnmtYinOAfRr16s2whHT_xGWB-XOFRTAKUtl477qg6KDagrzCiCv2GHcdXdDdQMq"/>
+<!-- Status Badge - Pending -->
+<div class="absolute top-3 right-3 bg-status-pending text-on-tertiary-fixed-variant font-label-sm text-label-sm px-3 py-1 rounded-full shadow-sm flex items-center gap-1 backdrop-blur-sm bg-opacity-90">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                            En Proceso
+                        </div>
+<button class="absolute top-3 left-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-outline hover:text-secondary hover:bg-surface-container-lowest flex items-center justify-center transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1">Luna</h3>
+<span class="font-label-md text-label-md text-primary bg-primary-container/20 px-2 py-0.5 rounded-lg">Adulto</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                            Hogar Temporal Alto Barinas
+                        </p>
+<div class="flex flex-wrap gap-2 mb-5 mt-auto">
+<span class="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">pets</span>
+                                Gato Común
+                            </span>
+<span class="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">female</span>
+                                Hembra
+                            </span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-surface-gray text-on-surface-variant font-label-md text-label-md py-2.5 rounded-lg hover:bg-surface-container-high active:scale-95 transition-all text-center">
+                                Ver Detalles
+                            </button>
+</div>
+</div>
+</article>
+<!-- Pet Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col group transition-all duration-300">
+<div class="relative h-56 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" data-alt="A charming, high-quality image of an inquisitive floppy-eared rabbit with soft, mottled brown and white fur, sitting attentively on a smooth, light oak surface. The scene is illuminated by gentle, warm ambient lighting that enhances the tactile warmth of the fur. The background is a soft, out-of-focus pastel beige, maintaining the clear, uncluttered visual rhythm of the brand's design system. The atmosphere feels gentle, approachable, and highly professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlCr-bdj85gWTNd-7OtnRmZk6zqDMjn7Yy4SQpauA-DJt1pdIuAYg7uNII-7UanS7TMWGcB-5VHuTEx9SGrCkk0WBBsXuIwMXiVEKjJM50nF-w55qR-fiWbGHyg80LHnE_fMq_VBLwFESEbIUfxMfVNWcBgRBoyNb9VYntZg9n31G9j4hqNciA6AfJsHXmxHA1B5PjEC68pC4ylU-N84ge8Iz-_IMCvOlkVXqg3tOJFmEQBQVjBQam"/>
+<div class="absolute top-3 right-3 bg-status-approved text-on-primary-container font-label-sm text-label-sm px-3 py-1 rounded-full shadow-sm flex items-center gap-1 backdrop-blur-sm bg-opacity-90">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            Disponible
+                        </div>
+<button class="absolute top-3 left-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-outline hover:text-secondary hover:bg-surface-container-lowest flex items-center justify-center transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface line-clamp-1">Tambor</h3>
+<span class="font-label-md text-label-md text-primary bg-primary-container/20 px-2 py-0.5 rounded-lg">Joven</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                            Centro Principal Barinas
+                        </p>
+<div class="flex flex-wrap gap-2 mb-5 mt-auto">
+<span class="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cruelty_free</span>
+                                Conejo Enano
+                            </span>
+<span class="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">male</span>
+                                Macho
+                            </span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary-container text-on-primary-container font-label-md text-label-md py-2.5 rounded-lg hover:brightness-105 active:scale-95 transition-all text-center">
+                                Conocer a Tambor
+                            </button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination / Load More (Simple placeholder) -->
+<div class="mt-8 flex justify-center">
+<button class="px-6 py-2 border border-outline-variant text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-container-low transition-colors">
+                    Cargar más mascotas
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full bg-surface-dim dark:bg-inverse-surface mt-stack-lg flat no shadows border-t border-outline-variant/30">
+<div class="w-full py-stack-lg px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-gutter max-w-container-max mx-auto">
+<!-- Brand Column -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface dark:text-inverse-on-surface icon-fill">pets</span>
+<span class="font-headline-sm text-headline-sm text-on-surface dark:text-inverse-on-surface">Huellitas Barinas</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary dark:text-secondary-fixed-dim">
+                    © 2024 Huellitas Barinas. Compassion in every adoption.
+                </p>
+</div>
+<!-- Links Column -->
+<div class="flex flex-col gap-2">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-2">Navegación</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Contacto</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Terminos</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Privacidad</a>
+</div>
+<!-- Socials Column (from links array) -->
+<div class="flex flex-col gap-2">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-2">Comunidad</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                    Redes Sociales
+                </a>
+</div>
+</div>
+</footer>
+</body></html>
