@@ -105,7 +105,7 @@ export default function UsersPage() {
         payload.center = selectedCenter;
       }
 
-      const { data } = await api.patch(`/users/${editingUser.id}/change_role/`, payload);
+      const { data } = await api.patch(`/users/${editingUser.id}/`,payload);
       
       sileo.success({
         title: 'Rol actualizado',

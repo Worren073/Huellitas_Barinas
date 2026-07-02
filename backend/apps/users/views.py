@@ -94,38 +94,61 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """ViewSet for managing users (SuperAdmin only)."""
-    queryset = User.objects.all().select_related('center')
-    serializer_class = UserListSerializer
+    """
+    ViewSet for managing users (SuperAdmin only).
+    """
+
+    queryset = User.objects.select_related("center").all()
     permission_classes = [IsSuperAdmin]
+    serializer_class = UserListSerializer
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        role = self.request.query_params.get('role')
+        queryset = super().get_queryset()
+
+        role = self.request.query_params.get("role")
+
         if role:
-            qs = qs.filter(role=role)
-        return qs
+            queryset = queryset.filter(role=role)
+
+        return queryset
 
     def get_serializer_class(self):
-        if self.action == 'update' or self.action == 'partial_update':
+        """
+        Use a lightweight serializer for list/retrieve
+        and a write serializer for updates.
+        """
+        if self.action in ("update", "partial_update"):
             return UserUpdateRoleSerializer
+
         return UserListSerializer
 
-    def update(self, request, *args, **kwargs):
-        """Update user role (SuperAdmin only)."""
-        user = self.get_object()
-        serializer = self.get_serializer(user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
+    def perform_update(self, serializer):
+        """
+        Save updates.
+
+        ModelViewSet already handles PUT/PATCH,
+        validation and partial updates.
+        """
         serializer.save()
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Return the list serializer after updating.
+        """
+        response = super().partial_update(request, *args, **kwargs)
+
+        user = self.get_object()
+
         return Response(UserListSerializer(user).data)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsSuperAdmin])
-    def change_role(self, request, pk=None):
-        """Change user role."""
+    def update(self, request, *args, **kwargs):
+        """
+        Return the list serializer after updating.
+        """
+        response = super().update(request, *args, **kwargs)
+
         user = self.get_object()
-        serializer = UserUpdateRoleSerializer(user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+
         return Response(UserListSerializer(user).data)
 
 
