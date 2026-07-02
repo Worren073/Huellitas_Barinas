@@ -1,3 +1,5 @@
+'use client';
+
 import {
   PlusIcon,
   ArrowRightIcon,
@@ -13,12 +15,14 @@ import {
   ArrowDownTrayIcon,
   HeartIcon,
   UserIcon,
+  UserCircleIcon,
   FunnelIcon,
   UsersIcon,
   ShieldCheckIcon,
   QuestionMarkCircleIcon,
   MapPinIcon,
   ArrowLeftOnRectangleIcon,
+  ArrowRightOnRectangleIcon,
   MapIcon,
   PhotoIcon,
   ArrowPathIcon,
@@ -30,10 +34,13 @@ import {
   ArrowTrendingUpIcon,
   EyeIcon,
   HandRaisedIcon,
+  TrashIcon,
+  PencilIcon,
 } from '@heroicons/react/24/outline';
 import {
   HeartIcon as HeartSolidIcon,
   CheckCircleIcon as CheckCircleSolidIcon,
+  UserCircleIcon as UserCircleSolidIcon,
 } from '@heroicons/react/24/solid';
 
 function PawSolidIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -54,6 +61,7 @@ function PawOutlineIcon(props: React.SVGProps<SVGSVGElement>) {
 
 const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
   add: PlusIcon,
+  add_circle: PlusIcon,
   arrow_forward: ArrowRightIcon,
   cake: CakeIcon,
   call: PhoneIcon,
@@ -63,9 +71,12 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   check_circle_solid: CheckCircleSolidIcon,
   chevron_left: ChevronLeftIcon,
   chevron_right: ChevronRightIcon,
+  close: XCircleIcon,
   dashboard: HomeModernIcon,
+  delete: TrashIcon,
   description: DocumentTextIcon,
   download: ArrowDownTrayIcon,
+  edit: PencilIcon,
   favorite: HeartIcon,
   favorite_solid: HeartSolidIcon,
   female: UserIcon,
@@ -73,10 +84,14 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   group: UsersIcon,
   health_and_safety: ShieldCheckIcon,
   help: QuestionMarkCircleIcon,
+  history: ArrowPathIcon,
+  history_outline: ArrowPathIcon,
   location: MapPinIcon,
   logout: ArrowLeftOnRectangleIcon,
+  logout_door: ArrowRightOnRectangleIcon,
   male: UserIcon,
   map: MapIcon,
+  pending_actions: ClockIcon,
   pets: PawOutlineIcon,
   pets_solid: PawSolidIcon,
   photo_library: PhotoIcon,
@@ -87,6 +102,9 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   search_off: ExclamationTriangleIcon,
   share: ArrowUpTrayIcon,
   trending_up: ArrowTrendingUpIcon,
+  user: UserIcon,
+  user_circle: UserCircleIcon,
+  user_circle_solid: UserCircleSolidIcon,
   visibility: EyeIcon,
   volunteer_activism: HandRaisedIcon,
 };

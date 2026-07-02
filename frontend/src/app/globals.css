@@ -21,3 +21,10 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
   }
 }
+
+/* Asegurar que sileo toasts aparezcan sobre el navbar */
+[role="status"],
+[role="alert"],
+.sonner-container {
+  z-index: 100 !important;
+}

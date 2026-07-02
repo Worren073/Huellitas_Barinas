@@ -11,14 +11,14 @@ from rest_framework.response import Response
 from .models import Center
 from .serializers import CenterSerializer, CenterCreateSerializer
 from .services import CenterService
-from .permissions import IsCenterAdminOrReadOnly
+from apps.users.permissions import IsSuperAdmin
 
 
 class CenterViewSet(viewsets.ModelViewSet):
-    """ViewSet for managing adoption centers."""
+    """ViewSet for managing adoption centers (SuperAdmin only)."""
     queryset = Center.objects.annotate(pets_count=Count('pets'))
     serializer_class = CenterSerializer
-    permission_classes = [IsCenterAdminOrReadOnly]
+    permission_classes = [IsSuperAdmin]
     search_fields = ['name', 'description', 'address']
     ordering_fields = ['created_at', 'name']
     ordering = ['-created_at']
@@ -31,16 +31,16 @@ class CenterViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsSuperAdmin])
     def activate(self, request, pk=None):
-        """Activate a center (admin only)."""
+        """Activate a center (SuperAdmin only)."""
         center = self.get_object()
         center = CenterService.activate_center(center, request.user)
         return Response(CenterSerializer(center).data)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsSuperAdmin])
     def deactivate(self, request, pk=None):
-        """Deactivate a center (admin only)."""
+        """Deactivate a center (SuperAdmin only)."""
         center = self.get_object()
         center = CenterService.deactivate_center(center, request.user)
         return Response(CenterSerializer(center).data)

@@ -72,6 +72,28 @@ class UserListSerializer(serializers.ModelSerializer):
         )
 
 
+class UserUpdateRoleSerializer(serializers.ModelSerializer):
+    """Serializer for updating user role (SuperAdmin only)."""
+    ROLE_CHOICES = [
+        ('superadmin', 'Súper Administrador'),
+        ('center_admin', 'Administrador de Centro'),
+        ('adoptante', 'Adoptante'),
+    ]
+    role = serializers.ChoiceField(choices=ROLE_CHOICES)
+
+    class Meta:
+        model = User
+        fields = ('id', 'role', 'center')
+
+    def validate(self, attrs):
+        # center_admin must have a center assigned
+        if attrs.get('role') == 'center_admin' and not attrs.get('center'):
+            raise serializers.ValidationError(
+                {'center': 'Un administrador de centro debe tener un centro asignado.'}
+            )
+        return attrs
+
+
 class ChangePasswordSerializer(serializers.Serializer):
     """Serializer for changing password."""
     old_password = serializers.CharField(required=True)

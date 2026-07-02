@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from './Icon';
 
@@ -10,31 +11,51 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-const sidebarLinks = [
-  { href: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
-  { href: '/dashboard/pets', label: 'Mascotas', icon: 'pets' },
-  { href: '/dashboard/centers', label: 'Centros', icon: 'location' },
-  { href: '/dashboard/adoptions', label: 'Solicitudes', icon: 'volunteer_activism' },
-  { href: '/dashboard/users', label: 'Usuarios', icon: 'group' },
+interface User {
+  email: string;
+  first_name: string;
+  role?: string;
+}
+
+const adminLinks = [
+  { href: '/dashboard', label: 'Dashboard', icon: 'dashboard', roles: ['superadmin', 'center_admin'] },
+  { href: '/dashboard/pets', label: 'Mascotas', icon: 'pets', roles: ['superadmin', 'center_admin'] },
+  { href: '/dashboard/adoptions', label: 'Postulantes', icon: 'volunteer_activism', roles: ['superadmin', 'center_admin'] },
+  { href: '/dashboard/centers', label: 'Centros', icon: 'location', roles: ['superadmin'] },
+  { href: '/dashboard/users', label: 'Usuarios', icon: 'group', roles: ['superadmin'] },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ email: string; first_name: string } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [visibleLinks, setVisibleLinks] = useState(adminLinks);
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
       router.push('/login');
       return;
     }
-    auth.getProfile().then(setUser).catch(() => router.push('/login'));
+    auth.getProfile()
+      .then((profile) => {
+        if (profile.role !== 'superadmin' && profile.role !== 'center_admin') {
+          router.push('/');
+          return;
+        }
+        setUser(profile);
+        // Filter sidebar links based on user role
+        setVisibleLinks(adminLinks.filter(link => link.roles.includes(profile.role)));
+      })
+      .catch(() => router.push('/login'));
   }, [router]);
 
   const handleLogout = () => {
     auth.logout();
+    sileo.success({ title: 'Sesión cerrada', description: 'Has cerrado sesión correctamente.' });
     router.push('/login');
   };
+
+  if (!user) return null;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -50,7 +71,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         <div className="flex flex-col gap-1 flex-1">
-          {sidebarLinks.map((link) => {
+          {visibleLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
@@ -70,13 +91,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         <div className="mt-auto flex flex-col gap-4">
-          <Link
-            href="/dashboard/pets/new"
-            className="w-full bg-primary text-on-primary font-label-md py-3 rounded-lg shadow-sm hover:shadow-md hover:bg-surface-tint transition-all flex items-center justify-center gap-2 group"
-          >
-            <Icon name="add" className="w-[18px] h-[18px] group-hover:rotate-90 transition-transform" />
-            Nueva Mascota
-          </Link>
+          {visibleLinks.some(l => l.href === '/dashboard/pets') && (
+            <Link
+              href="/dashboard/pets/new"
+              className="w-full bg-primary text-on-primary font-label-md py-3 rounded-lg shadow-sm hover:shadow-md hover:bg-surface-tint transition-all flex items-center justify-center gap-2 group"
+            >
+              <Icon name="add" className="w-[18px] h-[18px] group-hover:rotate-90 transition-transform" />
+              Nueva Mascota
+            </Link>
+          )}
           <div className="flex items-center gap-3 px-2 pt-4 border-t border-outline-variant/50">
             <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-label-md">
               {user?.first_name?.[0] || 'A'}

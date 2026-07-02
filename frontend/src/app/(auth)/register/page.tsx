@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
+import LoadingButton from '@/components/LoadingButton';
 
 const COUNTRIES = [
   { code: 'VE', name: 'Venezuela', prefix: '+58', flag: '🇻🇪', char: 'VE' },
@@ -35,7 +37,7 @@ export default function RegisterPage() {
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setError('Las contrasenas no coinciden');
+      setError('Las contraseñas no coinciden');
       setLoading(false);
       return;
     }
@@ -45,10 +47,15 @@ export default function RegisterPage() {
         username: formData.get('username') as string,
         email: formData.get('email') as string,
         password,
+        password_confirm: confirmPassword,
         first_name: formData.get('firstName') as string,
         last_name: formData.get('lastName') as string,
         country: selectedCountry,
         phone: formData.get('phone') as string,
+      });
+      sileo.success({
+        title: '¡Cuenta creada!',
+        description: 'Tu cuenta ha sido creada. Ahora puedes iniciar sesión.',
       });
       router.push('/login');
     } catch (err: unknown) {
@@ -60,13 +67,17 @@ export default function RegisterPage() {
         const firstError = Object.values(errorData)[0];
         if (Array.isArray(firstError)) {
           setError(firstError[0] as string);
+          sileo.error({ title: 'Error', description: firstError[0] as string });
         } else if (typeof firstError === 'string') {
           setError(firstError);
+          sileo.error({ title: 'Error', description: firstError });
         } else {
           setError('Error al registrar. Intenta de nuevo.');
+          sileo.error({ title: 'Error', description: 'Error al registrar. Intenta de nuevo.' });
         }
       } else {
         setError('Error al registrar. Intenta de nuevo.');
+        sileo.error({ title: 'Error', description: 'Error al registrar. Intenta de nuevo.' });
       }
     } finally {
       setLoading(false);
@@ -153,7 +164,6 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Country + Phone */}
             <div className="space-y-2">
               <label className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
                 País y Teléfono
@@ -175,8 +185,12 @@ export default function RegisterPage() {
                     }}
                   >
                     {COUNTRIES.map((country) => (
-                      <option key={country.code} value={country.code}>
-                        {country.char}
+                      <option 
+                        key={country.code} 
+                        value={country.code}
+                        style={{ color: '#1a1a1a', textShadow: 'none' }}
+                      >
+                        {country.flag} {country.name} ({country.prefix})
                       </option>
                     ))}
                   </select>
@@ -204,7 +218,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="password" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
-                Contrasena
+                Contraseña
               </label>
               <input
                 id="password"
@@ -218,7 +232,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="confirmPassword" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
-                Confirmar Contrasena
+                Confirmar Contraseña
               </label>
               <input
                 id="confirmPassword"
@@ -231,18 +245,19 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <button
+          <LoadingButton
             type="submit"
-            disabled={loading}
-            className="w-full bg-primary-container text-on-primary-container font-label-md py-3 rounded-lg shadow-sm hover:brightness-105 active:scale-95 transition-all disabled:opacity-50"
+            loading={loading}
+            className="w-full"
+            variant="primary"
           >
-            {loading ? 'Creando...' : 'Crear Cuenta'}
-          </button>
+            Crear Cuenta
+          </LoadingButton>
 
           <p className="text-center font-body-sm text-on-surface-variant">
-            Ya tienes cuenta?{' '}
+            ¿Ya tienes cuenta?{' '}
             <Link href="/login" className="font-medium text-primary hover:underline">
-              Inicia sesion
+              Inicia sesión
             </Link>
           </p>
         </form>

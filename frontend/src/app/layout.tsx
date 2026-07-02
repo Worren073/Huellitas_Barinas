@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Montserrat } from 'next/font/google';
+import { Toaster } from 'sileo';
 import TokenCleanup from '@/components/TokenCleanup';
 import './globals.css';
 
@@ -29,6 +30,7 @@ export default function RootLayout({
     <html lang="es" className={`${inter.variable} ${montserrat.variable}`}>
       <body className="font-inter text-on-surface bg-surface-off-white antialiased">
         <TokenCleanup />
+        <Toaster position="bottom-right" toastClassName="z-100" containerClassName="z-100" />
         {children}
       </body>
     </html>

@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
+import LoadingButton from '@/components/LoadingButton';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,13 +27,33 @@ export default function LoginPage() {
     try {
       const { access, refresh } = await auth.login(email, password);
       auth.setTokens(access, refresh);
-      router.push(redirectTo);
+
+      // Determine redirect based on role
+      let destination = redirectTo;
+      if (redirectTo === '/dashboard') {
+        try {
+          const profile = await auth.getProfile();
+          const adminRoles = ['superadmin', 'center_admin'];
+          if (!adminRoles.includes(profile.role)) {
+            destination = '/';
+          }
+          sileo.success({
+            title: `¡Bienvenido, ${profile.first_name || profile.email}!`,
+            description: 'Has iniciado sesión correctamente.',
+          });
+        } catch {
+          destination = '/';
+        }
+      }
+      router.push(destination);
     } catch (err: unknown) {
       const apiErr = err as { response?: { status?: number; data?: { detail?: string } } };
       if (apiErr?.response?.status === 429) {
         setError('Demasiados intentos. Espera un momento e intenta de nuevo.');
+        sileo.error({ title: 'Error', description: 'Demasiados intentos. Intenta más tarde.' });
       } else {
-        setError('Credenciales invalidas');
+        setError('Credenciales inválidas');
+        sileo.error({ title: 'Error', description: 'Email o contraseña incorrectos.' });
       }
     } finally {
       setLoading(false);
@@ -48,7 +70,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h2 className="font-montserrat text-headline-lg text-on-surface">
-            Iniciar Sesion
+            Iniciar Sesión
           </h2>
           <p className="mt-2 font-body-sm text-on-surface-variant">
             Huellitas Barinas
@@ -78,7 +100,7 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="password" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
-                Contrasena
+                Contraseña
               </label>
               <input
                 id="password"
@@ -90,18 +112,19 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <button
+          <LoadingButton
             type="submit"
-            disabled={loading}
-            className="w-full bg-primary-container text-on-primary-container font-label-md py-3 rounded-lg shadow-sm hover:brightness-105 active:scale-95 transition-all disabled:opacity-50"
+            loading={loading}
+            className="w-full"
+            variant="primary"
           >
-            {loading ? 'Ingresando...' : 'Iniciar Sesion'}
-          </button>
+            Iniciar Sesión
+          </LoadingButton>
 
           <p className="text-center font-body-sm text-on-surface-variant">
-            No tienes cuenta?{' '}
+            ¿No tienes cuenta?{' '}
             <Link href="/register" className="font-medium text-primary hover:underline">
-              Registrate aqui
+              Regístrate aquí
             </Link>
           </p>
         </form>

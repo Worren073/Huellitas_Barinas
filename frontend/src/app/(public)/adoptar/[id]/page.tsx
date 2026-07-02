@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { sileo } from 'sileo';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Icon from '@/components/Icon';
+import LoadingButton from '@/components/LoadingButton';
 import api from '@/lib/api';
 import { auth } from '@/lib/auth';
 
@@ -98,6 +100,10 @@ export default function AdoptarPage() {
         center: pet.center,
         ...formData,
       });
+      sileo.success({
+        title: '¡Solicitud enviada!',
+        description: `Tu postulación para ${pet.name} ha sido enviada correctamente.`,
+      });
       setSuccess(true);
     } catch (err: unknown) {
       const apiError = err as { response?: { data?: Record<string, string[]> } };
@@ -105,8 +111,10 @@ export default function AdoptarPage() {
       if (detail) {
         const messages = Object.values(detail).flat().join('. ');
         setError(messages || 'Error al enviar la solicitud');
+        sileo.error({ title: 'Error', description: messages || 'Error al enviar la solicitud' });
       } else {
         setError('Error al enviar la solicitud');
+        sileo.error({ title: 'Error', description: 'Error al enviar la solicitud' });
       }
     } finally {
       setSubmitting(false);
@@ -142,12 +150,12 @@ export default function AdoptarPage() {
           </div>
           <h1 className="font-montserrat text-headline-lg text-on-surface text-center">Solicitud Enviada</h1>
           <p className="font-body-md text-on-surface-variant text-center max-w-md">
-            Hemos recibido tu solicitud de adopcion para <strong>{pet?.name}</strong>. 
-            El centro de adopcion se pondra en contacto contigo pronto.
+            Hemos recibido tu solicitud de adopción para <strong>{pet?.name}</strong>. 
+            El centro de adopción se pondrá en contacto contigo pronto.
           </p>
           <div className="flex gap-4">
             <Link href="/mascotas" className="bg-primary-container text-on-primary-container font-label-md px-6 py-3 rounded-lg">
-              Ver mas mascotas
+              Ver más mascotas
             </Link>
             <Link href="/" className="border border-outline-variant text-on-surface font-label-md px-6 py-3 rounded-lg">
               Ir al inicio
@@ -194,9 +202,9 @@ export default function AdoptarPage() {
               <Icon name="pets" className="w-8 h-8 text-primary-container" />
             </div>
             <div>
-              <h1 className="font-montserrat text-headline-md text-on-surface">Solicitud de Adopcion</h1>
+              <h1 className="font-montserrat text-headline-md text-on-surface">Solicitud de Adopción</h1>
               <p className="font-body-sm text-on-surface-variant">
-                Para {pet.name} - {pet.center_name || 'Centro de adopcion'}
+                Para {pet.name} - {pet.center_name || 'Centro de adopción'}
               </p>
             </div>
           </div>
@@ -210,11 +218,11 @@ export default function AdoptarPage() {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-stack-md">
             <div className={fieldClass}>
-              <label className={labelClass} htmlFor="motivation">Motivacion</label>
+              <label className={labelClass} htmlFor="motivation">Motivación</label>
               <textarea
                 id="motivation"
                 rows={4}
-                placeholder="Cuentanos por que quieres adoptar a esta mascota..."
+                placeholder="Cuéntanos por qué quieres adoptar a esta mascota..."
                 className={`${inputClass} resize-none`}
                 value={formData.motivation}
                 onChange={e => updateField('motivation', e.target.value)}
@@ -227,7 +235,7 @@ export default function AdoptarPage() {
               <textarea
                 id="experience"
                 rows={3}
-                placeholder="Has tenido mascotas antes? Cuentanos tu experiencia..."
+                placeholder="¿Has tenido mascotas antes? Cuéntanos tu experiencia..."
                 className={`${inputClass} resize-none`}
                 value={formData.experience}
                 onChange={e => updateField('experience', e.target.value)}
@@ -292,7 +300,7 @@ export default function AdoptarPage() {
                 <textarea
                   id="other_pets_details"
                   rows={2}
-                  placeholder="Que mascotas tienes? Edad, especie, temperamento..."
+                  placeholder="¿Qué mascotas tienes? Edad, especie, temperamento..."
                   className={`${inputClass} resize-none`}
                   value={formData.other_pets_details}
                   onChange={e => updateField('other_pets_details', e.target.value)}
@@ -301,23 +309,15 @@ export default function AdoptarPage() {
               </div>
             )}
 
-            <button
+            <LoadingButton
               type="submit"
-              disabled={submitting}
-              className="w-full bg-primary text-on-primary font-label-md py-4 rounded-lg shadow-sm hover:brightness-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-stack-sm"
+              loading={submitting}
+              className="w-full py-4 mt-stack-sm"
+              variant="primary"
+              icon="favorite"
             >
-              {submitting ? (
-                <>
-                  <div className="animate-spin w-5 h-5 border-2 border-on-primary border-t-transparent rounded-full" />
-                  Enviando...
-                </>
-              ) : (
-                <>
-                  <Icon name="favorite" className="w-5 h-5" solid />
-                  Enviar Solicitud
-                </>
-              )}
-            </button>
+              Enviar Solicitud
+            </LoadingButton>
           </form>
         </div>
       </main>

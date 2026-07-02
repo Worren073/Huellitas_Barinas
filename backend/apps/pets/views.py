@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from .models import Pet, PetImage
 from .serializers import PetSerializer, PetCreateSerializer, PetImageSerializer
 from .services import PetService
+from .permissions import IsCenterAdminOrSuperAdmin
 
 
 class PetViewSet(viewsets.ModelViewSet):
@@ -21,8 +22,10 @@ class PetViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'available', 'stats']:
+        if self.action in ['list', 'retrieve', 'available']:
             return [permissions.AllowAny()]
+        if self.action in ['stats', 'mark_adopted', 'mark_in_process', 'create', 'update', 'partial_update', 'destroy']:
+            return [IsCenterAdminOrSuperAdmin()]
         return [permissions.IsAuthenticated()]
 
     def get_serializer_class(self):
@@ -32,6 +35,12 @@ class PetViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Pet.objects.select_related('center').prefetch_related('images')
+
+        # center_admin only sees their center's pets
+        user = self.request.user
+        if user.is_authenticated and hasattr(user, 'role') and user.role == 'center_admin':
+            if hasattr(user, 'center') and user.center:
+                queryset = queryset.filter(center=user.center)
 
         species = self.request.query_params.get('species')
         if species:
@@ -56,11 +65,17 @@ class PetViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        """Get general stats for the dashboard."""
-        total_pets = Pet.objects.count()
-        available = Pet.objects.filter(status='available').count()
-        in_process = Pet.objects.filter(status='in_process').count()
-        adopted = Pet.objects.filter(status='adopted').count()
+        """Get general stats for the dashboard. center_admin scoped to their center."""
+        user = request.user
+        base_qs = Pet.objects
+        if user.is_authenticated and hasattr(user, 'role') and user.role == 'center_admin':
+            if hasattr(user, 'center') and user.center:
+                base_qs = base_qs.filter(center=user.center)
+
+        total_pets = base_qs.count()
+        available = base_qs.filter(status='available').count()
+        in_process = base_qs.filter(status='in_process').count()
+        adopted = base_qs.filter(status='adopted').count()
         return Response({
             'pets_count': total_pets,
             'available_pets': available,
