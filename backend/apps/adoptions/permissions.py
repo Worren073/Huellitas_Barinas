@@ -12,17 +12,31 @@ class IsApplicantOrCenterAdmin(permissions.BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        # Read permission: applicant or center admin
         if request.method in permissions.SAFE_METHODS:
             return (
                 obj.applicant == request.user or
                 request.user.is_superuser or
                 (request.user.role == 'center_admin' and obj.center == request.user.center)
             )
-        
-        # Write permission: applicant for their own, admin for all
+
         return (
             obj.applicant == request.user or
+            request.user.is_superuser or
+            (request.user.role == 'center_admin' and obj.center == request.user.center)
+        )
+
+
+class IsAdminOrCenterAdmin(permissions.BasePermission):
+    """Allow access only to superusers or center admins."""
+
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated and
+            (request.user.is_superuser or request.user.role == 'center_admin')
+        )
+
+    def has_object_permission(self, request, view, obj):
+        return (
             request.user.is_superuser or
             (request.user.role == 'center_admin' and obj.center == request.user.center)
         )

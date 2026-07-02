@@ -11,6 +11,14 @@ class User(AbstractUser):
         VOLUNTEER = 'voluntario', 'Voluntario'
         ADOPTER = 'adoptante', 'Adoptante'
 
+    email = models.EmailField(
+        unique=True,
+        verbose_name='correo electrónico',
+        error_messages={
+            'unique': 'Ya existe un usuario con este correo electrónico.',
+        }
+    )
+
     role = models.CharField(
         max_length=20,
         choices=Role.choices,

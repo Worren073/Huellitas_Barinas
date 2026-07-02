@@ -197,10 +197,13 @@ export default async function PetDetailPage({
                 <p className="font-body-sm text-on-surface-variant mb-stack-md">
                   Completa el formulario de solicitud y nos pondremos en contacto contigo.
                 </p>
-                <button className="w-full bg-primary-container text-on-primary-container font-label-md py-4 rounded-lg flex items-center justify-center gap-2 mb-3 shadow-sm hover:brightness-105 active:scale-95 transition-all">
+                <Link
+                  href={pet.status === 'available' ? `/adoptar/${pet.id}` : '#'}
+                  className={`w-full font-label-md py-4 rounded-lg flex items-center justify-center gap-2 mb-3 shadow-sm transition-all ${pet.status === 'available' ? 'bg-primary-container text-on-primary-container hover:brightness-105 active:scale-95' : 'bg-surface-gray text-on-surface-variant cursor-not-allowed'}`}
+                >
                   <Icon name="favorite" className="w-5 h-5" solid />
-                  Iniciar Solicitud de Adopcion
-                </button>
+                  {pet.status === 'available' ? 'Iniciar Solicitud de Adopcion' : 'No disponible para adopcion'}
+                </Link>
                 <button className="w-full bg-transparent border-2 border-primary-container text-on-primary-container font-label-md py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
                   <Icon name="help" className="w-5 h-5" /> Hacer una pregunta
                 </button>

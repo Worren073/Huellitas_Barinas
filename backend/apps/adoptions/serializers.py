@@ -47,7 +47,8 @@ class AdoptionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Adoption
         fields = (
-            'pet', 'center', 'motivation', 'experience',
+            'id', 'pet', 'center', 'motivation', 'experience',
             'home_type', 'has_yard', 'has_other_pets',
-            'other_pets_details', 'family_members'
+            'other_pets_details', 'family_members', 'status'
         )
+        read_only_fields = ('id', 'status')

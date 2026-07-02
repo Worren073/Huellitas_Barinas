@@ -57,6 +57,19 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    """Serializer for listing users."""
+    center_name = serializers.CharField(source='center.name', read_only=True, default='')
+
+    class Meta:
+        model = User
+        fields = (
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'role', 'phone', 'is_active', 'is_verified', 'center',
+            'center_name', 'date_joined'
+        )
+
+
 class ChangePasswordSerializer(serializers.Serializer):
     """Serializer for changing password."""
     old_password = serializers.CharField(required=True)

@@ -23,15 +23,55 @@ CSRF_COOKIE_SECURE = True
 X_FRAME_OPTIONS = 'DENY'
 
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'URL': os.environ.get('DATABASE_URL'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    import re
+    match = re.match(
+        r'postgres(?:ql)?://(.+?):(.+?)@(.+?)(?::(\d+))?/(.+)',
+        DATABASE_URL
+    )
+    if match:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': match.group(5),
+                'USER': match.group(1),
+                'PASSWORD': match.group(2),
+                'HOST': match.group(3),
+                'PORT': match.group(4) or '5432',
+                'OPTIONS': {
+                    'sslmode': 'require',
+                },
+            }
+        }
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.environ.get('DB_NAME', 'huellitas_barinas'),
+                'USER': os.environ.get('DB_USER', 'postgres'),
+                'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+                'HOST': os.environ.get('DB_HOST', 'localhost'),
+                'PORT': os.environ.get('DB_PORT', '5432'),
+                'OPTIONS': {
+                    'sslmode': 'require',
+                },
+            }
+        }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'huellitas_barinas'),
+            'USER': os.environ.get('DB_USER', 'postgres'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+        }
     }
-}
 
 # Static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

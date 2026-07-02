@@ -37,7 +37,8 @@ class PetCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
         fields = (
-            'name', 'species', 'breed', 'age_months', 'size',
+            'id', 'name', 'species', 'breed', 'age_months', 'size',
             'gender', 'weight_kg', 'description', 'health_status',
-            'is_sterilized', 'is_vaccinated', 'center'
+            'is_sterilized', 'is_vaccinated', 'status', 'center'
         )
+        read_only_fields = ('id',)

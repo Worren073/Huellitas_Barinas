@@ -32,6 +32,7 @@ class CenterCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Center
         fields = (
-            'name', 'description', 'address', 'phone', 'email',
+            'id', 'name', 'description', 'address', 'phone', 'email',
             'logo', 'cover_image', 'latitude', 'longitude', 'max_capacity'
         )
+        read_only_fields = ('id',)

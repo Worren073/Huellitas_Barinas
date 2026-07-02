@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,11 +24,15 @@ export default function LoginPage() {
 
     try {
       const { access, refresh } = await auth.login(email, password);
-      localStorage.setItem('access_token', access);
-      localStorage.setItem('refresh_token', refresh);
-      router.push('/dashboard');
-    } catch {
-      setError('Credenciales invalidas');
+      auth.setTokens(access, refresh);
+      router.push(redirectTo);
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { status?: number; data?: { detail?: string } } };
+      if (apiErr?.response?.status === 429) {
+        setError('Demasiados intentos. Espera un momento e intenta de nuevo.');
+      } else {
+        setError('Credenciales invalidas');
+      }
     } finally {
       setLoading(false);
     }

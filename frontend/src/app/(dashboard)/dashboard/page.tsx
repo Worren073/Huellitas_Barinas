@@ -1,91 +1,125 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import AdminLayout from '@/components/AdminLayout';
 import AdminMetricCard from '@/components/AdminMetricCard';
 import AdminTable from '@/components/AdminTable';
 import StatusBadge from '@/components/StatusBadge';
-import { api } from '@/lib/api';
+import Icon from '@/components/Icon';
+import api from '@/lib/api';
 
-interface Stats {
+interface PetStats {
   pets_count: number;
-  adoptions_count: number;
-  pending_adoptions: number;
+  available_pets: number;
+  in_process_pets: number;
+  adopted_pets: number;
 }
 
 interface Adoption {
   id: number;
   pet_name: string;
   applicant_name: string;
-  applicant_email: string;
+  center_name: string;
   status: string;
   created_at: string;
-  center_name: string;
 }
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [petStats, setPetStats] = useState<PetStats | null>(null);
   const [adoptions, setAdoptions] = useState<Adoption[]>([]);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [adoptionsTotal, setAdoptionsTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get<Stats>('/pets/stats/')
-      .then((res) => setStats(res.data))
-      .catch(() => {});
-
-    api.get<{ results: Adoption[]; total_pages: number }>(`/adoptions/?page=${page}`)
-      .then((res) => {
-        setAdoptions(res.data.results || res.data);
-        setTotalPages(res.data.total_pages || 1);
+    Promise.all([
+      api.get<PetStats>('/pets/stats/'),
+      api.get<{ results: Adoption[] }>('/adoptions/'),
+    ])
+      .then(([statsRes, adoptionsRes]) => {
+        setPetStats(statsRes.data);
+        const results = adoptionsRes.data.results || [];
+        setAdoptions(results.slice(0, 10));
+        setAdoptionsTotal(results.length);
+        setPendingCount(results.filter((a: Adoption) => a.status === 'pending').length);
+        setTotalPages(Math.ceil(results.length / 10));
       })
-      .catch(() => {});
-  }, [page]);
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const columns = [
     {
       key: 'applicant_name',
-      label: 'Applicant',
+      label: 'Solicitante',
       render: (item: Record<string, unknown>) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full overflow-hidden bg-surface-container flex items-center justify-center text-on-surface-variant font-label-md">
-            {String(item.applicant_name ?? 'U')[0]}
+          <div className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-on-surface-variant font-label-md">
+            {String(item.applicant_name || 'U')[0]}
           </div>
-          <div>
-            <p className="font-medium text-on-surface">{String(item.applicant_name ?? '')}</p>
-            <p className="text-on-surface-variant text-[12px]">{String(item.applicant_email ?? '')}</p>
-          </div>
+          <p className="font-label-md text-on-surface">{String(item.applicant_name || '')}</p>
         </div>
       ),
     },
-    { key: 'pet_name', label: 'Pet' },
-    { key: 'center_name', label: 'Center' },
+    { key: 'pet_name', label: 'Mascota' },
+    { key: 'center_name', label: 'Centro' },
     {
       key: 'status',
-      label: 'Status',
-      render: (item: Record<string, unknown>) => <StatusBadge status={String(item.status ?? '')} />,
+      label: 'Estado',
+      render: (item: Record<string, unknown>) => <StatusBadge status={String(item.status || '')} />,
     },
     {
       key: 'created_at',
-      label: 'Date',
+      label: 'Fecha',
       render: (item: Record<string, unknown>) => (
-        <span className="text-on-surface-variant">{new Date(String(item.created_at ?? '')).toLocaleDateString('es-VE')}</span>
+        <span className="text-on-surface-variant">
+          {new Date(String(item.created_at || '')).toLocaleDateString('es-VE')}
+        </span>
       ),
     },
   ];
 
   return (
     <AdminLayout>
-      <div className="p-stack-lg">
-        <div className="mb-stack-lg">
-          <h1 className="font-montserrat text-headline-lg text-on-surface">Dashboard</h1>
-          <p className="font-body-sm text-on-surface-variant mt-1">Bienvenido al panel de administracion</p>
+      <div className="p-stack-lg max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-stack-lg">
+          <div>
+            <h1 className="font-montserrat text-headline-lg text-on-surface">Dashboard</h1>
+            <p className="font-body-md text-on-surface-variant">Panel principal de administracion</p>
+          </div>
+          <Link
+            href="/dashboard/pets/new"
+            className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 active:scale-95 transition-all flex items-center gap-2"
+          >
+            <Icon name="add" className="w-5 h-5" />
+            Nueva Mascota
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-stack-lg">
-          <AdminMetricCard icon="pets" value={stats?.pets_count ?? '--'} label="Total Mascotas" trend="+12%" />
-          <AdminMetricCard icon="volunteer_activism" value={stats?.adoptions_count ?? '--'} label="Adopciones Totales" />
-          <AdminMetricCard icon="schedule" value={stats?.pending_adoptions ?? '--'} label="Solicitudes Pendientes" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-stack-sm mb-stack-lg">
+          <AdminMetricCard
+            icon="pets"
+            value={loading ? '...' : (petStats?.pets_count ?? 0)}
+            label="Total Mascotas"
+          />
+          <AdminMetricCard
+            icon="check_circle"
+            value={loading ? '...' : (petStats?.available_pets ?? 0)}
+            label="Disponibles"
+          />
+          <AdminMetricCard
+            icon="schedule"
+            value={loading ? '...' : pendingCount}
+            label="Solicitudes Pendientes"
+          />
+          <AdminMetricCard
+            icon="volunteer_activism"
+            value={loading ? '...' : (petStats?.adopted_pets ?? 0)}
+            label="Adoptados"
+          />
         </div>
 
         <AdminTable

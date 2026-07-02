@@ -15,7 +15,10 @@ class UserService:
     @staticmethod
     def create_user(**kwargs):
         """Create a new user with validation."""
+        password = kwargs.pop('password', None)
         user = User(**kwargs)
+        if password:
+            user.set_password(password)
         user.full_clean()
         user.save()
         return user
@@ -23,8 +26,11 @@ class UserService:
     @staticmethod
     def update_user(user, **kwargs):
         """Update user with validation."""
+        password = kwargs.pop('password', None)
         for key, value in kwargs.items():
             setattr(user, key, value)
+        if password:
+            user.set_password(password)
         user.full_clean()
         user.save()
         return user

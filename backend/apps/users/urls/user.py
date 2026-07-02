@@ -2,11 +2,16 @@
 User URL patterns.
 """
 
-from django.urls import path
-from ..views import ProfileView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from ..views import ProfileView, UserViewSet
 
 app_name = 'users'
 
+router = DefaultRouter()
+router.register('', UserViewSet, basename='user')
+
 urlpatterns = [
     path('me/', ProfileView.as_view(), name='profile'),
+    path('', include(router.urls)),
 ]

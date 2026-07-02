@@ -6,6 +6,7 @@ Delegates to services (Presenter layer).
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from django.utils import timezone
 
 from .models import Adoption, AdoptionTimeline
@@ -15,7 +16,7 @@ from .serializers import (
     AdoptionTimelineSerializer,
 )
 from .services import AdoptionService
-from .permissions import IsApplicantOrCenterAdmin
+from .permissions import IsApplicantOrCenterAdmin, IsAdminOrCenterAdmin
 
 
 class AdoptionViewSet(viewsets.ModelViewSet):
@@ -38,8 +39,33 @@ class AdoptionViewSet(viewsets.ModelViewSet):
             return AdoptionCreateSerializer
         return AdoptionSerializer
 
+    def create(self, request, *args, **kwargs):
+        pet_id = request.data.get('pet')
+        if not pet_id:
+            raise ValidationError({'pet': 'La mascota es requerida.'})
+
+        from apps.pets.models import Pet
+        pet = Pet.objects.filter(id=pet_id).first()
+        if not pet:
+            raise ValidationError({'pet': 'La mascota no existe.'})
+
+        if pet.status != 'available':
+            raise ValidationError('Esta mascota no está disponible para adopción.')
+
+        existing = Adoption.objects.filter(
+            pet=pet,
+            applicant=request.user,
+            status__in=['pending', 'under_review']
+        ).exists()
+        if existing:
+            raise ValidationError('Ya tienes una solicitud activa para esta mascota.')
+
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
-        serializer.save(applicant=self.request.user)
+        adoption = serializer.save(applicant=self.request.user)
+        service = AdoptionService(adoption)
+        service._add_timeline('pending', 'pending', notes="Solicitud creada")
 
     @action(detail=True, methods=['post'])
     def submit(self, request, pk=None):
@@ -53,7 +79,7 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrCenterAdmin])
     def start_review(self, request, pk=None):
         """Start reviewing an adoption request (admin only)."""
         adoption = self.get_object()
@@ -65,7 +91,7 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrCenterAdmin])
     def approve(self, request, pk=None):
         """Approve an adoption request (admin only)."""
         adoption = self.get_object()
@@ -78,7 +104,7 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrCenterAdmin])
     def reject(self, request, pk=None):
         """Reject an adoption request (admin only)."""
         adoption = self.get_object()
@@ -91,7 +117,7 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrCenterAdmin])
     def complete(self, request, pk=None):
         """Mark adoption as completed (admin only)."""
         adoption = self.get_object()

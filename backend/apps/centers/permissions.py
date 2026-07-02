@@ -21,5 +21,5 @@ class IsCenterAdminOrReadOnly(permissions.BasePermission):
             return True
         return (
             request.user.is_superuser or
-            (request.user.role == 'center_admin' and obj.created_by == request.user)
+            (request.user.role == 'center_admin' and obj == request.user.center)
         )

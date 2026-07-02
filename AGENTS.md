@@ -193,29 +193,48 @@ test(centers): add unit tests
 | `render.yaml` | Blueprint Render |
 | `docker-compose.yml` | Dev containers |
 | `docker-compose.prod.yml` | Prod containers |
+| `frontend/src/components/PetSilhouette.tsx` | SVG silhouette fallback (dog/cat) |
+| `frontend/src/app/(public)/adoptar/[id]/page.tsx` | Adoption form page |
+| `frontend/src/app/(dashboard)/adoptions/page.tsx` | Dashboard adoptions management |
 
 ## Próximos Pasos (Pendiente)
 
 | Prioridad | Tarea | Descripción |
 |-----------|-------|-------------|
-| 🔴 Alta | **Imágenes reales** | Reemplazar placeholders de inicial por fotos reales (Unsplash/Pexels) o siluetas de mascota |
-| 🔴 Alta | **Formulario de postulación** | Página `(public)/adoptar/[id]` con formulario (datos personales, motivo, experiencia). POST a `/api/v1/adoptions/` |
-| 🔴 Alta | **Flujo de adopciones** | Dashboard: listar solicitudes, cambiar estado (pending→under_review→approved/rejected→completed), timeline |
 | 🟡 Media | **Mapa de centros** | Agregar `lat`/`lng` a `Center`, `react-leaflet`, página `/centros` |
 | 🟡 Media | **Vista de Contacto** | Modal o página `(public)/contacto` |
 | 🟡 Media | **Vista de Términos** | Modal o página `(public)/terminos` |
 | 🟡 Media | **Vista de Privacidad** | Modal o página `(public)/privacidad` |
 | 🟡 Media | **Vista de Redes Sociales** | Modal o página `(public)/redes` |
 | 🟢 Baja | **Animaciones** | `framer-motion`: fade-in scroll, transiciones de ruta, hover cards, skeleton animado |
-| 🟢 Baja | **Placeholder visual** | Silueta SVG de perro/gato en vez de letras |
 
 ### Notas por tarea
 
-- **Postulación**: requiere endpoint `POST /api/v1/adoptions/` con validaciones
 - **Mapa**: `react-leaflet` + OpenStreetMap (gratuito, sin API key)
 - **Modales**: componente `Modal.tsx` reutilizable en `components/ui/` con portal
 - **Animaciones**: instalar `framer-motion`, wrapper `AnimatedSection.tsx`
-- **Imágenes**: seed puede descargar de Unsplash o usar `https://placehold.co` como fallback
+- **Imágenes**: seed descarga de Unsplash (5 dog + 3 cat), fallback a placeholder con inicial si falla la descarga
+- **Seed**: `docker compose exec api python manage.py seed_data` descarga imágenes reales y las guarda como WebP
+
+## Progreso de Sesiones
+
+## Progreso de Sesiones
+
+### Sesión Actual (Jul 2026)
+**Completado:**
+- PetSilhouette: componente SVG que muestra silueta de perro/gato cuando falla la imagen
+- Seed data: ahora descarga imágenes reales de Unsplash (5 perros + 3 gatos) en lugar de placeholders de letras; fallback a placeholder con inicial si la descarga falla
+- PetCard actualizado con `onError` + `imgError` state → muestra `PetSilhouette`
+- Pet detail: botón "Iniciar Solicitud" funcional, enlaza a `/adoptar/[id]`
+- Formulario de postulación `(public)/adoptar/[id]`: validación cliente, campos (motivación, experiencia, tipo vivienda, patio, otras mascotas, familiares), POST a `/api/v1/adoptions/`
+- Dashboard adoptions `/dashboard/adoptions/`: métricas, tabla con filtros por estado, timeline modal, detalle modal, acciones (start_review, approve, reject, complete) con confirmación
+- Build exitoso en producción (0 errores, 0 advertencias)
+
+**Pendiente próximo:**
+- Imágenes reales en seed (Unsplash/Pexels)
+- Mapa de centros con react-leaflet
+- Páginas/modaLes de Contacto, Términos, Privacidad, Redes
+- Animaciones con framer-motion
 
 ## Contacto
 

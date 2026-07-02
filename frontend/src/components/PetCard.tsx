@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import StatusBadge from './StatusBadge';
 import Icon from './Icon';
+import PetSilhouette from './PetSilhouette';
 
 interface Pet {
   id: number;
@@ -56,18 +58,17 @@ function getStatusLabel(status: string): string {
 }
 
 export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
+  const [imgError, setImgError] = useState(false);
   const imageUrl = pet.images?.[0]?.image || '';
 
   if (variant === 'compact') {
     return (
       <article className="bg-surface-container-lowest rounded-xl shadow-card overflow-hidden group hover:shadow-card-hover transition-all duration-300 border border-surface-container-high">
         <div className="relative h-48 overflow-hidden bg-surface-container-high">
-          {imageUrl ? (
-            <Image src={imageUrl} alt={pet.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, 25vw" />
+          {imageUrl && !imgError ? (
+            <Image src={imageUrl} alt={pet.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, 25vw" onError={() => setImgError(true)} />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Icon name="pets" className="w-12 h-12 text-outline" />
-            </div>
+            <PetSilhouette species={pet.species} />
           )}
           <div className="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-status-approved"></span>
@@ -95,12 +96,10 @@ export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
   return (
     <article className="bg-surface-container-lowest rounded-xl shadow-card hover:shadow-card-hover overflow-hidden flex flex-col group transition-all duration-300">
       <div className="relative h-56 overflow-hidden">
-        {imageUrl ? (
-          <Image src={imageUrl} alt={pet.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" sizes="(max-width: 768px) 100vw, 33vw" />
+        {imageUrl && !imgError ? (
+          <Image src={imageUrl} alt={pet.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" sizes="(max-width: 768px) 100vw, 33vw" onError={() => setImgError(true)} />
         ) : (
-          <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
-            <Icon name="pets" className="w-16 h-16 text-outline" />
-          </div>
+          <PetSilhouette species={pet.species} />
         )}
         <div className="absolute top-3 right-3 bg-status-approved text-on-primary-container font-label-sm px-3 py-1 rounded-full shadow-sm flex items-center gap-1 backdrop-blur-sm bg-opacity-90">
           <Icon name="check_circle" className="w-3.5 h-3.5" />

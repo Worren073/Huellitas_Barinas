@@ -4,6 +4,7 @@ Usage: python manage.py seed_data
 """
 
 import io
+import urllib.request
 from PIL import Image, ImageDraw, ImageFont
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
@@ -13,33 +14,72 @@ from apps.pets.models import Pet, PetImage
 
 User = get_user_model()
 
+UNSPLASH_IMAGES = {
+    'dog': [
+        'https://images.unsplash.com/photo-1544568100-847a948585b9?w=800&h=800&fit=crop&q=85',
+        'https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&h=800&fit=crop&q=85',
+        'https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=800&h=800&fit=crop&q=85',
+        'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800&h=800&fit=crop&q=85',
+        'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=800&h=800&fit=crop&q=85',
+    ],
+    'cat': [
+        'https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=800&h=800&fit=crop&q=85',
+        'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800&h=800&fit=crop&q=85',
+        'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=800&h=800&fit=crop&q=85',
+    ],
+}
+
 
 def create_placeholder_image(name, species, size=800):
-    """Create a placeholder image with a colored background and first letter."""
+    """Create a placeholder image with a colored background and first letter (fallback)."""
     colors = {
         'dog': {'bg': '#2D5A3D', 'fg': '#FFFFFF'},
         'cat': {'bg': '#8B5E3C', 'fg': '#FFFFFF'},
     }
     color = colors.get(species, {'bg': '#6B7280', 'fg': '#FFFFFF'})
-    
+
     img = Image.new('RGB', (size, size), color['bg'])
     draw = ImageDraw.Draw(img)
-    
-    # Draw first letter
+
     letter = name[0].upper()
     try:
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size // 3)
     except (OSError, IOError):
         font = ImageFont.load_default()
-    
+
     bbox = draw.textbbox((0, 0), letter, font=font)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
     x = (size - text_width) // 2
     y = (size - text_height) // 2
     draw.text((x, y), letter, fill=color['fg'], font=font)
-    
-    # Save as WebP directly (skip conversion signal)
+
+    buffer = io.BytesIO()
+    img.save(buffer, format='WEBP', quality=85)
+    buffer.seek(0)
+    return buffer
+
+
+def download_image(url: str, max_size: int = 1200) -> io.BytesIO:
+    """Download an image from URL and return as WebP bytes."""
+    headers = {
+        'User-Agent': 'HuellitasBarinas/1.0 (seed-data)',
+        'Accept': 'image/avif,image/webp,image/jpeg,*/*',
+    }
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=30) as response:
+        img_data = response.read()
+
+    img = Image.open(io.BytesIO(img_data))
+    if img.mode in ('P', 'RGBA'):
+        img = img.convert('RGB')
+
+    # Resize if needed
+    if max(img.size) > max_size:
+        ratio = max_size / max(img.size)
+        new_size = (int(img.width * ratio), int(img.height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+
     buffer = io.BytesIO()
     img.save(buffer, format='WEBP', quality=85)
     buffer.seek(0)
@@ -234,27 +274,58 @@ class Command(BaseCommand):
             },
         ]
 
+        # Index to cycle through Unsplash images per species
+        dog_idx = 0
+        cat_idx = 0
+
         for data in pets_data:
             pet, created = Pet.objects.get_or_create(
                 name=data['name'],
                 center=data['center'],
                 defaults=data
             )
-            
-            # Create placeholder image if pet has no images
+
+            # Create image if pet has no images
             if not pet.images.exists():
-                img_buffer = create_placeholder_image(pet.name, pet.species)
-                pet_image = PetImage(
-                    pet=pet,
-                    is_primary=True,
-                    order=0,
-                )
-                # Save directly with .webp extension to skip signal conversion
-                pet_image.image.save(
-                    f'{pet.name.lower()}_placeholder.webp',
-                    ContentFile(img_buffer.read()),
-                    save=True
-                )
+                self.stdout.write(f'  Downloading image for {pet.name}...')
+                species = pet.species
+                if species == 'dog':
+                    url = UNSPLASH_IMAGES['dog'][dog_idx % len(UNSPLASH_IMAGES['dog'])]
+                    dog_idx += 1
+                else:
+                    url = UNSPLASH_IMAGES['cat'][cat_idx % len(UNSPLASH_IMAGES['cat'])]
+                    cat_idx += 1
+
+                try:
+                    img_buffer = download_image(url)
+                    pet_image = PetImage(
+                        pet=pet,
+                        is_primary=True,
+                        order=0,
+                    )
+                    pet_image.image.save(
+                        f'{pet.name.lower()}_real.webp',
+                        ContentFile(img_buffer.read()),
+                        save=True
+                    )
+                    self.stdout.write(self.style.SUCCESS(f'    Image saved for {pet.name}'))
+                except Exception as e:
+                    self.stdout.write(self.style.WARNING(
+                        f'    Failed to download image for {pet.name}: {e}'
+                    ))
+                    self.stdout.write('    Using fallback placeholder')
+                    img_buffer = create_placeholder_image(pet.name, pet.species)
+                    pet_image = PetImage(
+                        pet=pet,
+                        is_primary=True,
+                        order=0,
+                    )
+                    pet_image.image.save(
+                        f'{pet.name.lower()}_placeholder.webp',
+                        ContentFile(img_buffer.read()),
+                        save=True
+                    )
+
                 self.stdout.write(f'  Pet: {pet.name} ({pet.get_species_display()})')
             else:
                 self.stdout.write(f'  Pet: {pet.name} (already has images)')

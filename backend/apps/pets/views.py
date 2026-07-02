@@ -21,7 +21,7 @@ class PetViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'available']:
+        if self.action in ['list', 'retrieve', 'available', 'stats']:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
@@ -57,6 +57,20 @@ class PetViewSet(viewsets.ModelViewSet):
         serializer = PetSerializer(pets, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get general stats for the dashboard."""
+        total_pets = Pet.objects.count()
+        available = Pet.objects.filter(status='available').count()
+        in_process = Pet.objects.filter(status='in_process').count()
+        adopted = Pet.objects.filter(status='adopted').count()
+        return Response({
+            'pets_count': total_pets,
+            'available_pets': available,
+            'in_process_pets': in_process,
+            'adopted_pets': adopted,
+        })
+
     @action(detail=True, methods=['post'])
     def mark_adopted(self, request, pk=None):
         """Mark a pet as adopted."""
@@ -76,6 +90,11 @@ class PetImageViewSet(viewsets.ModelViewSet):
     """ViewSet for managing pet images."""
     queryset = PetImage.objects.all()
     serializer_class = PetImageSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         queryset = PetImage.objects.all()

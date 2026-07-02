@@ -8,10 +8,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, get_user_model
+from django.core.exceptions import MultipleObjectsReturned
+
+from rest_framework import viewsets
 
 from .serializers import (
     UserSerializer,
     UserCreateSerializer,
+    UserListSerializer,
     ChangePasswordSerializer,
     LoginSerializer,
 )
@@ -24,12 +28,13 @@ class RegisterView(generics.CreateAPIView):
     """Register a new user."""
     serializer_class = UserCreateSerializer
     permission_classes = [permissions.AllowAny]
+    throttle_scope = 'auth_register'
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        
+
         return Response(
             UserSerializer(user).data,
             status=status.HTTP_201_CREATED
@@ -39,6 +44,7 @@ class RegisterView(generics.CreateAPIView):
 class LoginView(APIView):
     """Login and obtain JWT tokens."""
     permission_classes = [permissions.AllowAny]
+    throttle_scope = 'auth_login'
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -49,7 +55,7 @@ class LoginView(APIView):
         
         try:
             user_obj = User.objects.get(email=email)
-        except User.DoesNotExist:
+        except (User.DoesNotExist, MultipleObjectsReturned):
             return Response(
                 {'error': 'Credenciales inválidas.'},
                 status=status.HTTP_401_UNAUTHORIZED
@@ -86,6 +92,20 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for listing users (admin only)."""
+    queryset = User.objects.all().select_related('center')
+    serializer_class = UserListSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        role = self.request.query_params.get('role')
+        if role:
+            qs = qs.filter(role=role)
+        return qs
+
+
 class ChangePasswordView(generics.UpdateAPIView):
     """Change current user password."""
     serializer_class = ChangePasswordSerializer
@@ -97,11 +117,10 @@ class ChangePasswordView(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         user = self.get_object()
-        user.set_password(serializer.validated_data['new_password'])
-        user.save()
-        
+        UserService.update_user(user, password=serializer.validated_data['new_password'])
+
         return Response({'message': 'Contraseña actualizada exitosamente.'})
 
 
