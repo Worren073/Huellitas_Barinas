@@ -4,13 +4,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-huellitas_barinas}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: huellitas_barinas
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,15 +27,12 @@ services:
 
   api:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     ports:
       - "8000:8000"
-    env_file:
-      - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
       DB_NAME: huellitas_barinas
@@ -44,6 +41,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
         condition: service_healthy
@@ -52,12 +50,10 @@ services:
 
   worker:
     build: ./backend
-    command: celery -A config worker -l info
+    command: ./entrypoint-worker.sh
     volumes:
       - ./backend:/app
       - media_volume:/app/media
-    env_file:
-      - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
       DB_NAME: huellitas_barinas
@@ -66,6 +62,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
         condition: service_healthy
@@ -74,11 +71,9 @@ services:
 
   beat:
     build: ./backend
-    command: celery -A config beat -l info
+    command: ./entrypoint-beat.sh
     volumes:
       - ./backend:/app
-    env_file:
-      - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
       DB_NAME: huellitas_barinas
@@ -87,6 +82,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
         condition: service_healthy
