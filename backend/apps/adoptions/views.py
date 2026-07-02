@@ -1,0 +1,113 @@
+"""
+Adoption views (View layer).
+Delegates to services (Presenter layer).
+"""
+
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.utils import timezone
+
+from .models import Adoption, AdoptionTimeline
+from .serializers import (
+    AdoptionSerializer,
+    AdoptionCreateSerializer,
+    AdoptionTimelineSerializer,
+)
+from .services import AdoptionService
+from .permissions import IsApplicantOrCenterAdmin
+
+
+class AdoptionViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing adoption requests."""
+    queryset = Adoption.objects.select_related('pet', 'applicant', 'center', 'reviewed_by')
+    serializer_class = AdoptionSerializer
+    permission_classes = [permissions.IsAuthenticated, IsApplicantOrCenterAdmin]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return Adoption.objects.all()
+        elif user.role == 'center_admin':
+            return Adoption.objects.filter(center=user.center)
+        else:
+            return Adoption.objects.filter(applicant=user)
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return AdoptionCreateSerializer
+        return AdoptionSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(applicant=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def submit(self, request, pk=None):
+        """Submit an adoption request."""
+        adoption = self.get_object()
+        service = AdoptionService(adoption)
+
+        try:
+            service.submit()
+            return Response(AdoptionSerializer(adoption).data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def start_review(self, request, pk=None):
+        """Start reviewing an adoption request (admin only)."""
+        adoption = self.get_object()
+        service = AdoptionService(adoption)
+
+        try:
+            service.start_review(reviewed_by=request.user)
+            return Response(AdoptionSerializer(adoption).data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def approve(self, request, pk=None):
+        """Approve an adoption request (admin only)."""
+        adoption = self.get_object()
+        service = AdoptionService(adoption)
+        notes = request.data.get('notes', '')
+
+        try:
+            service.approve(approved_by=request.user, notes=notes)
+            return Response(AdoptionSerializer(adoption).data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def reject(self, request, pk=None):
+        """Reject an adoption request (admin only)."""
+        adoption = self.get_object()
+        service = AdoptionService(adoption)
+        reason = request.data.get('reason', '')
+
+        try:
+            service.reject(rejected_by=request.user, reason=reason)
+            return Response(AdoptionSerializer(adoption).data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def complete(self, request, pk=None):
+        """Mark adoption as completed (admin only)."""
+        adoption = self.get_object()
+        service = AdoptionService(adoption)
+
+        try:
+            service.complete(completed_by=request.user)
+            return Response(AdoptionSerializer(adoption).data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['get'])
+    def timeline(self, request, pk=None):
+        """Get adoption timeline."""
+        adoption = self.get_object()
+        service = AdoptionService(adoption)
+        timeline = service.get_timeline()
+
+        return Response(AdoptionTimelineSerializer(timeline, many=True).data)

@@ -1,0 +1,93 @@
+services:
+  - type: web
+    name: huellitas-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_STORAGE_BUCKET_NAME
+        value: huellitas-barinas
+      - key: AWS_S3_ENDPOINT_URL
+        sync: false
+      - key: AWS_S3_REGION_NAME
+        value: auto
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: EMAIL_USE_TLS
+        value: true
+      - key: DEFAULT_FROM_EMAIL
+        value: "Huellitas Barinas <noreply@huellitasbarinas.com>"
+    healthCheckPath: /api/health/
+    plan: free
+
+  - type: worker
+    name: huellitas-worker
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerCommand: celery -A config worker -l info
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DATABASE_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_STORAGE_BUCKET_NAME
+        value: huellitas-barinas
+      - key: AWS_S3_ENDPOINT_URL
+        sync: false
+      - key: AWS_S3_REGION_NAME
+        value: auto
+    plan: free
+
+  - type: worker
+    name: huellitas-beat
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerCommand: celery -A config beat -l info
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DATABASE_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+    plan: free
+
+  - type: redis
+    name: huellitas-redis
+    plan: free
+    ipAllowList: []
+
+  - type: web
+    name: huellitas-web
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/.next
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+    plan: free
