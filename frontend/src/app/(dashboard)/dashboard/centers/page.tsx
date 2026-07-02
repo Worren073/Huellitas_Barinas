@@ -32,6 +32,16 @@ interface User {
   center?: number;
 }
 
+interface CenterAdminUser {
+  id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  center: number | null;
+}
+
 const STATUS_LABELS: Record<string, string> = {
   active: 'Activo',
   inactive: 'Inactivo',
@@ -41,6 +51,7 @@ const STATUS_LABELS: Record<string, string> = {
 export default function CentersPage() {
   const router = useRouter();
   const [centers, setCenters] = useState<Center[]>([]);
+  const [centerAdmins, setCenterAdmins] = useState<CenterAdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [newCenter, setNewCenter] = useState({
@@ -51,10 +62,12 @@ export default function CentersPage() {
     email: '',
     max_capacity: 50,
   });
+  const [selectedAdmin, setSelectedAdmin] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userCenter, setUserCenter] = useState<number | null>(null);
+  const [loadingAdmins, setLoadingAdmins] = useState(false);
 
   const fetchCenters = async () => {
     try {
@@ -64,6 +77,20 @@ export default function CentersPage() {
       setCenters([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCenterAdmins = async () => {
+    setLoadingAdmins(true);
+    try {
+      const r = await api.get<{ results: CenterAdminUser[] }>('/users/?role=center_admin');
+      // Filter to show only center_admins without a center assigned, or with the center we're creating
+      const availableAdmins = (r.data.results || r.data || []).filter(u => !u.center);
+      setCenterAdmins(availableAdmins);
+    } catch {
+      setCenterAdmins([]);
+    } finally {
+      setLoadingAdmins(false);
     }
   };
 
@@ -104,11 +131,28 @@ export default function CentersPage() {
     e.preventDefault();
     setCreating(true);
     setError('');
+
+    if (userRole === 'superadmin' && !selectedAdmin) {
+      setError('Debe seleccionar un administrador para el centro');
+      setCreating(false);
+      return;
+    }
+
     try {
-      await api.post('/centers/', newCenter);
+      // Create center
+      const { data: createdCenter } = await api.post('/centers/', newCenter);
+
+      // If an admin is selected, assign them to this center
+      if (selectedAdmin && userRole === 'superadmin') {
+        await api.patch(`/users/${selectedAdmin}/change_role/`, {
+          role: 'center_admin',
+          center: createdCenter.id,
+        });
+      }
+
       sileo.success({
         title: 'Centro creado',
-        description: `${newCenter.name} ha sido creado correctamente.`,
+        description: `${newCenter.name} ha sido creado correctamente${selectedAdmin ? ' y asignado a un administrador' : ''}.`,
       });
       setShowModal(false);
       setNewCenter({
@@ -119,6 +163,7 @@ export default function CentersPage() {
         email: '',
         max_capacity: 50,
       });
+      setSelectedAdmin(null);
       fetchCenters();
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: Record<string, string[]> } };
@@ -129,6 +174,13 @@ export default function CentersPage() {
       );
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleOpenModal = async () => {
+    setShowModal(true);
+    if (userRole === 'superadmin') {
+      await fetchCenterAdmins();
     }
   };
 
@@ -159,7 +211,7 @@ export default function CentersPage() {
           </div>
           {userRole === 'superadmin' && (
             <button
-              onClick={() => setShowModal(true)}
+              onClick={handleOpenModal}
               className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2"
             >
               <Icon name="add" className="w-5 h-5" /> Nuevo Centro
@@ -293,7 +345,11 @@ export default function CentersPage() {
             <div className="p-stack-md border-b border-outline-variant/30 flex justify-between items-center sticky top-0 bg-surface rounded-t-2xl">
               <h3 className="font-headline-sm text-on-surface">Nuevo Centro</h3>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setSelectedAdmin(null);
+                  setError('');
+                }}
                 className="text-on-surface-variant hover:text-on-surface"
               >
                 <Icon name="close" className="w-5 h-5" />
@@ -368,6 +424,40 @@ export default function CentersPage() {
                   }
                 />
               </div>
+
+              <div>
+                <label className="font-label-md text-on-surface mb-1.5 block">
+                  Administrador del Centro
+                </label>
+                {loadingAdmins ? (
+                  <div className="flex items-center justify-center py-3">
+                    <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
+                  </div>
+                ) : centerAdmins.length === 0 ? (
+                  <div className="p-3 bg-surface-container-low rounded-lg text-center">
+                    <p className="font-body-sm text-on-surface-variant">
+                      No hay administradores de centro disponibles
+                    </p>
+                  </div>
+                ) : (
+                  <select
+                    className={inputClass}
+                    value={selectedAdmin || ''}
+                    onChange={e => setSelectedAdmin(e.target.value ? parseInt(e.target.value) : null)}
+                  >
+                    <option value="">Selecciona un administrador</option>
+                    {centerAdmins.map(admin => (
+                      <option key={admin.id} value={admin.id}>
+                        {admin.first_name} {admin.last_name} ({admin.email})
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <p className="font-label-sm text-on-surface-variant mt-1.5">
+                  Solo se muestran usuarios sin centro asignado
+                </p>
+              </div>
+
               <LoadingButton
                 type="submit"
                 loading={creating}
