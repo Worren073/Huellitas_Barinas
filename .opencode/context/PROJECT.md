@@ -51,7 +51,6 @@
 - [x] .env.example, .gitignore, README.md
 
 ### Pendiente ⏳
-- [ ] Commit inicial y push a GitHub
 - [ ] Tests unitarios y de integración
 - [ ] Deploy a Render (probar)
 - [ ] Frontend: páginas CRUD completas
@@ -131,3 +130,76 @@
 - Celery worker y beat corren en servicios separados en Render
 - Nginx maneja static files y proxy reverso
 - Frontend es estático (Next.js export) en Render
+
+---
+
+## Session Log
+
+### Session 1 - Julio 1, 2026
+
+**Objetivo**: Crear proyecto completo y hacer commit inicial
+
+**Completado**:
+- [x] Backend: 4 apps completas (users, centers, pets, adoptions)
+- [x] Frontend: Estructura Next.js + páginas básicas
+- [x] Docker: docker-compose.yml + prod + Dockerfiles
+- [x] CI/CD: GitHub Actions
+- [x] Deploy: render.yaml + nginx
+- [x] Docs: README, AGENTS.md, SKILL.md, PROJECT.md
+- [x] Git: Commit inicial + push a GitHub
+
+**Archivos creados**: 82 archivos, 4095 líneas
+
+---
+
+### Session 2 - Julio 1, 2026
+
+**Objetivo**: Configurar entorno local para desarrollo
+
+**Problemas encontrados y corregidos**:
+1. `whitenoise` faltaba en requirements.txt
+2. `development.py` no parseaba DATABASE_URL correctamente
+3. docker-compose.yml usaba `&&` que no funciona en sh
+4. Falta archivo `.env` para desarrollo local
+5. Apps sin archivos de migraciones
+6. Unicode `✓` en print statements causaba error en Windows
+
+**Archivos modificados**:
+- `backend/requirements.txt` → agregado whitenoise==6.7.*
+- `backend/config/settings/development.py` → parseo DB_URL + fix unicode
+- `.env` → creado con valores locales
+- `docker-compose.yml` → fix comando API + DB vars individuales
+- `frontend/.env.local` → creado con API URL
+
+**Migraciones generadas**:
+- users.0001_initial
+- centers.0001_initial, 0002_initial
+- pets.0001_initial
+- adoptions.0001_initial, 0002_initial
+
+**Servicios verificados**:
+- PostgreSQL: localhost:5432 ✅
+- Redis: localhost:6379 ✅
+- Django API: localhost:8000 ✅
+- Health endpoint: `/api/v1/health/` → 200 ✅
+- Login endpoint: `/api/v1/auth/login/` → JWT tokens ✅
+- Admin: localhost:8000/admin/ → 200 ✅
+
+**Admin creado**:
+- Usuario: admin
+- Contraseña: admin123
+- Email: admin@huellitas.com
+- Rol: superadmin
+
+**Próximos pasos**:
+1. Iniciar frontend (`cd frontend && npm run dev`)
+2. Probar conexión frontend-backend
+3. Crear centro de prueba
+4. Agregar mascota de prueba
+5. Probar flujo de adopción completo
+
+**Notas técnicas**:
+- Windows PowerShell tiene execution policy restrictions
+- Usar `cmd /c` para comandos npm
+- Next.js necesita `.env.local` con `NEXT_PUBLIC_API_URL`
+- Django usa `DB_*` vars individuales en development (no DATABASE_URL)

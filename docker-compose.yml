@@ -27,10 +27,7 @@ services:
 
   api:
     build: ./backend
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             python manage.py runserver 0.0.0.0:8000"
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend:/app
       - static_volume:/app/staticfiles
@@ -41,7 +38,11 @@ services:
       - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-huellitas_barinas}
+      DB_NAME: huellitas_barinas
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      DB_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
     depends_on:
       db:
@@ -59,7 +60,11 @@ services:
       - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-huellitas_barinas}
+      DB_NAME: huellitas_barinas
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      DB_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
     depends_on:
       db:
@@ -76,7 +81,11 @@ services:
       - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-huellitas_barinas}
+      DB_NAME: huellitas_barinas
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      DB_PORT: 5432
       CELERY_BROKER_URL: redis://redis:6379/0
     depends_on:
       db:
@@ -89,10 +98,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://api:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - /app/.next
     depends_on:
       - api
 
