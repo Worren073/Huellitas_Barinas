@@ -1,5 +1,3 @@
-'use client';
-
 interface PetSilhouetteProps {
   species?: string;
   className?: string;

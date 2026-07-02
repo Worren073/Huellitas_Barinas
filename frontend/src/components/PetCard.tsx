@@ -48,15 +48,6 @@ function getAgeBadge(months?: number): string {
   return 'Adulto';
 }
 
-function getStatusLabel(status: string): string {
-  const labels: Record<string, string> = {
-    available: 'Disponible',
-    in_process: 'En Proceso',
-    adopted: 'Adoptada',
-  };
-  return labels[status] || status;
-}
-
 export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
   const [imgError, setImgError] = useState(false);
   const imageUrl = pet.images?.[0]?.image || '';
@@ -70,9 +61,8 @@ export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
           ) : (
             <PetSilhouette species={pet.species} />
           )}
-          <div className="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-status-approved"></span>
-            <span className="font-label-sm text-on-surface">{getStatusLabel(pet.status)}</span>
+          <div className="absolute top-3 right-3">
+            <StatusBadge status={pet.status} />
           </div>
         </div>
         <div className="p-5">
@@ -101,9 +91,8 @@ export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
         ) : (
           <PetSilhouette species={pet.species} />
         )}
-        <div className="absolute top-3 right-3 bg-status-approved text-on-primary-container font-label-sm px-3 py-1 rounded-full shadow-sm flex items-center gap-1 backdrop-blur-sm bg-opacity-90">
-          <Icon name="check_circle" className="w-3.5 h-3.5" />
-          {getStatusLabel(pet.status)}
+        <div className="absolute top-3 right-3">
+          <StatusBadge status={pet.status} />
         </div>
         <button className="absolute top-3 left-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-outline hover:text-secondary-container hover:bg-surface-container-lowest flex items-center justify-center transition-colors shadow-sm">
           <Icon name="favorite" className="w-[18px] h-[18px]" />

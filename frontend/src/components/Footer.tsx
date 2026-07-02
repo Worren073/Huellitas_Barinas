@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="flex flex-col gap-4">
           <span className="font-montserrat font-headline-sm text-on-surface">Huellitas Barinas</span>
           <p className="font-body-sm text-secondary">
-            2024 Huellitas Barinas. Compasion en cada adopcion.
+            {new Date().getFullYear()} Huellitas Barinas. Compasion en cada adopcion.
           </p>
         </div>
         <div className="flex flex-col gap-2 md:col-span-2 md:items-end justify-center">
