@@ -38,6 +38,12 @@ class AdoptionViewSet(viewsets.ModelViewSet):
             return AdoptionCreateSerializer
         return AdoptionSerializer
 
+    def get_serializer_context(self):
+        """Pass request to serializer context."""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
     def perform_create(self, serializer):
         adoption = serializer.save(applicant=self.request.user)
         service = AdoptionService(adoption)

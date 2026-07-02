@@ -32,13 +32,14 @@ export default async function HomePage() {
   let centers: Center[] = [];
 
   try {
-    const [petsRes, centersRes] = await Promise.all([
-      serverApi<{ results: Pet[] } | Pet[]>('/pets/?page_size=4'),
-      serverApi<{ results: Center[] } | Center[]>('/centers/'),
-    ]);
-    pets = Array.isArray(petsRes) ? petsRes : petsRes.results;
-    centers = (Array.isArray(centersRes) ? centersRes : centersRes.results).slice(0, 2);
-  } catch {
+    const petsRes = await serverApi<any>('/pets/?page_size=4');
+    const centersRes = await serverApi<any>('/centers/');
+    
+    // Handle paginated response
+    pets = petsRes.results ? petsRes.results : Array.isArray(petsRes) ? petsRes : [];
+    centers = (centersRes.results ? centersRes.results : Array.isArray(centersRes) ? centersRes : []).slice(0, 2);
+  } catch (error) {
+    console.error('Error fetching data:', error);
     // Silent fail - page renders with empty state
   }
 
@@ -52,7 +53,7 @@ export default async function HomePage() {
             <ScrollAnimation variant="slideLeft">
               <div className="flex flex-col gap-stack-md">
                 <h1 className="font-montserrat text-headline-xl md:text-[56px] md:leading-[64px] font-bold text-on-surface">
-                  Encuentra a tu próximo
+                  Adopta a tu próximo
                   <span className="text-primary"> compañero</span> de vida
                 </h1>
                 <p className="font-body-lg text-on-surface-variant max-w-lg">
@@ -125,10 +126,11 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {pets.map((pet) => (
-                <PetCard key={pet.id} pet={pet} variant="compact" />
-              ))}
-              {pets.length === 0 && (
+              {pets.length > 0 ? (
+                pets.map((pet) => (
+                  <PetCard key={pet.id} pet={pet} variant="compact" />
+                ))
+              ) : (
                 <p className="col-span-full text-center text-on-surface-variant font-body-md py-8">
                   Cargando mascotas...
                 </p>
@@ -145,28 +147,29 @@ export default async function HomePage() {
               </h2>
             </ScrollAnimation>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {centers.map((center, index) => (
-                <ScrollAnimation key={center.id} variant="slideUp" delay={index * 0.1}>
-                  <div className="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer">
-                    <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden">
-                      {center.logo ? (
-                        <img src={normalizeImageUrl(center.logo)} alt={center.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <Icon name="location" className="w-8 h-8 text-primary m-6" />
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-headline-sm text-on-surface mb-1">{center.name}</h3>
-                      <p className="font-body-sm text-on-surface-variant mb-2">{center.address || 'Barinas, Venezuela'}</p>
-                      <div className="flex items-center gap-2 text-primary font-label-sm">
-                        <Icon name="pets" className="w-4 h-4" />
-                        {center.pets_count || 0} Mascotas disponibles
+              {centers.length > 0 ? (
+                centers.map((center, index) => (
+                  <ScrollAnimation key={center.id} variant="slideUp" delay={index * 0.1}>
+                    <div className="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer">
+                      <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden">
+                        {center.logo ? (
+                          <img src={normalizeImageUrl(center.logo)} alt={center.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Icon name="location" className="w-8 h-8 text-primary m-6" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-headline-sm text-on-surface mb-1">{center.name}</h3>
+                        <p className="font-body-sm text-on-surface-variant mb-2">{center.address || 'Barinas, Venezuela'}</p>
+                        <div className="flex items-center gap-2 text-primary font-label-sm">
+                          <Icon name="pets" className="w-4 h-4" />
+                          {center.pets_count || 0} Mascotas disponibles
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </ScrollAnimation>
-              ))}
-              {centers.length === 0 && (
+                  </ScrollAnimation>
+                ))
+              ) : (
                 <p className="col-span-full text-center text-on-surface-variant font-body-md py-8">
                   Cargando centros...
                 </p>

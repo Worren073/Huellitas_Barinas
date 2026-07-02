@@ -19,12 +19,12 @@ const statusConfig: Record<string, { bg: string; text: string; border?: string; 
 };
 
 const statusLabels: Record<string, string> = {
-  available: 'Disponible',
+  available: 'En Adopción',
   in_process: 'En Proceso',
   adopted: 'Adoptada',
   removed: 'Removida',
   pending: 'Pendiente',
-  under_review: 'En Revision',
+  under_review: 'En Revisión',
   approved: 'Aprobada',
   rejected: 'Rechazada',
   completed: 'Completada',

@@ -1,9 +1,13 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
-import { serverApi } from '@/lib/server';
+import api from '@/lib/api';
 import { normalizeImageUrl } from '@/lib/utils';
 
 interface PetImage {
@@ -42,7 +46,7 @@ function formatAge(months?: number): string {
   if (!months) return '';
   if (months < 12) return `${months} Meses`;
   const years = Math.floor(months / 12);
-  return `${years} ${years === 1 ? 'Ano' : 'Anos'}`;
+  return `${years} ${years === 1 ? 'Año' : 'Años'}`;
 }
 
 function getSpeciesLabel(species: string): string {
@@ -54,18 +58,39 @@ function getGenderLabel(gender?: string): string {
   return gender === 'M' || gender === 'male' ? 'Macho' : 'Hembra';
 }
 
-export default async function PetDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  let pet: Pet | null = null;
+export default function PetDetailPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const [pet, setPet] = useState<Pet | null>(null);
+  const [loading, setLoading] = useState(true);
+  const petId = params.id;
 
-  try {
-    pet = await serverApi<Pet>(`/pets/${id}/`);
-  } catch {
-    // Pet not found
+  useEffect(() => {
+    if (!petId) return;
+
+    const fetchPet = async () => {
+      try {
+        const response = await api.get<Pet>(`/pets/${petId}/`);
+        setPet(response.data);
+      } catch {
+        setPet(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPet();
+  }, [petId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar variant="detail" />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   if (!pet) {
@@ -75,7 +100,9 @@ export default async function PetDetailPage({
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <Icon name="search_off" className="w-16 h-16 text-outline" />
           <p className="font-headline-sm text-on-surface">Mascota no encontrada</p>
-          <Link href="/mascotas" className="text-primary hover:underline font-label-md">Volver a mascotas</Link>
+          <Link href="/mascotas" className="text-primary hover:underline font-label-md">
+            Volver a mascotas
+          </Link>
         </div>
         <Footer />
       </div>
@@ -172,14 +199,14 @@ export default async function PetDetailPage({
                     name={pet.is_vaccinated ? 'check_circle_solid' : 'radio_button_unchecked'}
                     className={`w-5 h-5 ${pet.is_vaccinated ? 'text-primary-container' : 'text-outline'}`}
                   />
-                  Vacunacion al dia {pet.is_vaccinated ? '' : '(Pendiente)'}
+                  Vacunación al día {pet.is_vaccinated ? '' : '(Pendiente)'}
                 </li>
                 <li className="flex items-center gap-3">
                   <Icon
                     name={pet.is_sterilized ? 'check_circle_solid' : 'radio_button_unchecked'}
                     className={`w-5 h-5 ${pet.is_sterilized ? 'text-primary-container' : 'text-outline'}`}
                   />
-                  Esterilizacion {pet.is_sterilized ? 'completada' : '(Pendiente)'}
+                  Esterilización {pet.is_sterilized ? 'completada' : '(Pendiente)'}
                 </li>
                 {pet.health_status && (
                   <li className="flex items-center gap-3">
@@ -200,10 +227,14 @@ export default async function PetDetailPage({
                 </p>
                 <Link
                   href={pet.status === 'available' ? `/adoptar/${pet.id}` : '#'}
-                  className={`w-full font-label-md py-4 rounded-lg flex items-center justify-center gap-2 mb-3 shadow-sm transition-all ${pet.status === 'available' ? 'bg-primary-container text-on-primary-container hover:brightness-105 active:scale-95' : 'bg-surface-gray text-on-surface-variant cursor-not-allowed'}`}
+                  className={`w-full font-label-md py-4 rounded-lg flex items-center justify-center gap-2 mb-3 shadow-sm transition-all ${
+                    pet.status === 'available'
+                      ? 'bg-primary-container text-on-primary-container hover:brightness-105 active:scale-95'
+                      : 'bg-surface-gray text-on-surface-variant cursor-not-allowed'
+                  }`}
                 >
                   <Icon name="favorite" className="w-5 h-5" solid />
-                  {pet.status === 'available' ? 'Iniciar Solicitud de Adopcion' : 'No disponible para adopcion'}
+                  {pet.status === 'available' ? 'Iniciar Solicitud de Adopción' : 'No disponible para adopción'}
                 </Link>
                 <button className="w-full bg-transparent border-2 border-primary-container text-on-primary-container font-label-md py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
                   <Icon name="help" className="w-5 h-5" /> Hacer una pregunta

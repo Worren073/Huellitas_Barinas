@@ -3,6 +3,7 @@ Adoption serializers for the API.
 """
 
 from rest_framework import serializers
+from django.db import IntegrityError
 from .models import Adoption, AdoptionTimeline
 
 
@@ -52,3 +53,21 @@ class AdoptionCreateSerializer(serializers.ModelSerializer):
             'other_pets_details', 'family_members', 'status'
         )
         read_only_fields = ('id', 'status')
+
+    def create(self, validated_data):
+        """Create adoption with duplicate check."""
+        applicant = self.context['request'].user
+        pet = validated_data.get('pet')
+        
+        # Check if adoption already exists for this pet and applicant
+        if Adoption.objects.filter(pet=pet, applicant=applicant).exists():
+            raise serializers.ValidationError({
+                'non_field_errors': 'Ya tienes una solicitud de adopción para esta mascota.'
+            })
+        
+        try:
+            return super().create(validated_data)
+        except IntegrityError:
+            raise serializers.ValidationError({
+                'non_field_errors': 'Ya tienes una solicitud de adopción para esta mascota.'
+            })
