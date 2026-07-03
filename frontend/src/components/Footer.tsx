@@ -1,11 +1,21 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
     <footer className="bg-surface-dim mt-stack-lg">
       <div className="w-full py-stack-lg px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-container-max mx-auto">
         <div className="flex flex-col gap-4">
-          <span className="font-montserrat font-headline-sm text-on-surface">Huellitas Barinas</span>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/Huellitas png.png"
+              alt="Huellitas Barinas"
+              width={28}
+              height={28}
+              className="w-7 h-7 object-contain"
+            />
+            <span className="font-montserrat font-headline-sm text-on-surface">Huellitas Barinas</span>
+          </div>
           <p className="font-body-sm text-secondary">
             {new Date().getFullYear()} Huellitas Barinas. Compasion en cada adopcion.
           </p>

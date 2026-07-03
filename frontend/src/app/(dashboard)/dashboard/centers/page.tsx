@@ -16,6 +16,7 @@ interface Center {
   name: string;
   description: string;
   address: string;
+  state: string;
   phone: string;
   email: string;
   status: string;
@@ -58,6 +59,7 @@ export default function CentersPage() {
     name: '',
     description: '',
     address: '',
+    state: 'Barinas',
     phone: '',
     email: '',
     max_capacity: 50,
@@ -159,6 +161,7 @@ export default function CentersPage() {
         name: '',
         description: '',
         address: '',
+        state: 'Barinas',
         phone: '',
         email: '',
         max_capacity: 50,
@@ -219,7 +222,7 @@ export default function CentersPage() {
           )}
         </div>
 
-        {userRole === 'superadmin' && (
+          {userRole === 'superadmin' && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-stack-sm mb-stack-lg">
             <AdminMetricCard icon="location" value={centers.length} label="Total Centros" />
             <AdminMetricCard
@@ -228,9 +231,9 @@ export default function CentersPage() {
               label="Activos"
             />
             <AdminMetricCard
-              icon="cancel"
-              value={centers.filter(c => c.status === 'inactive').length}
-              label="Inactivos"
+              icon="pending_actions"
+              value={centers.filter(c => c.status === 'pending').length}
+              label="Pendientes"
             />
             <AdminMetricCard
               icon="pets"
@@ -279,7 +282,7 @@ export default function CentersPage() {
                 <div className="space-y-1.5 mb-4">
                   <p className="font-body-sm text-on-surface-variant flex items-center gap-1.5">
                     <Icon name="location" className="w-4 h-4 shrink-0" />
-                    {c.address}
+                    {c.address || c.state}
                   </p>
                   <p className="font-body-sm text-on-surface-variant flex items-center gap-1.5">
                     <Icon name="call" className="w-4 h-4 shrink-0" />
@@ -320,10 +323,12 @@ export default function CentersPage() {
                       className={`px-3 py-1.5 rounded-lg font-label-sm transition-all ${
                         c.status === 'active'
                           ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                          : c.status === 'pending'
+                          ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
                           : 'bg-green-100 text-green-700 hover:bg-green-200'
                       }`}
                     >
-                      {c.status === 'active' ? 'Desactivar' : 'Activar'}
+                      {c.status === 'active' ? 'Desactivar' : c.status === 'pending' ? 'Aprobar' : 'Activar'}
                     </button>
                   )}
                 </div>
@@ -386,8 +391,19 @@ export default function CentersPage() {
                   className={inputClass}
                   value={newCenter.address}
                   onChange={e => setNewCenter(f => ({ ...f, address: e.target.value }))}
-                  required
                 />
+              </div>
+              <div>
+                <label className="font-label-md text-on-surface mb-1.5 block">Estado</label>
+                <select
+                  className={inputClass}
+                  value={newCenter.state}
+                  onChange={e => setNewCenter(f => ({ ...f, state: e.target.value }))}
+                >
+                  {['Amazonas','Anzoátegui','Apure','Aragua','Barinas','Bolívar','Carabobo','Cojedes','Delta Amacuro','Distrito Capital','Falcón','Guárico','Lara','Mérida','Miranda','Monagas','Nueva Esparta','Portuguesa','Sucre','Táchira','Trujillo','La Guaira','Yaracuy','Zulia'].map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

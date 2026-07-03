@@ -32,6 +32,9 @@ urlpatterns = [
         
         # Adoptions
         path('adoptions/', include('apps.adoptions.urls')),
+
+        # Inquiries
+        path('help-requests/', include('apps.inquiries.urls')),
         
         # Health check
         path('health/', include('apps.users.urls.health')),

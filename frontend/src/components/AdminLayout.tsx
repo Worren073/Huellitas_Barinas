@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { sileo } from 'sileo';
@@ -60,15 +61,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex h-screen overflow-hidden">
       <nav className="hidden md:flex flex-col h-full py-stack-lg px-stack-md bg-surface-container-low border-r border-outline-variant shadow-sm w-64 shrink-0">
-        <div className="flex items-center gap-3 px-3 mb-8">
-          <div className="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center">
-            <Icon name="pets" className="w-5 h-5" solid />
-          </div>
+        <Link href="/" className="flex items-center gap-3 px-3 mb-8">
+          <Image
+            src="/Huellitas png.png"
+            alt="Huellitas Barinas"
+            width={36}
+            height={36}
+            className="w-9 h-9 object-contain"
+          />
           <div>
             <h2 className="font-headline-sm text-primary tracking-tight">Admin Panel</h2>
             <p className="font-label-sm text-on-surface-variant">Huellitas Barinas</p>
           </div>
-        </div>
+        </Link>
 
         <div className="flex flex-col gap-1 flex-1">
           {visibleLinks.map((link) => {

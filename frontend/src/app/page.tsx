@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import PetCard from '@/components/PetCard';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import Icon from '@/components/Icon';
+import HowToHelpButton from '@/components/HowToHelpButton';
 import { normalizeImageUrl } from '@/lib/utils';
 import { serverApi } from '@/lib/server';
 
@@ -67,12 +68,7 @@ export default async function HomePage() {
                     <Icon name="pets" className="w-5 h-5" solid />
                     Ver Mascotas
                   </Link>
-                  <Link
-                    href="/register"
-                    className="bg-transparent border border-primary text-primary font-label-md px-6 py-3 rounded-lg hover:bg-surface-container-low transition-colors"
-                  >
-                    Cómo Ayudar
-                  </Link>
+                  <HowToHelpButton />
                 </div>
               </div>
             </ScrollAnimation>

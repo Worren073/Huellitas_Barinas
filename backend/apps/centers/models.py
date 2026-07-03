@@ -1,6 +1,34 @@
 from django.db import models
 
 
+VENEZUELAN_STATES = [
+    ('Amazonas', 'Amazonas'),
+    ('Anzoátegui', 'Anzoátegui'),
+    ('Apure', 'Apure'),
+    ('Aragua', 'Aragua'),
+    ('Barinas', 'Barinas'),
+    ('Bolívar', 'Bolívar'),
+    ('Carabobo', 'Carabobo'),
+    ('Cojedes', 'Cojedes'),
+    ('Delta Amacuro', 'Delta Amacuro'),
+    ('Distrito Capital', 'Distrito Capital'),
+    ('Falcón', 'Falcón'),
+    ('Guárico', 'Guárico'),
+    ('Lara', 'Lara'),
+    ('Mérida', 'Mérida'),
+    ('Miranda', 'Miranda'),
+    ('Monagas', 'Monagas'),
+    ('Nueva Esparta', 'Nueva Esparta'),
+    ('Portuguesa', 'Portuguesa'),
+    ('Sucre', 'Sucre'),
+    ('Táchira', 'Táchira'),
+    ('Trujillo', 'Trujillo'),
+    ('La Guaira', 'La Guaira'),
+    ('Yaracuy', 'Yaracuy'),
+    ('Zulia', 'Zulia'),
+]
+
+
 class Center(models.Model):
     """Adoption center model."""
 
@@ -11,7 +39,13 @@ class Center(models.Model):
 
     name = models.CharField(max_length=200, verbose_name='nombre')
     description = models.TextField(verbose_name='descripción')
-    address = models.TextField(verbose_name='dirección')
+    address = models.TextField(blank=True, verbose_name='dirección')
+    state = models.CharField(
+        max_length=100,
+        choices=VENEZUELAN_STATES,
+        default='Barinas',
+        verbose_name='estado'
+    )
     phone = models.CharField(max_length=20, verbose_name='teléfono')
     email = models.EmailField(verbose_name='correo electrónico')
     logo = models.ImageField(

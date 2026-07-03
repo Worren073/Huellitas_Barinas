@@ -20,6 +20,9 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Huellitas Barinas',
   description: 'Plataforma de adopcion de mascotas en Barinas, Venezuela',
+  icons: {
+    icon: '/Huellitas png.png',
+  },
 };
 
 export default function RootLayout({

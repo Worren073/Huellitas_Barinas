@@ -44,10 +44,15 @@ class CenterViewSet(viewsets.ModelViewSet):
         Base queryset.
 
         Annotate pets_count to avoid N+1 queries in the serializer.
+        Supports ?state= filter for public browsing.
         """
-        return Center.objects.annotate(
+        qs = Center.objects.annotate(
             pets_count=Count("pets")
         )
+        state = self.request.query_params.get("state")
+        if state:
+            qs = qs.filter(state__iexact=state)
+        return qs
 
     def get_permissions(self):
         """

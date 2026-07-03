@@ -1,23 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from './Icon';
 import ActiveLink from './ActiveLink';
+import UserDropdown from './ui/UserDropdown';
 
 interface NavbarProps {
   variant?: 'public' | 'catalog' | 'detail';
 }
 
-const ADMIN_ROLES = ['superadmin', 'center_admin'];
-
-export default function Navbar({ variant = 'public' }: NavbarProps) {
-  const router = useRouter();
+// eslint-disable-next-line no-unused-vars
+export default function Navbar({ variant: _variant }: NavbarProps = {}) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const navLinks = [
     { href: '/mascotas', label: 'Mascotas' },
@@ -44,21 +43,20 @@ export default function Navbar({ variant = 'public' }: NavbarProps) {
     checkAuth();
   }, []);
 
-  const handleLogout = () => {
-    auth.logout();
-    setIsLoggedIn(false);
-    setUserRole(null);
-    sileo.success({ title: 'Sesión cerrada', description: 'Has cerrado sesión correctamente.' });
-    router.push('/');
-  };
-
-  const dashboardHref = ADMIN_ROLES.includes(userRole || '') ? '/dashboard' : '/';
-
   return (
     <header className="bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40">
       <div className="flex justify-between items-center px-4 md:px-8 max-w-container-max mx-auto h-20">
         <Link href="/" className="flex items-center gap-3">
-          <Icon name="pets" className="w-7 h-7 text-primary" solid />
+          <div className="w-11 h-11 overflow-hidden flex items-start shrink-0">
+            <Image
+              src="/Huellitas png.png"
+              alt="Huellitas Barinas"
+              width={44}
+              height={44}
+              className="object-contain object-top"
+              style={{ marginTop: '-4px' }}
+            />
+          </div>
           <span className="font-montserrat text-headline-md font-bold text-primary hidden sm:block">
             Huellitas Barinas
           </span>
@@ -74,22 +72,20 @@ export default function Navbar({ variant = 'public' }: NavbarProps) {
 
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
-            <>
-              <Link
-                href={dashboardHref}
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
                 className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"
-                title={ADMIN_ROLES.includes(userRole || '') ? 'Panel de administración' : 'Mi perfil'}
+                title="Menú de usuario"
               >
                 <Icon name="user_circle" className="w-7 h-7" solid />
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-                title="Cerrar sesión"
-              >
-                <Icon name="logout_door" className="w-7 h-7" />
               </button>
-            </>
+              <UserDropdown
+                show={showDropdown}
+                onClose={() => setShowDropdown(false)}
+                userRole={userRole}
+              />
+            </div>
           ) : (
             <>
               <Link
