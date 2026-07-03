@@ -3,7 +3,6 @@ import pytest
 from django.core.exceptions import ValidationError
 from apps.adoptions.models import Adoption
 from apps.adoptions.services import AdoptionService
-from apps.pets.models import Pet
 
 
 class TestAdoptionService:

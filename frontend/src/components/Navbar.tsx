@@ -21,7 +21,7 @@ export default function Navbar({ variant = 'public' }: NavbarProps) {
 
   const navLinks = [
     { href: '/mascotas', label: 'Mascotas' },
-    { href: '/#centros', label: 'Centros' },
+    { href: '/centros', label: 'Centros' },
     { href: '/#sobre-nosotros', label: 'Sobre Nosotros' },
   ];
 

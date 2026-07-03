@@ -7,4 +7,4 @@ class PetsConfig(AppConfig):
     verbose_name = 'Mascotas'
 
     def ready(self):
-        import apps.pets.signals
+        pass

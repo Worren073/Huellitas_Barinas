@@ -1,6 +1,6 @@
 'use client';
 
-import Icon from '@/components/Icon';
+import Modal from '@/components/ui/Modal';
 
 interface AdoptionDetail {
   id: number;
@@ -43,82 +43,74 @@ export default function DetailModal({ adoption, onClose }: DetailModalProps) {
   if (!adoption) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-surface rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
-        <div className="p-stack-md border-b border-outline-variant/30 flex justify-between items-center sticky top-0 bg-surface rounded-t-2xl">
-          <h3 className="font-headline-sm text-on-surface">Detalle de Solicitud #{adoption.id}</h3>
-          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
-            <Icon name="close" className="w-5 h-5" />
-          </button>
+    <Modal open={!!adoption} onClose={onClose} title={`Detalle de Solicitud #${adoption.id}`} maxWidth="lg">
+      <div className="space-y-stack-md">
+        <div className="grid grid-cols-2 gap-stack-md">
+          <div>
+            <p className="font-label-sm text-on-surface-variant mb-1">Solicitante</p>
+            <p className="font-body-md text-on-surface">{adoption.applicant_name || `Usuario #${adoption.applicant}`}</p>
+          </div>
+          <div>
+            <p className="font-label-sm text-on-surface-variant mb-1">Mascota</p>
+            <p className="font-body-md text-on-surface">{adoption.pet_name}</p>
+          </div>
+          <div>
+            <p className="font-label-sm text-on-surface-variant mb-1">Centro</p>
+            <p className="font-body-md text-on-surface">{adoption.center_name}</p>
+          </div>
+          <div>
+            <p className="font-label-sm text-on-surface-variant mb-1">Estado</p>
+            <span className={`inline-block px-3 py-1 rounded-full text-label-sm font-medium border ${STATUS_CONFIG[adoption.status]?.color || ''}`}>
+              {STATUS_CONFIG[adoption.status]?.label || adoption.status}
+            </span>
+          </div>
         </div>
-        <div className="p-stack-md space-y-stack-md">
-          <div className="grid grid-cols-2 gap-stack-md">
+
+        <div className="border-t border-outline-variant/30 pt-stack-md">
+          <h4 className="font-label-md text-on-surface mb-3">Informacion de la Solicitud</h4>
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="font-label-sm text-on-surface-variant mb-1">Solicitante</p>
-              <p className="font-body-md text-on-surface">{adoption.applicant_name || `Usuario #${adoption.applicant}`}</p>
+              <p className="font-label-sm text-on-surface-variant mb-1">Motivacion</p>
+              <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.motivation || '\u2014'}</p>
             </div>
             <div>
-              <p className="font-label-sm text-on-surface-variant mb-1">Mascota</p>
-              <p className="font-body-md text-on-surface">{adoption.pet_name}</p>
-            </div>
-            <div>
-              <p className="font-label-sm text-on-surface-variant mb-1">Centro</p>
-              <p className="font-body-md text-on-surface">{adoption.center_name}</p>
-            </div>
-            <div>
-              <p className="font-label-sm text-on-surface-variant mb-1">Estado</p>
-              <span className={`inline-block px-3 py-1 rounded-full text-label-sm font-medium border ${STATUS_CONFIG[adoption.status]?.color || ''}`}>
-                {STATUS_CONFIG[adoption.status]?.label || adoption.status}
-              </span>
+              <p className="font-label-sm text-on-surface-variant mb-1">Experiencia</p>
+              <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.experience || '\u2014'}</p>
             </div>
           </div>
-
-          <div className="border-t border-outline-variant/30 pt-stack-md">
-            <h4 className="font-label-md text-on-surface mb-3">Informacion de la Solicitud</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-label-sm text-on-surface-variant mb-1">Motivacion</p>
-                <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.motivation || '\u2014'}</p>
-              </div>
-              <div>
-                <p className="font-label-sm text-on-surface-variant mb-1">Experiencia</p>
-                <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.experience || '\u2014'}</p>
-              </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <p className="font-label-sm text-on-surface-variant mb-1">Tipo de Vivienda</p>
+              <p className="font-body-sm text-on-surface">{HOME_TYPE[adoption.home_type] || adoption.home_type}</p>
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <p className="font-label-sm text-on-surface-variant mb-1">Tipo de Vivienda</p>
-                <p className="font-body-sm text-on-surface">{HOME_TYPE[adoption.home_type] || adoption.home_type}</p>
-              </div>
-              <div>
-                <p className="font-label-sm text-on-surface-variant mb-1">Miembros de la Familia</p>
-                <p className="font-body-sm text-on-surface">{adoption.family_members}</p>
-              </div>
-              <div>
-                <p className="font-label-sm text-on-surface-variant mb-1">Tiene Patio</p>
-                <p className="font-body-sm text-on-surface">{adoption.has_yard ? 'Si' : 'No'}</p>
-              </div>
-              <div>
-                <p className="font-label-sm text-on-surface-variant mb-1">Tiene Otras Mascotas</p>
-                <p className="font-body-sm text-on-surface">{adoption.has_other_pets ? 'Si' : 'No'}</p>
-              </div>
+            <div>
+              <p className="font-label-sm text-on-surface-variant mb-1">Miembros de la Familia</p>
+              <p className="font-body-sm text-on-surface">{adoption.family_members}</p>
             </div>
-            {adoption.has_other_pets && adoption.other_pets_details && (
-              <div className="mt-4">
-                <p className="font-label-sm text-on-surface-variant mb-1">Detalles de Otras Mascotas</p>
-                <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.other_pets_details}</p>
-              </div>
-            )}
+            <div>
+              <p className="font-label-sm text-on-surface-variant mb-1">Tiene Patio</p>
+              <p className="font-body-sm text-on-surface">{adoption.has_yard ? 'Si' : 'No'}</p>
+            </div>
+            <div>
+              <p className="font-label-sm text-on-surface-variant mb-1">Tiene Otras Mascotas</p>
+              <p className="font-body-sm text-on-surface">{adoption.has_other_pets ? 'Si' : 'No'}</p>
+            </div>
           </div>
-
-          {adoption.review_notes && (
-            <div className="border-t border-outline-variant/30 pt-stack-md">
-              <p className="font-label-sm text-on-surface-variant mb-1">Notas de Revision</p>
-              <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.review_notes}</p>
+          {adoption.has_other_pets && adoption.other_pets_details && (
+            <div className="mt-4">
+              <p className="font-label-sm text-on-surface-variant mb-1">Detalles de Otras Mascotas</p>
+              <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.other_pets_details}</p>
             </div>
           )}
         </div>
+
+        {adoption.review_notes && (
+          <div className="border-t border-outline-variant/30 pt-stack-md">
+            <p className="font-label-sm text-on-surface-variant mb-1">Notas de Revision</p>
+            <p className="font-body-sm text-on-surface bg-surface-gray/30 rounded-lg p-3">{adoption.review_notes}</p>
+          </div>
+        )}
       </div>
-    </div>
+    </Modal>
   );
 }

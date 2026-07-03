@@ -96,7 +96,26 @@ VALID_TRANSITIONS = {
 # in_process → available (si adopción cancelada)
 ```
 
-### 6. Permisos
+### 6. Permisos (Patrón estandarizado)
+
+Todas las apps usan el mismo patrón en `views.py`:
+
+```python
+def get_permissions(self):
+    """Define qué acciones son públicas y cuáles requieren roles específicos."""
+    public_actions = {"list", "retrieve"}
+    if self.action in public_actions:
+        return [permissions.AllowAny()]
+    return [IsSuperAdmin()]
+
+@action(detail=True, methods=["post"], permission_classes=[IsSuperAdmin])
+def activate(self, request, pk=None):
+    ...
+```
+
+- **`get_permissions()`**: controla permisos a nivel de acción con conjuntos (`public_actions`, `admin_actions`)
+- **`@action(permission_classes=[...])`**: documenta explícitamente qué rol requiere cada acción custom
+- **Clases de permiso**: en `permissions.py` por app, granulares por rol (`IsSuperAdmin`, `IsCenterAdmin`, etc.)
 
 | Rol | PuedeCrear | PuedeVer | PuedeEditar | PuedeEliminar |
 |-----|-----------|----------|-------------|---------------|
@@ -201,40 +220,46 @@ test(centers): add unit tests
 
 | Prioridad | Tarea | Descripción |
 |-----------|-------|-------------|
-| 🟡 Media | **Mapa de centros** | Agregar `lat`/`lng` a `Center`, `react-leaflet`, página `/centros` |
-| 🟡 Media | **Vista de Contacto** | Modal o página `(public)/contacto` |
-| 🟡 Media | **Vista de Términos** | Modal o página `(public)/terminos` |
-| 🟡 Media | **Vista de Privacidad** | Modal o página `(public)/privacidad` |
-| 🟡 Media | **Vista de Redes Sociales** | Modal o página `(public)/redes` |
-| 🟢 Baja | **Animaciones** | `framer-motion`: fade-in scroll, transiciones de ruta, hover cards, skeleton animado |
-
-### Notas por tarea
-
-- **Mapa**: `react-leaflet` + OpenStreetMap (gratuito, sin API key)
-- **Modales**: componente `Modal.tsx` reutilizable en `components/ui/` con portal
-- **Animaciones**: instalar `framer-motion`, wrapper `AnimatedSection.tsx`
-- **Imágenes**: seed descarga de Unsplash (5 dog + 3 cat), fallback a placeholder con inicial si falla la descarga
-- **Seed**: `docker compose exec api python manage.py seed_data` descarga imágenes reales y las guarda como WebP
+| 🟢 Baja | **Fase 7** | ErrorBoundary, skeleton loaders, framer-motion animaciones, ESLint/Prettier, CHANGELOG.md |
+| 🟢 Baja | **Documentación** | Actualizar PROJECT_STATUS.md, EXECUTIVE_SUMMARY.md |
+| 🟢 Baja | **Tests opcionales** | pytest-cov, serializer tests, tests de integración |
 
 ## Progreso de Sesiones
 
-## Progreso de Sesiones
-
-### Sesión Actual (Jul 2026)
+### Sesión Anterior (Feb 2026)
 **Completado:**
 - PetSilhouette: componente SVG que muestra silueta de perro/gato cuando falla la imagen
-- Seed data: ahora descarga imágenes reales de Unsplash (5 perros + 3 gatos) en lugar de placeholders de letras; fallback a placeholder con inicial si la descarga falla
+- Seed data: descarga imágenes reales de Unsplash (5 perros + 3 gatos); fallback a placeholder con inicial
 - PetCard actualizado con `onError` + `imgError` state → muestra `PetSilhouette`
 - Pet detail: botón "Iniciar Solicitud" funcional, enlaza a `/adoptar/[id]`
-- Formulario de postulación `(public)/adoptar/[id]`: validación cliente, campos (motivación, experiencia, tipo vivienda, patio, otras mascotas, familiares), POST a `/api/v1/adoptions/`
-- Dashboard adoptions `/dashboard/adoptions/`: métricas, tabla con filtros por estado, timeline modal, detalle modal, acciones (start_review, approve, reject, complete) con confirmación
+- Formulario de postulación `(public)/adoptar/[id]`: validación cliente, POST a `/api/v1/adoptions/`
+- Dashboard adoptions `/dashboard/adoptions/`: métricas, tabla con filtros, timeline/detalle/acciones modales
 - Build exitoso en producción (0 errores, 0 advertencias)
+- 7 fixes críticos de seguridad aplicados (credenciales a env vars, validación automática, multi-stage build, etc.)
+- Documentación agents_context/ completa (8 documentos, ~58 KB)
 
-**Pendiente próximo:**
-- Imágenes reales en seed (Unsplash/Pexels)
-- Mapa de centros con react-leaflet
-- Páginas/modaLes de Contacto, Términos, Privacidad, Redes
-- Animaciones con framer-motion
+### Sesión Actual (Jul 2026) — Refactor Completo: Permisos, Servicios, Frontend, Tests, Mejoras
+**Completado:**
+- Fase 1 — **Bug fixes**: `production.py` import order fixed, credentials removed from `.opencode/context/PROJECT.md` and `base.py`.
+- Fase 2 — **Permission refactor**: all ViewSets (`pets`, `adoptions`, `users`) use `get_permissions()` + `@action(permission_classes=...)` pattern matching `centers/views.py`.
+- **Docker infrastructure**: Fixed CRLF→LF line endings in `entrypoint.sh`, `entrypoint-worker.sh`, `entrypoint-beat.sh`. All 6 containers healthy.
+- Fase 3 — **PetService instance pattern**: Changed from `@staticmethod` to `__init__(self, pet)`. Instance methods: `mark_as_adopted()`, `mark_as_in_process()`, `mark_as_available()`, `mark_as_not_available()`, `update_pet(**kwargs)`. Classmethods: `create_pet(**kwargs)`, `get_available_pets()`, `get_pets_by_center(center)`.
+- Fase 4 — **Frontend**: Shared TS types (`lib/types.ts`), `Pagination` component, 4 static pages (`contacto`, `terminos`, `privacidad`, `redes`), centros map page with `react-leaflet` v4, "Mis Solicitudes" dashboard page with pagination, 5 social SVG icons in `Icon.tsx`, Navbar centros link updated.
+- Fase 5 — **Zustand stores**: `authStore` (auth state, tokens, login/register/logout/fetchProfile/hydrate) and `uiStore` (sidebar, theme, modal state). Both TS-clean.
+- Fase 6 — **63 new tests** (92 total, all passing): permissions (12+10+11=33 tests), views (11+9=20 tests), services (6 tests). Covers all permission classes, CRUD endpoints, approval flows.
+- **Permission bug fixes**: `None` user guard (`bool(request.user and ...)`) added to `adoptions/permissions.py` and `users/permissions.py` — prevented 500 errors on unauthenticated requests.
+- Fase 7 — **Mejoras menores**:
+  - `ErrorBoundary` component (class-based, fallback UI con retry) en `layout.tsx`
+  - `Skeleton`, `PetCardSkeleton`, `TableSkeleton` componentes reutilizables
+  - `Modal` reutilizable (keyboard trap, click-outside, overflow lock)
+  - `TimelineModal`, `DetailModal`, `ActionModal` refactorizados para usar `Modal`
+  - ESLint reglas adicionales + `.prettierrc` + `pyproject.toml` ruff config
+  - `CHANGELOG.md` con formato Keep a Changelog
+  - `ScrollAnimation` añadido a páginas contacto, términos, privacidad, redes, centros
+
+**Pendiente:**
+- Docs opcionales: Update PROJECT_STATUS.md, EXECUTIVE_SUMMARY.md
+- Tests opcionales: pytest-cov, serializer tests, integration tests
 
 ## Contacto
 

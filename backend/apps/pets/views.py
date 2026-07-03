@@ -3,7 +3,7 @@ Pet views (View layer).
 Delegates to services (Presenter layer).
 """
 
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -14,7 +14,23 @@ from .permissions import IsCenterAdminOrSuperAdmin
 
 
 class PetViewSet(viewsets.ModelViewSet):
-    """ViewSet for managing pets."""
+    """
+    Manage pets.
+
+    Public endpoints:
+        - GET /pets/
+        - GET /pets/{id}/
+        - GET /pets/available/
+
+    CenterAdmin/SuperAdmin only:
+        - POST /pets/
+        - PUT/PATCH /pets/{id}/
+        - DELETE /pets/{id}/
+        - GET /pets/stats/
+        - POST /pets/{id}/mark_adopted/
+        - POST /pets/{id}/mark_in_process/
+    """
+
     queryset = Pet.objects.select_related('center').prefetch_related('images')
     serializer_class = PetSerializer
     search_fields = ['name', 'breed', 'description']
@@ -22,25 +38,22 @@ class PetViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve', 'available']:
+        public_actions = {"list", "retrieve", "available"}
+        if self.action in public_actions:
             return [permissions.AllowAny()]
-        if self.action in ['stats', 'mark_adopted', 'mark_in_process', 'create', 'update', 'partial_update', 'destroy']:
-            return [IsCenterAdminOrSuperAdmin()]
-        return [permissions.IsAuthenticated()]
+        return [IsCenterAdminOrSuperAdmin()]
 
     def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
+        if self.action in {"create", "update", "partial_update"}:
             return PetCreateSerializer
         return PetSerializer
 
     def get_queryset(self):
         queryset = Pet.objects.select_related('center').prefetch_related('images')
 
-        # center_admin only sees their center's pets
         user = self.request.user
-        if user.is_authenticated and hasattr(user, 'role') and user.role == 'center_admin':
-            if hasattr(user, 'center') and user.center:
-                queryset = queryset.filter(center=user.center)
+        if user.is_authenticated and user.role == 'center_admin' and user.center:
+            queryset = queryset.filter(center=user.center)
 
         species = self.request.query_params.get('species')
         if species:
@@ -56,55 +69,66 @@ class PetViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=["get"])
     def available(self, request):
-        """Get all available pets."""
-        pets = PetService.get_available_pets()
-        serializer = PetSerializer(pets, many=True)
+        """Get all available pets (public)."""
+        available = PetService.get_available_pets()
+        serializer = PetSerializer(available, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'])
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsCenterAdminOrSuperAdmin],
+    )
     def stats(self, request):
-        """Get general stats for the dashboard. center_admin scoped to their center."""
+        """Get dashboard stats, scoped to center for center_admins."""
         user = request.user
         base_qs = Pet.objects
-        if user.is_authenticated and hasattr(user, 'role') and user.role == 'center_admin':
-            if hasattr(user, 'center') and user.center:
-                base_qs = base_qs.filter(center=user.center)
+        if user.role == 'center_admin' and user.center:
+            base_qs = base_qs.filter(center=user.center)
 
-        total_pets = base_qs.count()
-        available = base_qs.filter(status='available').count()
-        in_process = base_qs.filter(status='in_process').count()
-        adopted = base_qs.filter(status='adopted').count()
         return Response({
-            'pets_count': total_pets,
-            'available_pets': available,
-            'in_process_pets': in_process,
-            'adopted_pets': adopted,
+            'pets_count': base_qs.count(),
+            'available_pets': base_qs.filter(status='available').count(),
+            'in_process_pets': base_qs.filter(status='in_process').count(),
+            'adopted_pets': base_qs.filter(status='adopted').count(),
         })
 
-    @action(detail=True, methods=['post'])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsCenterAdminOrSuperAdmin],
+    )
     def mark_adopted(self, request, pk=None):
         """Mark a pet as adopted."""
         pet = self.get_object()
-        pet = PetService.mark_as_adopted(pet)
+        service = PetService(pet)
+        service.mark_as_adopted()
         return Response(PetSerializer(pet).data)
 
-    @action(detail=True, methods=['post'])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsCenterAdminOrSuperAdmin],
+    )
     def mark_in_process(self, request, pk=None):
         """Mark a pet as in adoption process."""
         pet = self.get_object()
-        pet = PetService.mark_as_in_process(pet)
+        service = PetService(pet)
+        service.mark_as_in_process()
         return Response(PetSerializer(pet).data)
 
 
 class PetImageViewSet(viewsets.ModelViewSet):
-    """ViewSet for managing pet images."""
+    """Manage pet images."""
+
     queryset = PetImage.objects.all()
     serializer_class = PetImageSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
+        public_actions = {"list", "retrieve"}
+        if self.action in public_actions:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 

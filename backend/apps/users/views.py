@@ -6,7 +6,6 @@ Delegates to services (Presenter layer).
 from rest_framework import generics, status, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import MultipleObjectsReturned
@@ -95,61 +94,40 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for managing users (SuperAdmin only).
+    Manage users.
+
+    SuperAdmin only:
+        - GET /users/
+        - GET /users/{id}/
+        - PUT/PATCH /users/{id}/
+        - DELETE /users/{id}/
     """
 
     queryset = User.objects.select_related("center").all()
-    permission_classes = [IsSuperAdmin]
     serializer_class = UserListSerializer
+
+    def get_permissions(self):
+        return [IsSuperAdmin()]
 
     def get_queryset(self):
         queryset = super().get_queryset()
-
         role = self.request.query_params.get("role")
-
         if role:
             queryset = queryset.filter(role=role)
-
         return queryset
 
     def get_serializer_class(self):
-        """
-        Use a lightweight serializer for list/retrieve
-        and a write serializer for updates.
-        """
         if self.action in ("update", "partial_update"):
             return UserUpdateRoleSerializer
-
         return UserListSerializer
 
-    def perform_update(self, serializer):
-        """
-        Save updates.
-
-        ModelViewSet already handles PUT/PATCH,
-        validation and partial updates.
-        """
-        serializer.save()
-
     def partial_update(self, request, *args, **kwargs):
-        """
-        Return the list serializer after updating.
-        """
-        response = super().partial_update(request, *args, **kwargs)
-
-        user = self.get_object()
-
-        return Response(UserListSerializer(user).data)
+        super().partial_update(request, *args, **kwargs)
+        return Response(UserListSerializer(self.get_object()).data)
 
     def update(self, request, *args, **kwargs):
-        """
-        Return the list serializer after updating.
-        """
-        response = super().update(request, *args, **kwargs)
-
-        user = self.get_object()
-
-        return Response(UserListSerializer(user).data)
+        super().update(request, *args, **kwargs)
+        return Response(UserListSerializer(self.get_object()).data)
 
 
 class ChangePasswordView(generics.UpdateAPIView):

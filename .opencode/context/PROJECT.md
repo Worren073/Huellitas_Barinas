@@ -99,15 +99,19 @@
 
 ## Credenciales
 
+> **⚠️ IMPORTANTE**: Las credenciales reales deben ir en `.env` o en variables de entorno de Render.  
+> NO commitear este archivo si contiene credenciales reales.  
+> Usar el template `.env.example` como referencia.
+
 ### Neon PostgreSQL
-- **URL**: postgresql://neondb_owner:npg_aiXy4NJFqSe5@ep-royal-snow-atfogk2r.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require
+- **URL**: `postgresql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:5432/<DB_NAME>?sslmode=require`
 
 ### Cloudflare R2
-- **Account ID**: b36968d564ce65b626f75ff9a70e6f33
-- **Access Key ID**: 10b3889d30123e7c436b834017a1cc16
-- **Secret**: dfaf98032aae6a88f0906e21cc4bd0d417af71fc1fda1f6fd2dd546b522b01ac
-- **Bucket**: huellitas-barinas
-- **Endpoint**: https://b36968d564ce65b626f75ff9a70e6f33.r2.cloudflarestorage.com
+- **Account ID**: `{{R2_ACCOUNT_ID}}`
+- **Access Key ID**: `{{R2_ACCESS_KEY_ID}}`
+- **Secret**: `{{R2_SECRET_ACCESS_KEY}}`
+- **Bucket**: `huellitas-barinas`
+- **Endpoint**: `https://{{R2_ACCOUNT_ID}}.r2.cloudflarestorage.com`
 
 ### Render
 - **Username**: Worren Barrios

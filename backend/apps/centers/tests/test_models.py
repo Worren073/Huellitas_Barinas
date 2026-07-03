@@ -1,5 +1,4 @@
 """Tests for Center model."""
-import pytest
 from apps.centers.models import Center
 
 

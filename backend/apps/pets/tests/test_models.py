@@ -1,5 +1,4 @@
 """Tests for Pet model."""
-import pytest
 from apps.pets.models import Pet
 
 
