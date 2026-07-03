@@ -10,9 +10,7 @@ class IsCenterAdmin(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return bool(
-            request.user and
-            request.user.is_authenticated and
-            request.user.role == 'center_admin'
+            request.user and request.user.is_authenticated and request.user.role == "center_admin"
         )
 
 
@@ -21,9 +19,7 @@ class IsVolunteer(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return bool(
-            request.user and
-            request.user.is_authenticated and
-            request.user.role == 'voluntario'
+            request.user and request.user.is_authenticated and request.user.role == "voluntario"
         )
 
 
@@ -32,9 +28,7 @@ class IsAdopter(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return bool(
-            request.user and
-            request.user.is_authenticated and
-            request.user.role == 'adoptante'
+            request.user and request.user.is_authenticated and request.user.role == "adoptante"
         )
 
 
@@ -42,8 +36,4 @@ class IsSuperAdmin(permissions.BasePermission):
     """Permission for super administrators."""
 
     def has_permission(self, request, view):
-        return bool(
-            request.user and
-            request.user.is_authenticated and
-            request.user.is_superuser
-        )
+        return bool(request.user and request.user.is_authenticated and request.user.is_superuser)

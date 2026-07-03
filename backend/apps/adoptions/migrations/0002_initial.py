@@ -6,49 +6,80 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('adoptions', '0001_initial'),
-        ('centers', '0001_initial'),
-        ('pets', '0001_initial'),
+        ("adoptions", "0001_initial"),
+        ("centers", "0001_initial"),
+        ("pets", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='adoption',
-            name='applicant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='adoption_requests', to=settings.AUTH_USER_MODEL, verbose_name='solicitante'),
+            model_name="adoption",
+            name="applicant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="adoption_requests",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="solicitante",
+            ),
         ),
         migrations.AddField(
-            model_name='adoption',
-            name='center',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='adoptions', to='centers.center', verbose_name='centro'),
+            model_name="adoption",
+            name="center",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="adoptions",
+                to="centers.center",
+                verbose_name="centro",
+            ),
         ),
         migrations.AddField(
-            model_name='adoption',
-            name='pet',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='adoption_requests', to='pets.pet', verbose_name='mascota'),
+            model_name="adoption",
+            name="pet",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="adoption_requests",
+                to="pets.pet",
+                verbose_name="mascota",
+            ),
         ),
         migrations.AddField(
-            model_name='adoption',
-            name='reviewed_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reviewed_adoptions', to=settings.AUTH_USER_MODEL, verbose_name='revisado por'),
+            model_name="adoption",
+            name="reviewed_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="reviewed_adoptions",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="revisado por",
+            ),
         ),
         migrations.AddField(
-            model_name='adoptiontimeline',
-            name='adoption',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='timeline', to='adoptions.adoption', verbose_name='adopción'),
+            model_name="adoptiontimeline",
+            name="adoption",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="timeline",
+                to="adoptions.adoption",
+                verbose_name="adopción",
+            ),
         ),
         migrations.AddField(
-            model_name='adoptiontimeline',
-            name='changed_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='cambiado por'),
+            model_name="adoptiontimeline",
+            name="changed_by",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="cambiado por",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='adoption',
-            unique_together={('pet', 'applicant')},
+            name="adoption",
+            unique_together={("pet", "applicant")},
         ),
     ]

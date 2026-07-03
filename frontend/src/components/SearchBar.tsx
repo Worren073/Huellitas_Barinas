@@ -4,7 +4,7 @@ import Icon from './Icon';
 
 interface SearchBarProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (_value: string) => void;
   placeholder?: string;
   variant?: 'default' | 'pill';
 }

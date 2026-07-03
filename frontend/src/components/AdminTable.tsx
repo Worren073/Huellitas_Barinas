@@ -5,7 +5,7 @@ import Icon from './Icon';
 interface Column {
   key: string;
   label: string;
-  render?: (item: Record<string, unknown>) => React.ReactNode;
+  render?: (_item: Record<string, unknown>) => React.ReactNode;
 }
 
 interface AdminTableProps {
@@ -14,7 +14,7 @@ interface AdminTableProps {
   title: string;
   page?: number;
   totalPages?: number;
-  onPageChange?: (page: number) => void;
+  onPageChange?: (_page: number) => void;
 }
 
 export default function AdminTable({

@@ -1,10 +1,11 @@
-import api from './api';
-import { removeCookie, setCookie } from './cookies';
+import { useAuthStore } from '@/store/authStore';
 
 export const auth = {
   async login(email: string, password: string) {
-    const { data } = await api.post('/auth/login/', { email, password });
-    return data as { access: string; refresh: string };
+    const store = useAuthStore.getState();
+    await store.login(email, password);
+    const { accessToken, refreshToken } = useAuthStore.getState();
+    return { access: accessToken!, refresh: refreshToken! };
   },
 
   async register(userData: {
@@ -17,42 +18,35 @@ export const auth = {
     country?: string;
     phone?: string;
   }) {
-    const { data } = await api.post('/auth/register/', {
-      ...userData,
-      country: userData.country || 'VE', // Default to Venezuela
-    });
-    return data as { id: number; username: string; email: string };
+    const store = useAuthStore.getState();
+    await store.register(userData);
+    return { id: 0, username: userData.username, email: userData.email };
   },
 
   setTokens(access: string, refresh: string) {
-    // Save to localStorage for client-side access
-    localStorage.setItem('accessToken', access);
-    localStorage.setItem('refreshToken', refresh);
-    
-    // Also save to cookies so middleware can read them
-    setCookie('access_token', access, 7);
-    setCookie('refresh_token', refresh, 7);
+    useAuthStore.getState().setTokens(access, refresh);
   },
 
   logout() {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    removeCookie('access_token');
-    removeCookie('refresh_token');
+    useAuthStore.getState().logout();
   },
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
+    return useAuthStore.getState().accessToken;
   },
 
   isAuthenticated(): boolean {
-    return !!this.getAccessToken();
+    return useAuthStore.getState().isAuthenticated;
   },
 
   async getProfile() {
-    const { data } = await api.get('/users/me/');
-    return data as { 
-      email: string; 
+    const store = useAuthStore.getState();
+    if (!store.user) {
+      await store.fetchProfile();
+    }
+    const { user } = useAuthStore.getState();
+    return user as {
+      email: string;
       first_name: string;
       last_name: string;
       id: number;

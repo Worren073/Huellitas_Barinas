@@ -12,7 +12,7 @@ export default function Footer() {
               alt="Huellitas Barinas"
               width={28}
               height={28}
-              className="w-7 h-7 object-contain"
+              className="object-contain"
             />
             <span className="font-montserrat font-headline-sm text-on-surface">Huellitas Barinas</span>
           </div>

@@ -36,6 +36,9 @@ import {
   HandRaisedIcon,
   TrashIcon,
   PencilIcon,
+  Bars3Icon,
+  XMarkIcon,
+  InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 import {
   HeartIcon as HeartSolidIcon,
@@ -118,6 +121,8 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   chevron_left: ChevronLeftIcon,
   chevron_right: ChevronRightIcon,
   close: XCircleIcon,
+  close_simple: XMarkIcon,
+  menu: Bars3Icon,
   dashboard: HomeModernIcon,
   delete: TrashIcon,
   description: DocumentTextIcon,
@@ -130,6 +135,7 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   group: UsersIcon,
   health_and_safety: ShieldCheckIcon,
   help: QuestionMarkCircleIcon,
+  info: InformationCircleIcon,
   history: ArrowPathIcon,
   history_outline: ArrowPathIcon,
   location: MapPinIcon,

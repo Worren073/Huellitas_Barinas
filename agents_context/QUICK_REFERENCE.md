@@ -32,15 +32,15 @@ bash scripts/pre-deploy-checklist.sh
 
 ```bash
 # Iniciar todo
-docker-compose up -d
+docker compose up -d
 
 # Ver logs
-docker-compose logs -f api      # Backend
-docker-compose logs -f web      # Frontend
-docker-compose logs -f worker   # Celery worker
+docker compose logs -f api      # Backend
+docker compose logs -f web      # Frontend
+docker compose logs -f worker   # Celery worker
 
 # Crear admin
-docker-compose exec api python manage.py createsuperuser
+docker compose exec api python manage.py createsuperuser
 
 # Acceder
 Frontend:  http://localhost:3000
@@ -49,7 +49,41 @@ Admin:     http://localhost:8000/admin/
 Docs:      http://localhost:8000/api/docs/
 
 # Parar
-docker-compose down
+docker compose down
+```
+
+### Linter y Formato (Backend)
+```bash
+# Ruff check
+docker compose exec api ruff check apps/
+
+# Ruff auto-fix (I, W2, F4)
+docker compose exec api ruff check apps/ --fix --select I,W2,F4
+
+# Ruff format
+docker compose exec api ruff format apps/
+docker compose exec api ruff format apps/ --check
+```
+
+### Linter y Build (Frontend)
+```bash
+# ESLint
+docker compose exec web npm run lint
+
+# Build
+docker compose exec web npm run build
+```
+
+### Tests
+```bash
+# Todos los tests
+docker compose exec api python -m pytest -v
+
+# Por app
+docker compose exec api python -m pytest apps/pets -v
+docker compose exec api python -m pytest apps/adoptions -v
+docker compose exec api python -m pytest apps/centers -v
+docker compose exec api python -m pytest apps/users -v
 ```
 
 ## 📦 Deploy a Producción

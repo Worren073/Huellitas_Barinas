@@ -51,15 +51,8 @@ export default function UserDropdown({ show, onClose, userRole }: UserDropdownPr
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full mt-2 w-64 bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg rounded-2xl overflow-hidden z-50"
-      style={{ animation: 'fadeScaleIn 0.15s ease-out' }}
+      className="absolute right-0 top-full mt-2 w-64 bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg rounded-2xl overflow-hidden z-50 animate-fade-scale-in"
     >
-      <style>{`
-        @keyframes fadeScaleIn {
-          from { opacity: 0; transform: scale(0.95) translateY(-4px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-      `}</style>
 
       {ADMIN_ROLES.includes(userRole || '') && (
         <Link
@@ -72,16 +65,42 @@ export default function UserDropdown({ show, onClose, userRole }: UserDropdownPr
         </Link>
       )}
 
-      {userRole === 'adopter' && (
+      <Link
+        href="/dashboard/mis-solicitudes"
+        onClick={onClose}
+        className="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors"
+      >
+        <Icon name="description" className="w-5 h-5 text-primary" />
+        <span className="font-label-md">Mis Solicitudes</span>
+      </Link>
+
+      <div className="border-t border-outline-variant/30 md:hidden" />
+      <div className="md:hidden">
         <Link
-          href="/dashboard/mis-solicitudes"
+          href="/mascotas"
           onClick={onClose}
           className="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors"
         >
-          <Icon name="description" className="w-5 h-5 text-primary" />
-          <span className="font-label-md">Mis Solicitudes</span>
+          <Icon name="pets" className="w-5 h-5 text-primary" />
+          <span className="font-label-md">Mascotas</span>
         </Link>
-      )}
+        <Link
+          href="/centros"
+          onClick={onClose}
+          className="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors"
+        >
+          <Icon name="location" className="w-5 h-5 text-primary" />
+          <span className="font-label-md">Centros</span>
+        </Link>
+        <Link
+          href="/#sobre-nosotros"
+          onClick={onClose}
+          className="flex items-center gap-3 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors"
+        >
+          <Icon name="info" className="w-5 h-5 text-primary" />
+          <span className="font-label-md">Sobre Nosotros</span>
+        </Link>
+      </div>
 
       <div className="border-t border-outline-variant/30" />
 

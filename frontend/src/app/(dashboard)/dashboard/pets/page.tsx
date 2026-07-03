@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AdminLayout from '@/components/AdminLayout';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
@@ -34,7 +35,7 @@ export default function PetsPage() {
     finally { setLoading(false) }
   };
 
-  useEffect(() => { fetchPets() }, [filter]);
+  useEffect(() => { fetchPets() }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDelete = async (id: number) => {
     if (!confirm('Eliminar esta mascota?')) return;
@@ -51,14 +52,12 @@ export default function PetsPage() {
     } catch {}
   };
 
-  const speciesIcon = (s: string) => s === 'dog' ? 'pets' : 'pets';
-
   return (
     <AdminLayout>
       <div className="p-stack-lg max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-stack-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-stack-lg">
           <h1 className="font-montserrat text-headline-lg text-on-surface">Mascotas</h1>
-          <Link href="/dashboard/pets/new" className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2">
+          <Link href="/dashboard/pets/new" className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2 self-start mt-3 md:mt-0">
             <Icon name="add" className="w-5 h-5" /> Nueva Mascota
           </Link>
         </div>
@@ -95,9 +94,9 @@ export default function PetsPage() {
                     <tr key={pet.id} className="hover:bg-surface-container-low/50 group">
                       <td className="p-stack-sm pl-stack-md">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center overflow-hidden">
+                          <div className="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center overflow-hidden relative">
                             {pet.images?.[0]?.image ? (
-                              <img src={normalizeImageUrl(pet.images[0].image)} alt="" className="w-full h-full object-cover" />
+                              <Image src={normalizeImageUrl(pet.images[0].image)} alt="" fill className="object-cover" />
                             ) : (
                               <Icon name="pets" className="w-5 h-5 text-primary-container" />
                             )}

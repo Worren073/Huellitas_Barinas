@@ -1,11 +1,12 @@
 """Tests for adoptions permission classes."""
+
 from rest_framework.views import APIView
 
-from apps.adoptions.permissions import IsApplicantOrCenterAdmin, IsAdminOrCenterAdmin
+from apps.adoptions.permissions import IsAdminOrCenterAdmin, IsApplicantOrCenterAdmin
 
 
 class MockRequest:
-    def __init__(self, user, method='GET'):
+    def __init__(self, user, method="GET"):
         self.user = user
         self.method = method
 
@@ -15,31 +16,27 @@ class TestIsApplicantOrCenterAdmin:
         self.perm = IsApplicantOrCenterAdmin()
 
     def test_authenticated_allowed(self, db, adopter):
-        req = MockRequest(adopter, 'GET')
+        req = MockRequest(adopter, "GET")
         assert self.perm.has_permission(req, APIView())
 
     def test_unauthenticated_denied(self, db):
         assert not self.perm.has_permission(MockRequest(None), APIView())
 
     def test_superadmin_has_object_permission(self, db, superadmin, adoption):
-        assert self.perm.has_object_permission(
-            MockRequest(superadmin, 'GET'), APIView(), adoption
-        )
+        assert self.perm.has_object_permission(MockRequest(superadmin, "GET"), APIView(), adoption)
 
     def test_adopter_owns_object(self, db, adopter, adoption):
-        assert self.perm.has_object_permission(
-            MockRequest(adopter, 'GET'), APIView(), adoption
-        )
+        assert self.perm.has_object_permission(MockRequest(adopter, "GET"), APIView(), adoption)
 
     def test_adopter_not_owner_denied(self, db, adoption):
         from django.contrib.auth import get_user_model
-        User = get_user_model()
-        other = User.objects.create_user(
-            username='other', email='other@test.com', password='pass',
-            role='adoptante'
+
+        user_model = get_user_model()
+        other = user_model.objects.create_user(
+            username="other", email="other@test.com", password="pass", role="adoptante"
         )
         assert not self.perm.has_object_permission(
-            MockRequest(other, 'DELETE'), APIView(), adoption
+            MockRequest(other, "DELETE"), APIView(), adoption
         )
 
 
@@ -61,12 +58,8 @@ class TestIsAdminOrCenterAdmin:
         assert not self.perm.has_permission(MockRequest(None), APIView())
 
     def test_superadmin_has_object_permission(self, db, superadmin, adoption):
-        assert self.perm.has_object_permission(
-            MockRequest(superadmin), APIView(), adoption
-        )
+        assert self.perm.has_object_permission(MockRequest(superadmin), APIView(), adoption)
 
     def test_center_admin_own_center(self, db, center_admin, adoption):
         user, _ = center_admin
-        assert self.perm.has_object_permission(
-            MockRequest(user), APIView(), adoption
-        )
+        assert self.perm.has_object_permission(MockRequest(user), APIView(), adoption)

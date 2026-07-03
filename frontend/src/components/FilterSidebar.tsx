@@ -11,7 +11,7 @@ interface Filters {
 
 interface FilterSidebarProps {
   filters: Filters;
-  onFilterChange: (filters: Filters) => void;
+  onFilterChange: (_filters: Filters) => void;
 }
 
 const speciesOptions = [

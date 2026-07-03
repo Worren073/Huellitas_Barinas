@@ -43,12 +43,6 @@ interface CenterAdminUser {
   center: number | null;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  active: 'Activo',
-  inactive: 'Inactivo',
-  pending: 'Pendiente',
-};
-
 export default function CentersPage() {
   const router = useRouter();
   const [centers, setCenters] = useState<Center[]>([]);
@@ -146,7 +140,7 @@ export default function CentersPage() {
 
       // If an admin is selected, assign them to this center
       if (selectedAdmin && userRole === 'superadmin') {
-        await api.patch(`/users/${selectedAdmin}/change_role/`, {
+        await api.patch(`/users/${selectedAdmin}/`, {
           role: 'center_admin',
           center: createdCenter.id,
         });
@@ -201,7 +195,7 @@ export default function CentersPage() {
   return (
     <AdminLayout>
       <div className="p-stack-lg max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-stack-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-stack-lg">
           <div>
             <h1 className="font-montserrat text-headline-lg text-on-surface">
               {userRole === 'superadmin' ? 'Centros' : 'Mi Centro'}
@@ -215,7 +209,7 @@ export default function CentersPage() {
           {userRole === 'superadmin' && (
             <button
               onClick={handleOpenModal}
-              className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2"
+              className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2 self-start mt-3 md:mt-0"
             >
               <Icon name="add" className="w-5 h-5" /> Nuevo Centro
             </button>

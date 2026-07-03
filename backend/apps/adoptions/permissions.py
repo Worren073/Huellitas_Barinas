@@ -16,15 +16,15 @@ class IsApplicantOrCenterAdmin(permissions.BasePermission):
             return False
         if request.method in permissions.SAFE_METHODS:
             return (
-                obj.applicant == request.user or
-                request.user.is_superuser or
-                (request.user.role == 'center_admin' and obj.center == request.user.center)
+                obj.applicant == request.user
+                or request.user.is_superuser
+                or (request.user.role == "center_admin" and obj.center == request.user.center)
             )
 
         return (
-            obj.applicant == request.user or
-            request.user.is_superuser or
-            (request.user.role == 'center_admin' and obj.center == request.user.center)
+            obj.applicant == request.user
+            or request.user.is_superuser
+            or (request.user.role == "center_admin" and obj.center == request.user.center)
         )
 
 
@@ -33,15 +33,15 @@ class IsAdminOrCenterAdmin(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return bool(
-            request.user and
-            request.user.is_authenticated and
-            (request.user.is_superuser or request.user.role == 'center_admin')
+            request.user
+            and request.user.is_authenticated
+            and (request.user.is_superuser or request.user.role == "center_admin")
         )
 
     def has_object_permission(self, request, view, obj):
         if not request.user or not request.user.is_authenticated:
             return False
         return bool(
-            request.user.is_superuser or
-            (request.user.role == 'center_admin' and obj.center == request.user.center)
+            request.user.is_superuser
+            or (request.user.role == "center_admin" and obj.center == request.user.center)
         )

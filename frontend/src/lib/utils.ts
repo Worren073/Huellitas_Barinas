@@ -1,15 +1,11 @@
 /**
  * Normalize image URLs for frontend use.
- * Converts internal Docker API URLs (e.g., http://api:8000/media/...)
- * to relative paths (/media/...) so Next.js rewrites handle proxying.
+ * Converts absolute URLs (from Docker or localhost) to relative paths
+ * so Next.js Image optimization works server-side.
  */
 export function normalizeImageUrl(url: string): string {
   if (!url) return url;
-  // Strip internal Docker hostname so the browser uses the same-origin rewrite
-  if (url.startsWith('http://api:8000/') || url.startsWith('https://api:8000/')) {
-    return url.replace(/^https?:\/\/api:8000\//, '/');
-  }
-  return url;
+  return url.replace(/^https?:\/\/[^/]+\//, '/');
 }
 
 /**

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -37,7 +38,7 @@ export default function CentrosPage() {
   useLeafletIcon();
   const [centers, setCenters] = useState<CenterWithPets[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCenter, setSelectedCenter] = useState<CenterWithPets | null>(null);
+  const [, setSelectedCenter] = useState<CenterWithPets | null>(null);
 
   useEffect(() => {
     const fetchCenters = async () => {
@@ -121,9 +122,9 @@ export default function CentrosPage() {
                   onClick={() => setSelectedCenter(center)}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden flex-shrink-0 relative">
                       {center.logo ? (
-                        <img src={center.logo} alt={center.name} className="w-full h-full object-cover" />
+                        <Image src={center.logo} alt={center.name} fill className="object-cover" />
                       ) : (
                         <Icon name="location" className="w-6 h-6 text-primary" />
                       )}

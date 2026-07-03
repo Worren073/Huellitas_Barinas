@@ -46,9 +46,7 @@ class CenterViewSet(viewsets.ModelViewSet):
         Annotate pets_count to avoid N+1 queries in the serializer.
         Supports ?state= filter for public browsing.
         """
-        qs = Center.objects.annotate(
-            pets_count=Count("pets")
-        )
+        qs = Center.objects.annotate(pets_count=Count("pets"))
         state = self.request.query_params.get("state")
         if state:
             qs = qs.filter(state__iexact=state)
@@ -108,11 +106,7 @@ class CenterViewSet(viewsets.ModelViewSet):
         """
         center = self.get_object()
 
-        pets = (
-            center.pets.all()
-            .select_related("center")
-            .prefetch_related("images")
-        )
+        pets = center.pets.all().select_related("center").prefetch_related("images")
 
         serializer = PetSerializer(
             pets,

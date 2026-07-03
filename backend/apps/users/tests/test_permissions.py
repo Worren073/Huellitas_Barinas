@@ -1,7 +1,8 @@
 """Tests for users permission classes."""
+
 from rest_framework.views import APIView
 
-from apps.users.permissions import IsCenterAdmin, IsVolunteer, IsAdopter, IsSuperAdmin
+from apps.users.permissions import IsAdopter, IsCenterAdmin, IsSuperAdmin, IsVolunteer
 
 
 class MockRequest:
@@ -31,12 +32,12 @@ class TestIsVolunteer:
     def setup_method(self):
         self.perm = IsVolunteer()
         from django.contrib.auth import get_user_model
+
         self.User = get_user_model()
 
     def test_volunteer_allowed(self, db):
         user = self.User.objects.create_user(
-            username='vol', email='vol@test.com', password='pass',
-            role='voluntario'
+            username="vol", email="vol@test.com", password="pass", role="voluntario"
         )
         assert self.perm.has_permission(MockRequest(user), APIView())
 

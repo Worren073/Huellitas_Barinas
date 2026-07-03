@@ -4,15 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0002_alter_user_email'),
+        ("users", "0002_alter_user_email"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='country',
-            field=models.CharField(choices=[('VE', 'Venezuela (+58)'), ('CO', 'Colombia (+57)'), ('EC', 'Ecuador (+593)'), ('PE', 'Perú (+51)'), ('CL', 'Chile (+56)'), ('AR', 'Argentina (+54)'), ('BR', 'Brasil (+55)'), ('MX', 'México (+52)'), ('ES', 'España (+34)'), ('US', 'Estados Unidos (+1)')], default='VE', max_length=2, verbose_name='país'),
+            model_name="user",
+            name="country",
+            field=models.CharField(
+                choices=[
+                    ("VE", "Venezuela (+58)"),
+                    ("CO", "Colombia (+57)"),
+                    ("EC", "Ecuador (+593)"),
+                    ("PE", "Perú (+51)"),
+                    ("CL", "Chile (+56)"),
+                    ("AR", "Argentina (+54)"),
+                    ("BR", "Brasil (+55)"),
+                    ("MX", "México (+52)"),
+                    ("ES", "España (+34)"),
+                    ("US", "Estados Unidos (+1)"),
+                ],
+                default="VE",
+                max_length=2,
+                verbose_name="país",
+            ),
         ),
     ]

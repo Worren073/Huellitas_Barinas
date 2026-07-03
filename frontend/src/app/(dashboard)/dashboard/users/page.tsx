@@ -93,7 +93,7 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers();
     fetchCenters();
-  }, [filter]);
+  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChangeRole = async () => {
     if (!editingUser || !newRole) return;
@@ -105,7 +105,7 @@ export default function UsersPage() {
         payload.center = selectedCenter;
       }
 
-      const { data } = await api.patch(`/users/${editingUser.id}/`,payload);
+      await api.patch(`/users/${editingUser.id}/`,payload);
       
       sileo.success({
         title: 'Rol actualizado',

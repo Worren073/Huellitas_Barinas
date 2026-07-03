@@ -115,6 +115,15 @@ module.exports = {
       maxWidth: {
         'container-max': '1280px',
       },
+      keyframes: {
+        fadeScaleIn: {
+          from: { opacity: '0', transform: 'scale(0.95) translateY(-4px)' },
+          to: { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
+      },
+      animation: {
+        'fade-scale-in': 'fadeScaleIn 0.15s ease-out',
+      },
     },
   },
   plugins: [],

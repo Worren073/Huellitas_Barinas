@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useAuthStore } from '@/store/authStore';
 
 function isTokenExpired(token: string): boolean {
   try {
@@ -18,6 +19,7 @@ export default function TokenCleanup() {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
     }
+    useAuthStore.getState().hydrate();
   }, []);
 
   return null;

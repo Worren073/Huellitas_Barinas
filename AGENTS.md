@@ -216,50 +216,34 @@ test(centers): add unit tests
 | `frontend/src/app/(public)/adoptar/[id]/page.tsx` | Adoption form page |
 | `frontend/src/app/(dashboard)/adoptions/page.tsx` | Dashboard adoptions management |
 
-## Próximos Pasos (Pendiente)
+## Estado del Proyecto — Jul 2026 (Post-Auditoría)
 
-| Prioridad | Tarea | Descripción |
-|-----------|-------|-------------|
-| 🟢 Baja | **Fase 7** | ErrorBoundary, skeleton loaders, framer-motion animaciones, ESLint/Prettier, CHANGELOG.md |
-| 🟢 Baja | **Documentación** | Actualizar PROJECT_STATUS.md, EXECUTIVE_SUMMARY.md |
-| 🟢 Baja | **Tests opcionales** | pytest-cov, serializer tests, tests de integración |
+### Backend: 92 tests ✅ — Ruff: 0 errors ✅
+- Migraciones: al día ✅ — `ruff check apps/` → All checks passed ✅
+- `ruff format apps/` → 62 files reformatted, estilo consistente ✅
+- Lint auto-fix → 64 errores corregidos automáticamente, 7 manuales
+- Migraciones y seed_data excluidos de E501 (line-length) vía pyproject.toml
 
-## Progreso de Sesiones
+### Frontend: Build exitoso ✅ — ESLint: 0 warnings ✅
+- **20 rutas estáticas generadas**, 2 dinámicas (`/mascotas`, `/pets/[id]`)
+- **0 errores, 0 warnings en ESLint** y build de Next.js
+- 8 `<img>` → `<Image/>` migrados con `fill` + parent `relative`
+- ~30 warnings eliminados: unused vars, hook deps faltantes, `<style>` inline
+- Animación `fadeScaleIn` movida de `<style>` a Tailwind config como `animate-fade-scale-in`
 
-### Sesión Anterior (Feb 2026)
-**Completado:**
-- PetSilhouette: componente SVG que muestra silueta de perro/gato cuando falla la imagen
-- Seed data: descarga imágenes reales de Unsplash (5 perros + 3 gatos); fallback a placeholder con inicial
-- PetCard actualizado con `onError` + `imgError` state → muestra `PetSilhouette`
-- Pet detail: botón "Iniciar Solicitud" funcional, enlaza a `/adoptar/[id]`
-- Formulario de postulación `(public)/adoptar/[id]`: validación cliente, POST a `/api/v1/adoptions/`
-- Dashboard adoptions `/dashboard/adoptions/`: métricas, tabla con filtros, timeline/detalle/acciones modales
-- Build exitoso en producción (0 errores, 0 advertencias)
-- 7 fixes críticos de seguridad aplicados (credenciales a env vars, validación automática, multi-stage build, etc.)
-- Documentación agents_context/ completa (8 documentos, ~58 KB)
+### Issues resueltos en esta sesión
 
-### Sesión Actual (Jul 2026) — Refactor Completo: Permisos, Servicios, Frontend, Tests, Mejoras
-**Completado:**
-- Fase 1 — **Bug fixes**: `production.py` import order fixed, credentials removed from `.opencode/context/PROJECT.md` and `base.py`.
-- Fase 2 — **Permission refactor**: all ViewSets (`pets`, `adoptions`, `users`) use `get_permissions()` + `@action(permission_classes=...)` pattern matching `centers/views.py`.
-- **Docker infrastructure**: Fixed CRLF→LF line endings in `entrypoint.sh`, `entrypoint-worker.sh`, `entrypoint-beat.sh`. All 6 containers healthy.
-- Fase 3 — **PetService instance pattern**: Changed from `@staticmethod` to `__init__(self, pet)`. Instance methods: `mark_as_adopted()`, `mark_as_in_process()`, `mark_as_available()`, `mark_as_not_available()`, `update_pet(**kwargs)`. Classmethods: `create_pet(**kwargs)`, `get_available_pets()`, `get_pets_by_center(center)`.
-- Fase 4 — **Frontend**: Shared TS types (`lib/types.ts`), `Pagination` component, 4 static pages (`contacto`, `terminos`, `privacidad`, `redes`), centros map page with `react-leaflet` v4, "Mis Solicitudes" dashboard page with pagination, 5 social SVG icons in `Icon.tsx`, Navbar centros link updated.
-- Fase 5 — **Zustand stores**: `authStore` (auth state, tokens, login/register/logout/fetchProfile/hydrate) and `uiStore` (sidebar, theme, modal state). Both TS-clean.
-- Fase 6 — **63 new tests** (92 total, all passing): permissions (12+10+11=33 tests), views (11+9=20 tests), services (6 tests). Covers all permission classes, CRUD endpoints, approval flows.
-- **Permission bug fixes**: `None` user guard (`bool(request.user and ...)`) added to `adoptions/permissions.py` and `users/permissions.py` — prevented 500 errors on unauthenticated requests.
-- Fase 7 — **Mejoras menores**:
-  - `ErrorBoundary` component (class-based, fallback UI con retry) en `layout.tsx`
-  - `Skeleton`, `PetCardSkeleton`, `TableSkeleton` componentes reutilizables
-  - `Modal` reutilizable (keyboard trap, click-outside, overflow lock)
-  - `TimelineModal`, `DetailModal`, `ActionModal` refactorizados para usar `Modal`
-  - ESLint reglas adicionales + `.prettierrc` + `pyproject.toml` ruff config
-  - `CHANGELOG.md` con formato Keep a Changelog
-  - `ScrollAnimation` añadido a páginas contacto, términos, privacidad, redes, centros
-
-**Pendiente:**
-- Docs opcionales: Update PROJECT_STATUS.md, EXECUTIVE_SUMMARY.md
-- Tests opcionales: pytest-cov, serializer tests, integration tests
+| Severidad | Issue | Solución |
+|-----------|-------|----------|
+| 🔴 HIGH | endpoint `change_role` inexistente | `centers/page.tsx:149` → usa `PATCH /users/{id}/` (partial_update) |
+| 🔴 HIGH | Login filtra existencia de usuarios (email oracle) | Creado `EmailAuthBackend` + `authenticate()` sin `User.objects.get()` previo |
+| 🟡 MED | Dual auth desincronizado | `auth.ts` ahora delega a `authStore`; `TokenCleanup.tsx` llama `hydrate()` |
+| 🟡 MED | Sin notificaciones email en adopciones | `adoptions/notifications.py` con 4 funciones + integradas en services.py |
+| 🟡 MED | Center creado sin validación desde inquiries | Validación email único + `CenterService.create_center()` |
+| 🟡 MED | No se valida capacidad del centro al aprobar | `AdoptionService.approve()` chequea `center.is_full` |
+| 🟢 LOW | `UserDropdown.tsx` usa `<style>` inline | Animación movida a `tailwind.config.js` como `animate-fade-scale-in` |
+| 🟢 LOW | 8 `<img>` tags sin `<Image/>` | Migrados a `next/image` con `fill` + contenedor `relative` |
+| 🟢 LOW | 145 ruff issues (formato) | 64 auto-fix, 62 formateados con `ruff format`, 0 restantes |
 
 ## Contacto
 

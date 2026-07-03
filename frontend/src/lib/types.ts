@@ -83,8 +83,15 @@ export interface Adoption {
   applicant: User;
   center: Center;
   status: string;
-  motivation?: string;
+  motivation: string;
+  experience?: string;
+  home_type?: string;
+  has_yard?: boolean;
+  has_other_pets?: boolean;
+  other_pets_details?: string;
+  family_members?: number;
   notes?: string;
+  review_notes?: string;
   reviewed_by?: User;
   reviewed_at?: string;
   completed_at?: string;

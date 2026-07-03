@@ -21,8 +21,8 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: {
+  login: (_email: string, _password: string) => Promise<void>;
+  register: (_data: {
     username: string;
     email: string;
     password: string;
@@ -33,7 +33,7 @@ interface AuthState {
     phone?: string;
   }) => Promise<void>;
   logout: () => void;
-  setTokens: (access: string, refresh: string) => void;
+  setTokens: (_access: string, _refresh: string) => void;
   fetchProfile: () => Promise<void>;
   hydrate: () => void;
   clearError: () => void;

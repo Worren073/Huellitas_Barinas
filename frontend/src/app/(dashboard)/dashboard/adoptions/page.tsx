@@ -11,7 +11,7 @@ import api from '@/lib/api';
 
 interface Adoption {
   id: number;
-  pet: number;
+  pet: { id: number; name: string; species: string; breed?: string; images?: { image: string }[] };
   pet_name: string;
   applicant: number;
   applicant_name: string;
@@ -171,7 +171,7 @@ export default function AdoptionsPage() {
                           onClick={() => { setSelectedAdoption(adoption); setShowDetail(true); }}
                           className="font-label-md text-primary hover:underline text-left"
                         >
-                          {adoption.pet_name || `Mascota #${adoption.pet}`}
+                          {adoption.pet_name || adoption.pet?.name || `Mascota #${adoption.pet?.id}`}
                         </button>
                       </td>
                       <td className="p-stack-sm font-body-sm text-on-surface-variant">{adoption.center_name}</td>

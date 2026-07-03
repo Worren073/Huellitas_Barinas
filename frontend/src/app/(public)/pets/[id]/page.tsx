@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
+import { auth } from '@/lib/auth';
 import api from '@/lib/api';
 import { normalizeImageUrl } from '@/lib/utils';
 
@@ -59,9 +60,9 @@ function getGenderLabel(gender?: string): string {
 }
 
 export default function PetDetailPage({ params }: { params: { id: string } }) {
-  const router = useRouter();
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasExistingRequest, setHasExistingRequest] = useState(false);
   const petId = params.id;
 
   useEffect(() => {
@@ -79,6 +80,17 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
     };
 
     fetchPet();
+  }, [petId]);
+
+  useEffect(() => {
+    if (!petId) return;
+    if (!auth.isAuthenticated()) {
+      setHasExistingRequest(false);
+      return;
+    }
+    api.get(`/adoptions/?mine=true&pet=${petId}`)
+      .then(res => setHasExistingRequest(res.data.count > 0))
+      .catch(() => setHasExistingRequest(false));
   }, [petId]);
 
   if (loading) {
@@ -152,7 +164,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
             <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px] rounded-2xl overflow-hidden bg-surface">
               <div className="col-span-4 row-span-2 md:col-span-3 md:row-span-2 relative group cursor-pointer">
                 {mainImage ? (
-                  <img src={mainImage} alt={pet.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <Image src={mainImage} alt={pet.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
                 ) : (
                   <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
                     <Icon name="pets" className="w-16 h-16 text-outline" />
@@ -161,12 +173,12 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
               </div>
               {images[1] && (
                 <div className="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-bl-lg">
-                  <img src={images[1].image} alt="" className="w-full h-full object-cover group-hover:scale-110" />
+                  <Image src={images[1].image} alt="" fill className="object-cover group-hover:scale-110" />
                 </div>
               )}
               {images[2] && (
                 <div className="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-tl-lg">
-                  <img src={images[2].image} alt="" className="w-full h-full object-cover group-hover:scale-110" />
+                  <Image src={images[2].image} alt="" fill className="object-cover group-hover:scale-110" />
                   {images.length > 3 && (
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center hover:bg-black/10">
                       <span className="text-white font-label-md flex items-center gap-1">
@@ -225,17 +237,24 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
                 <p className="font-body-sm text-on-surface-variant mb-stack-md">
                   Completa el formulario de solicitud y nos pondremos en contacto contigo.
                 </p>
-                <Link
-                  href={pet.status === 'available' ? `/adoptar/${pet.id}` : '#'}
-                  className={`w-full font-label-md py-4 rounded-lg flex items-center justify-center gap-2 mb-3 shadow-sm transition-all ${
-                    pet.status === 'available'
-                      ? 'bg-primary-container text-on-primary-container hover:brightness-105 active:scale-95'
-                      : 'bg-surface-gray text-on-surface-variant cursor-not-allowed'
-                  }`}
-                >
-                  <Icon name="favorite" className="w-5 h-5" solid />
-                  {pet.status === 'available' ? 'Iniciar Solicitud de Adopción' : 'No disponible para adopción'}
-                </Link>
+                {hasExistingRequest ? (
+                  <div className="w-full font-label-md py-4 rounded-lg flex items-center justify-center gap-2 mb-3 shadow-sm bg-green-100 text-green-700 cursor-default">
+                    <Icon name="check_circle_solid" className="w-5 h-5" />
+                    Postulación Enviada
+                  </div>
+                ) : (
+                  <Link
+                    href={pet.status === 'available' ? `/adoptar/${pet.id}` : '#'}
+                    className={`w-full font-label-md py-4 rounded-lg flex items-center justify-center gap-2 mb-3 shadow-sm transition-all ${
+                      pet.status === 'available'
+                        ? 'bg-primary-container text-on-primary-container hover:brightness-105 active:scale-95'
+                        : 'bg-surface-gray text-on-surface-variant cursor-not-allowed'
+                    }`}
+                  >
+                    <Icon name="favorite" className="w-5 h-5" solid />
+                    {pet.status === 'available' ? 'Iniciar Solicitud de Adopción' : 'No disponible para adopción'}
+                  </Link>
+                )}
                 <button className="w-full bg-transparent border-2 border-primary-container text-on-primary-container font-label-md py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
                   <Icon name="help" className="w-5 h-5" /> Hacer una pregunta
                 </button>

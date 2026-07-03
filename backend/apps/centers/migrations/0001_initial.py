@@ -4,35 +4,90 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Center',
+            name="Center",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200, verbose_name='nombre')),
-                ('description', models.TextField(verbose_name='descripción')),
-                ('address', models.TextField(verbose_name='dirección')),
-                ('phone', models.CharField(max_length=20, verbose_name='teléfono')),
-                ('email', models.EmailField(max_length=254, verbose_name='correo electrónico')),
-                ('logo', models.ImageField(blank=True, null=True, upload_to='centers/logos/', verbose_name='logo')),
-                ('cover_image', models.ImageField(blank=True, null=True, upload_to='centers/covers/', verbose_name='imagen de portada')),
-                ('status', models.CharField(choices=[('active', 'Activo'), ('inactive', 'Inactivo'), ('pending', 'Pendiente de Verificación')], default='pending', max_length=20, verbose_name='estado')),
-                ('latitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True, verbose_name='latitud')),
-                ('longitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True, verbose_name='longitud')),
-                ('max_capacity', models.PositiveIntegerField(default=50, verbose_name='capacidad máxima')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='fecha de actualización')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200, verbose_name="nombre")),
+                ("description", models.TextField(verbose_name="descripción")),
+                ("address", models.TextField(verbose_name="dirección")),
+                ("phone", models.CharField(max_length=20, verbose_name="teléfono")),
+                ("email", models.EmailField(max_length=254, verbose_name="correo electrónico")),
+                (
+                    "logo",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="centers/logos/", verbose_name="logo"
+                    ),
+                ),
+                (
+                    "cover_image",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="centers/covers/",
+                        verbose_name="imagen de portada",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("active", "Activo"),
+                            ("inactive", "Inactivo"),
+                            ("pending", "Pendiente de Verificación"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                        verbose_name="estado",
+                    ),
+                ),
+                (
+                    "latitude",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=6,
+                        max_digits=9,
+                        null=True,
+                        verbose_name="latitud",
+                    ),
+                ),
+                (
+                    "longitude",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=6,
+                        max_digits=9,
+                        null=True,
+                        verbose_name="longitud",
+                    ),
+                ),
+                (
+                    "max_capacity",
+                    models.PositiveIntegerField(default=50, verbose_name="capacidad máxima"),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="fecha de actualización"),
+                ),
             ],
             options={
-                'verbose_name': 'centro',
-                'verbose_name_plural': 'centros',
-                'ordering': ['-created_at'],
+                "verbose_name": "centro",
+                "verbose_name_plural": "centros",
+                "ordering": ["-created_at"],
             },
         ),
     ]

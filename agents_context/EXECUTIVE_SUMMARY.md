@@ -2,7 +2,7 @@
 
 ## 📊 Estado Actual del Proyecto
 
-**Versión**: 2.0.0  
+**Versión**: 2.1.0  
 **Puntuación**: 9.5/10 ✅ COMPLETE  
 **Fecha**: Julio 2026
 
@@ -57,6 +57,17 @@ Plataforma web para gestión de centros de adopción de mascotas en Barinas, Ven
 - **CHANGELOG.md**: historial completo v0.1.0 → v0.2.0
 - **ScrollAnimation**: añadido a todas las páginas públicas
 
+### Fase 8 — Auditoría de Seguridad y Calidad (Jul 2026)
+- **Email oracle eliminado**: `EmailAuthBackend` en `authentication.py`, `authenticate()` sin `User.objects.get()` previo
+- **change_role endpoint**: frontend corregido a `PATCH /users/{id}/`
+- **Dual auth unificado**: `auth.ts` delega a `authStore`, `TokenCleanup` llama `hydrate()`
+- **Notificaciones email**: `notifications.py` con 4 funciones para submit/approve/reject/complete
+- **Validación capacidad centro**: `AdoptionService.approve()` chequea `center.is_full`
+- **Validación inquiries**: email único + `CenterService.create_center()` en lugar de `Center.objects.create()`
+- **Ruff 0 errores**: 64 auto-fix + 7 manuales, 62 files formateados con `ruff format`
+- **ESLint 0 warnings**: ~30 warnings eliminados, 8 `<img>` → `<Image/>`
+- **UserDropdown**: `<style>` inline movido a `animate-fade-scale-in` en Tailwind
+
 ---
 
 ## 🔧 Infraestructura
@@ -85,10 +96,13 @@ beat (Celery Beat)    ✅ Up
 | Métrica | Antes (Feb 2026) | Ahora (Jul 2026) |
 |---------|------------------|------------------|
 | Tests | 29 | **92** (+217%) |
-| Páginas frontend | 10 | **18** (+80%) |
+| Rutas frontend | 10 | **22** (+120%) |
 | Componentes | 15 | **24** (+60%) |
 | Stores Zustand | 0 | **2** |
 | Archivos test | 4 | **12** (+200%) |
+| Ruff errors | 145 | **0** ✅ |
+| ESLint warnings | ~30 | **0** ✅ |
+| Issues críticos | 5 | **0** ✅ |
 | Puntuación | 8.5/10 | **9.5/10** |
 
 ---

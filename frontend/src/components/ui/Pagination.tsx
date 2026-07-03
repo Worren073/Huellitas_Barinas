@@ -5,7 +5,7 @@ import Icon from '@/components/Icon';
 interface PaginationProps {
   page: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  onPageChange: (_page: number) => void;
   variant?: 'default' | 'minimal';
 }
 

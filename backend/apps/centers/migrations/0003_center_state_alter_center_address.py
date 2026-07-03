@@ -4,20 +4,49 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('centers', '0002_initial'),
+        ("centers", "0002_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='center',
-            name='state',
-            field=models.CharField(choices=[('Amazonas', 'Amazonas'), ('Anzoátegui', 'Anzoátegui'), ('Apure', 'Apure'), ('Aragua', 'Aragua'), ('Barinas', 'Barinas'), ('Bolívar', 'Bolívar'), ('Carabobo', 'Carabobo'), ('Cojedes', 'Cojedes'), ('Delta Amacuro', 'Delta Amacuro'), ('Distrito Capital', 'Distrito Capital'), ('Falcón', 'Falcón'), ('Guárico', 'Guárico'), ('Lara', 'Lara'), ('Mérida', 'Mérida'), ('Miranda', 'Miranda'), ('Monagas', 'Monagas'), ('Nueva Esparta', 'Nueva Esparta'), ('Portuguesa', 'Portuguesa'), ('Sucre', 'Sucre'), ('Táchira', 'Táchira'), ('Trujillo', 'Trujillo'), ('La Guaira', 'La Guaira'), ('Yaracuy', 'Yaracuy'), ('Zulia', 'Zulia')], default='Barinas', max_length=100, verbose_name='estado'),
+            model_name="center",
+            name="state",
+            field=models.CharField(
+                choices=[
+                    ("Amazonas", "Amazonas"),
+                    ("Anzoátegui", "Anzoátegui"),
+                    ("Apure", "Apure"),
+                    ("Aragua", "Aragua"),
+                    ("Barinas", "Barinas"),
+                    ("Bolívar", "Bolívar"),
+                    ("Carabobo", "Carabobo"),
+                    ("Cojedes", "Cojedes"),
+                    ("Delta Amacuro", "Delta Amacuro"),
+                    ("Distrito Capital", "Distrito Capital"),
+                    ("Falcón", "Falcón"),
+                    ("Guárico", "Guárico"),
+                    ("Lara", "Lara"),
+                    ("Mérida", "Mérida"),
+                    ("Miranda", "Miranda"),
+                    ("Monagas", "Monagas"),
+                    ("Nueva Esparta", "Nueva Esparta"),
+                    ("Portuguesa", "Portuguesa"),
+                    ("Sucre", "Sucre"),
+                    ("Táchira", "Táchira"),
+                    ("Trujillo", "Trujillo"),
+                    ("La Guaira", "La Guaira"),
+                    ("Yaracuy", "Yaracuy"),
+                    ("Zulia", "Zulia"),
+                ],
+                default="Barinas",
+                max_length=100,
+                verbose_name="estado",
+            ),
         ),
         migrations.AlterField(
-            model_name='center',
-            name='address',
-            field=models.TextField(blank=True, verbose_name='dirección'),
+            model_name="center",
+            name="address",
+            field=models.TextField(blank=True, verbose_name="dirección"),
         ),
     ]

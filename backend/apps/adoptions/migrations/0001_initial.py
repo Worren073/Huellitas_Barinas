@@ -4,50 +4,111 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Adoption',
+            name="Adoption",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('motivation', models.TextField(verbose_name='motivación')),
-                ('experience', models.TextField(blank=True, verbose_name='experiencia con mascotas')),
-                ('home_type', models.CharField(choices=[('house', 'Casa'), ('apartment', 'Apartamento'), ('other', 'Otro')], max_length=50, verbose_name='tipo de vivienda')),
-                ('has_yard', models.BooleanField(default=False, verbose_name='tiene patio')),
-                ('has_other_pets', models.BooleanField(default=False, verbose_name='tiene otras mascotas')),
-                ('other_pets_details', models.TextField(blank=True, verbose_name='detalles de otras mascotas')),
-                ('family_members', models.PositiveIntegerField(default=1, verbose_name='miembros de la familia')),
-                ('status', models.CharField(choices=[('pending', 'Solicitud Enviada'), ('under_review', 'En Revisión'), ('approved', 'Aprobada'), ('rejected', 'Rechazada'), ('completed', 'Adopción Completada'), ('cancelled', 'Cancelada')], default='pending', max_length=20, verbose_name='estado')),
-                ('review_notes', models.TextField(blank=True, verbose_name='notas de revisión')),
-                ('reviewed_at', models.DateTimeField(blank=True, null=True, verbose_name='fecha de revisión')),
-                ('completed_at', models.DateTimeField(blank=True, null=True, verbose_name='fecha de completado')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='fecha de actualización')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("motivation", models.TextField(verbose_name="motivación")),
+                (
+                    "experience",
+                    models.TextField(blank=True, verbose_name="experiencia con mascotas"),
+                ),
+                (
+                    "home_type",
+                    models.CharField(
+                        choices=[
+                            ("house", "Casa"),
+                            ("apartment", "Apartamento"),
+                            ("other", "Otro"),
+                        ],
+                        max_length=50,
+                        verbose_name="tipo de vivienda",
+                    ),
+                ),
+                ("has_yard", models.BooleanField(default=False, verbose_name="tiene patio")),
+                (
+                    "has_other_pets",
+                    models.BooleanField(default=False, verbose_name="tiene otras mascotas"),
+                ),
+                (
+                    "other_pets_details",
+                    models.TextField(blank=True, verbose_name="detalles de otras mascotas"),
+                ),
+                (
+                    "family_members",
+                    models.PositiveIntegerField(default=1, verbose_name="miembros de la familia"),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Solicitud Enviada"),
+                            ("under_review", "En Revisión"),
+                            ("approved", "Aprobada"),
+                            ("rejected", "Rechazada"),
+                            ("completed", "Adopción Completada"),
+                            ("cancelled", "Cancelada"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                        verbose_name="estado",
+                    ),
+                ),
+                ("review_notes", models.TextField(blank=True, verbose_name="notas de revisión")),
+                (
+                    "reviewed_at",
+                    models.DateTimeField(blank=True, null=True, verbose_name="fecha de revisión"),
+                ),
+                (
+                    "completed_at",
+                    models.DateTimeField(blank=True, null=True, verbose_name="fecha de completado"),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(auto_now=True, verbose_name="fecha de actualización"),
+                ),
             ],
             options={
-                'verbose_name': 'adopción',
-                'verbose_name_plural': 'adopciones',
-                'ordering': ['-created_at'],
+                "verbose_name": "adopción",
+                "verbose_name_plural": "adopciones",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='AdoptionTimeline',
+            name="AdoptionTimeline",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('old_status', models.CharField(max_length=20, verbose_name='estado anterior')),
-                ('new_status', models.CharField(max_length=20, verbose_name='estado nuevo')),
-                ('notes', models.TextField(blank=True, verbose_name='notas')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='fecha de creación')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("old_status", models.CharField(max_length=20, verbose_name="estado anterior")),
+                ("new_status", models.CharField(max_length=20, verbose_name="estado nuevo")),
+                ("notes", models.TextField(blank=True, verbose_name="notas")),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación"),
+                ),
             ],
             options={
-                'verbose_name': 'línea de tiempo de adopción',
-                'verbose_name_plural': 'líneas de tiempo de adopciones',
-                'ordering': ['created_at'],
+                "verbose_name": "línea de tiempo de adopción",
+                "verbose_name_plural": "líneas de tiempo de adopciones",
+                "ordering": ["created_at"],
             },
         ),
     ]

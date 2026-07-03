@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="es" className={`${inter.variable} ${montserrat.variable}`}>
       <body className="font-inter text-on-surface bg-surface-off-white antialiased">
         <TokenCleanup />
-        <Toaster position="bottom-right" toastClassName="z-100" containerClassName="z-100" />
+        <Toaster position="bottom-right" />
         <ErrorBoundary>{children}</ErrorBoundary>
       </body>
     </html>

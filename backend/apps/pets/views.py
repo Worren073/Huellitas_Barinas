@@ -3,14 +3,14 @@ Pet views (View layer).
 Delegates to services (Presenter layer).
 """
 
-from rest_framework import viewsets, permissions
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Pet, PetImage
-from .serializers import PetSerializer, PetCreateSerializer, PetImageSerializer
-from .services import PetService
 from .permissions import IsCenterAdminOrSuperAdmin
+from .serializers import PetCreateSerializer, PetImageSerializer, PetSerializer
+from .services import PetService
 
 
 class PetViewSet(viewsets.ModelViewSet):
@@ -31,11 +31,11 @@ class PetViewSet(viewsets.ModelViewSet):
         - POST /pets/{id}/mark_in_process/
     """
 
-    queryset = Pet.objects.select_related('center').prefetch_related('images')
+    queryset = Pet.objects.select_related("center").prefetch_related("images")
     serializer_class = PetSerializer
-    search_fields = ['name', 'breed', 'description']
-    ordering_fields = ['created_at', 'name', 'age_months']
-    ordering = ['-created_at']
+    search_fields = ["name", "breed", "description"]
+    ordering_fields = ["created_at", "name", "age_months"]
+    ordering = ["-created_at"]
 
     def get_permissions(self):
         public_actions = {"list", "retrieve", "available"}
@@ -49,21 +49,21 @@ class PetViewSet(viewsets.ModelViewSet):
         return PetSerializer
 
     def get_queryset(self):
-        queryset = Pet.objects.select_related('center').prefetch_related('images')
+        queryset = Pet.objects.select_related("center").prefetch_related("images")
 
         user = self.request.user
-        if user.is_authenticated and user.role == 'center_admin' and user.center:
+        if user.is_authenticated and user.role == "center_admin" and user.center:
             queryset = queryset.filter(center=user.center)
 
-        species = self.request.query_params.get('species')
+        species = self.request.query_params.get("species")
         if species:
             queryset = queryset.filter(species=species)
 
-        status_filter = self.request.query_params.get('status')
+        status_filter = self.request.query_params.get("status")
         if status_filter:
             queryset = queryset.filter(status=status_filter)
 
-        center = self.request.query_params.get('center')
+        center = self.request.query_params.get("center")
         if center:
             queryset = queryset.filter(center_id=center)
 
@@ -85,15 +85,17 @@ class PetViewSet(viewsets.ModelViewSet):
         """Get dashboard stats, scoped to center for center_admins."""
         user = request.user
         base_qs = Pet.objects
-        if user.role == 'center_admin' and user.center:
+        if user.role == "center_admin" and user.center:
             base_qs = base_qs.filter(center=user.center)
 
-        return Response({
-            'pets_count': base_qs.count(),
-            'available_pets': base_qs.filter(status='available').count(),
-            'in_process_pets': base_qs.filter(status='in_process').count(),
-            'adopted_pets': base_qs.filter(status='adopted').count(),
-        })
+        return Response(
+            {
+                "pets_count": base_qs.count(),
+                "available_pets": base_qs.filter(status="available").count(),
+                "in_process_pets": base_qs.filter(status="in_process").count(),
+                "adopted_pets": base_qs.filter(status="adopted").count(),
+            }
+        )
 
     @action(
         detail=True,
@@ -134,7 +136,7 @@ class PetImageViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = PetImage.objects.all()
-        pet_id = self.kwargs.get('pet_pk')
+        pet_id = self.kwargs.get("pet_pk")
         if pet_id:
             queryset = queryset.filter(pet_id=pet_id)
         return queryset

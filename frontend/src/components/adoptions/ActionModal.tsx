@@ -6,7 +6,7 @@ import Modal from '@/components/ui/Modal';
 interface ActionModalProps {
   adoption: { id: number; pet_name: string } | null;
   action: string;
-  onConfirm: (notes: string) => Promise<void>;
+  onConfirm: (_notes: string) => Promise<void>;
   onClose: () => void;
 }
 

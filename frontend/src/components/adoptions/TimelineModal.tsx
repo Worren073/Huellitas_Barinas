@@ -1,6 +1,5 @@
 'use client';
 
-import Icon from '@/components/Icon';
 import Modal from '@/components/ui/Modal';
 
 interface TimelineEntry {

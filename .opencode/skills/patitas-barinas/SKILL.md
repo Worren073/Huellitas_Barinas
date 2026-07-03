@@ -62,7 +62,8 @@ Huellitas_Barinas/
 │   │   ├── users/          # Modelo User, JWT auth, permisos
 │   │   ├── centers/        # Centro con capacidad y geolocalización
 │   │   ├── pets/           # Mascota + imágenes WebP
-│   │   └── adoptions/      # Flujo de adopción con estados
+│   │   ├── adoptions/      # Flujo de adopción con estados
+│   │   └── inquiries/      # Solicitudes de ayuda/voluntariado/centros
 │   ├── config/
 │   │   ├── settings/       # base.py, development.py, production.py
 │   │   ├── urls.py
@@ -190,9 +191,12 @@ pending ──────────→ cancelled (en cualquier momento antes 
 
 ### Frontend
 - App Router con route groups: (auth), (public), (dashboard)
-- Componentes en components/ui/, components/layout/, components/forms/
+- Componentes en components/ui/, components/layout/, components/adoptions/
 - API calls en lib/api.ts con axios
+- Estado global: Zustand (authStore, uiStore)
+- Auth: `auth.ts` es wrapper que delega a `authStore`
 - Constants en lib/utils.ts (PET_SPECIES, PET_STATUS, etc.)
+- Imágenes: usar `next/image` con `fill` + contenedor `relative`
 
 ### Docker
 - Multi-stage builds para optimizar tamaño
@@ -240,7 +244,31 @@ docker compose exec api python manage.py shell
 # Tests
 python manage.py test
 pytest
+
+# Ruff (linter)
+ruff check apps/
+ruff check apps/ --fix
+ruff format apps/
+ruff format apps/ --check
 ```
+
+### Backend Apps
+- `users/`: Modelo User custom con roles (superadmin, center_admin, voluntario, adoptante), `EmailAuthBackend` (`authentication.py`), JWT auth, permisos por rol
+- `centers/`: Centro con capacidad, geolocalización, estados (active/inactive/pending)
+- `pets/`: Mascota con especies, estados, imágenes WebP automáticas vía signal
+- `adoptions/`: Flujo de adopción con máquina de estados, timeline, notificaciones email (`notifications.py`)
+- `inquiries/`: Solicitudes de ayuda/voluntariado/registro de centros
+
+### Frontend Pages
+- `(auth)`: login, register
+- `(public)`: home, centros, adoptar/[id], pets/[id], mascotas, contacto, términos, privacidad, redes
+- `(dashboard)`: dashboard, pets, pets/new, adoptions, centers, users, mis-solicitudes
+
+## Estado Actual (Jul 2026)
+
+- **Backend**: 92 tests ✅, Ruff 0 errors ✅, `ruff format` consistente ✅
+- **Frontend**: Build 0 errors ✅, ESLint 0 warnings ✅, Next.js 14.2 App Router
+- **Issues resueltos**: email oracle, change_role endpoint, dual auth, notificaciones, capacity validation, inquiries validation, img→Image, UserDropdown style, ruff lint
 
 ## Credenciales (no commitear)
 

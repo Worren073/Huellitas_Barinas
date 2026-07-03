@@ -8,6 +8,7 @@ import AdminTable from '@/components/AdminTable';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
 import api from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 
 interface PetStats {
   pets_count: number;
@@ -26,15 +27,22 @@ interface Adoption {
 }
 
 export default function DashboardPage() {
+  const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [petStats, setPetStats] = useState<PetStats | null>(null);
   const [adoptions, setAdoptions] = useState<Adoption[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
-  const [adoptionsTotal, setAdoptionsTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const isAdmin = user?.role === 'superadmin' || user?.role === 'center_admin';
+    if (!isAuthenticated || !isAdmin || !user) {
+      setLoading(false);
+      return;
+    }
+
     Promise.all([
       api.get<PetStats>('/pets/stats/'),
       api.get<{ results: Adoption[] }>('/adoptions/'),
@@ -43,13 +51,12 @@ export default function DashboardPage() {
         setPetStats(statsRes.data);
         const results = adoptionsRes.data.results || [];
         setAdoptions(results.slice(0, 10));
-        setAdoptionsTotal(results.length);
         setPendingCount(results.filter((a: Adoption) => a.status === 'pending').length);
         setTotalPages(Math.ceil(results.length / 10));
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [isAuthenticated, user]);
 
   const columns = [
     {
@@ -85,18 +92,27 @@ export default function DashboardPage() {
   return (
     <AdminLayout>
       <div className="p-stack-lg max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-stack-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-stack-lg">
           <div>
             <h1 className="font-montserrat text-headline-lg text-on-surface">Dashboard</h1>
             <p className="font-body-md text-on-surface-variant">Panel principal de administracion</p>
           </div>
-          <Link
-            href="/dashboard/pets/new"
-            className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 active:scale-95 transition-all flex items-center gap-2"
-          >
-            <Icon name="add" className="w-5 h-5" />
-            Nueva Mascota
-          </Link>
+          <div className="flex items-center gap-2 mt-3 md:mt-0">
+            <Link
+              href="/"
+              className="border border-outline-variant text-on-surface-variant font-label-md py-2.5 px-4 rounded-lg hover:bg-surface-container-high active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Icon name="logout_door" className="w-5 h-5" />
+              Ver sitio
+            </Link>
+            <Link
+              href="/dashboard/pets/new"
+              className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Icon name="add" className="w-5 h-5" />
+              Nueva Mascota
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-stack-sm mb-stack-lg">

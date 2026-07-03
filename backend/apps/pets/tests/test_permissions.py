@@ -1,12 +1,12 @@
 """Tests for pets permission classes."""
-from rest_framework.test import APIRequestFactory
+
 from rest_framework.views import APIView
 
-from apps.pets.permissions import IsCenterAdminOrSuperAdmin, IsSuperAdmin, IsAdminUser
+from apps.pets.permissions import IsAdminUser, IsCenterAdminOrSuperAdmin, IsSuperAdmin
 
 
 class MockRequest:
-    def __init__(self, user, method='GET'):
+    def __init__(self, user, method="GET"):
         self.user = user
         self.method = method
 
@@ -19,29 +19,29 @@ class TestIsCenterAdminOrSuperAdmin:
     def setup_method(self):
         self.perm = IsCenterAdminOrSuperAdmin()
 
-    def test_safe_method_always_allowed(self, db):
-        req = MockRequest(None, 'GET')
-        assert self.perm.has_permission(req, MockView())
+    def test_safe_method_denied_anonymous(self, db):
+        req = MockRequest(None, "GET")
+        assert not self.perm.has_permission(req, MockView())
 
-    def test_safe_method_unauthenticated(self, db):
-        req = MockRequest(None, 'GET')
+    def test_safe_method_allowed_authenticated(self, db, adopter):
+        req = MockRequest(adopter, "GET")
         assert self.perm.has_permission(req, MockView())
 
     def test_write_denied_unauthenticated(self, db):
-        req = MockRequest(None, 'POST')
+        req = MockRequest(None, "POST")
         assert not self.perm.has_permission(req, MockView())
 
     def test_write_allowed_superadmin(self, db, superadmin):
-        req = MockRequest(superadmin, 'POST')
+        req = MockRequest(superadmin, "POST")
         assert self.perm.has_permission(req, MockView())
 
     def test_write_allowed_center_admin(self, db, center_admin):
         user, _ = center_admin
-        req = MockRequest(user, 'PATCH')
+        req = MockRequest(user, "PATCH")
         assert self.perm.has_permission(req, MockView())
 
     def test_write_denied_adopter(self, db, adopter):
-        req = MockRequest(adopter, 'DELETE')
+        req = MockRequest(adopter, "DELETE")
         assert not self.perm.has_permission(req, MockView())
 
 

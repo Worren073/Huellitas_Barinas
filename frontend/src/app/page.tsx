@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PetCard from '@/components/PetCard';
@@ -76,7 +77,7 @@ export default async function HomePage() {
               <div className="relative">
                 <div className="absolute -inset-4 bg-primary-container/20 rounded-3xl blur-3xl"></div>
                 <div className="relative rounded-2xl shadow-card w-full h-[400px] bg-surface-container-high flex items-center justify-center overflow-hidden">
-                  <img src="/perrito.jpg" alt="Perrito disponible para adopción" className="w-full h-full object-cover" />
+                  <Image src="/perrito.jpg" alt="Perrito disponible para adopción" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                 </div>
               </div>
             </ScrollAnimation>
@@ -147,9 +148,9 @@ export default async function HomePage() {
                 centers.map((center, index) => (
                   <ScrollAnimation key={center.id} variant="slideUp" delay={index * 0.1}>
                     <div className="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer">
-                      <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden">
+                      <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden relative">
                         {center.logo ? (
-                          <img src={normalizeImageUrl(center.logo)} alt={center.name} className="w-full h-full object-cover" />
+                          <Image src={normalizeImageUrl(center.logo)} alt={center.name} fill className="object-cover" />
                         ) : (
                           <Icon name="location" className="w-8 h-8 text-primary m-6" />
                         )}

@@ -47,14 +47,13 @@ export default function Navbar({ variant: _variant }: NavbarProps = {}) {
     <header className="bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40">
       <div className="flex justify-between items-center px-4 md:px-8 max-w-container-max mx-auto h-20">
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-11 h-11 overflow-hidden flex items-start shrink-0">
+          <div className="w-10 h-10 overflow-hidden flex items-start shrink-0">
             <Image
               src="/Huellitas png.png"
               alt="Huellitas Barinas"
-              width={44}
-              height={44}
-              className="object-contain object-top"
-              style={{ marginTop: '-4px' }}
+              width={35}
+              height={35}
+              className="object-contain"
             />
           </div>
           <span className="font-montserrat text-headline-md font-bold text-primary hidden sm:block">

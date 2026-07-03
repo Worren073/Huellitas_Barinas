@@ -6,9 +6,9 @@ interface UIState {
   activeModal: string | null;
 
   toggleSidebar: () => void;
-  setSidebarOpen: (open: boolean) => void;
-  setTheme: (theme: 'light' | 'dark') => void;
-  openModal: (modalId: string) => void;
+  setSidebarOpen: (_open: boolean) => void;
+  setTheme: (_theme: 'light' | 'dark') => void;
+  openModal: (_modalId: string) => void;
   closeModal: () => void;
 }
 

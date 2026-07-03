@@ -6,18 +6,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('centers', '0001_initial'),
+        ("centers", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='center',
-            name='created_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_centers', to=settings.AUTH_USER_MODEL, verbose_name='creado por'),
+            model_name="center",
+            name="created_by",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="created_centers",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="creado por",
+            ),
         ),
     ]

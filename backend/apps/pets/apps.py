@@ -2,9 +2,9 @@ from django.apps import AppConfig
 
 
 class PetsConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.pets'
-    verbose_name = 'Mascotas'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.pets"
+    verbose_name = "Mascotas"
 
     def ready(self):
         pass

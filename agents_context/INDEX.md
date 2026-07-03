@@ -3,7 +3,7 @@
 **Carpeta**: `agents_context/`  
 **Propósito**: Centro único de referencia para todos los cambios, fixes y documentación del proyecto Huellitas Barinas  
 **Última actualización**: Julio 2026  
-**Total de documentos**: 8
+**Total de documentos**: 8 (+ AGENTS.md, SKILL.md actualizados)
 
 ---
 
@@ -255,13 +255,14 @@ Empezar aquí:
 
 | Métrica | Valor |
 |---------|-------|
-| Total documentos | 8 |
-| Total KB | ~58 KB |
+| Total documentos | 8 (+ AGENTS.md, SKILL.md) |
+| Total KB | ~70 KB |
 | Tiempo lectura completa | ~60 minutos |
-| Problemas solucionados | 7 |
+| Problemas solucionados (sesión anterior) | 7 |
+| Problemas solucionados (sesión actual) | 9 |
 | Scripts nuevos | 4 |
-| Archivos modificados | 3 |
-| Líneas de código nuevo | 1000+ |
+| Archivos modificados | 30+ |
+| Líneas de código nuevo/modificado | 2000+ |
 
 ---
 
@@ -297,13 +298,13 @@ Empezar aquí:
 **Tiempo total**: 35 minutos
 
 ### 🤖 **AI Agent / Desarrollador General**
+- [ ] AGENTS.md (5 min) — Guía actualizada del proyecto
 - [ ] PROJECT_STATUS.md (20 min)
-- [ ] FIXES_SUMMARY.md (15 min)
 - [ ] REGISTRATION_UPDATE.md (5 min)
 - [ ] QUICK_REFERENCE.md (5 min)
 - [ ] ENV_TEMPLATE.txt (3 min)
 
-**Tiempo total**: 48 minutos
+**Tiempo total**: 38 minutos
 
 ---
 
@@ -403,14 +404,16 @@ Día 3 (30 min):
 
 | Documento | Versión | Fecha | Status |
 |-----------|---------|-------|--------|
-| EXECUTIVE_SUMMARY.md | 1.0.0 | Feb 2026 | ✅ Final |
+| AGENTS.md | 2.0.0 | Jul 2026 | ✅ Actualizado |
+| SKILL.md | 2.0.0 | Jul 2026 | ✅ Actualizado |
+| EXECUTIVE_SUMMARY.md | 2.1.0 | Jul 2026 | ✅ Actualizado |
 | FIXES_SUMMARY.md | 1.0.0 | Feb 2026 | ✅ Final |
 | DEPLOYMENT.md | 1.0.0 | Feb 2026 | ✅ Final |
-| QUICK_REFERENCE.md | 1.0.0 | Feb 2026 | ✅ Final |
-| PROJECT_STATUS.md | 1.0.0 | Feb 2026 | ✅ Final |
+| QUICK_REFERENCE.md | 2.1.0 | Jul 2026 | ✅ Actualizado |
+| PROJECT_STATUS.md | 2.1.0 | Jul 2026 | ✅ Actualizado |
 | REGISTRATION_UPDATE.md | 1.0.0 | Feb 2026 | ✅ Final |
 | ENV_TEMPLATE.txt | 1.0.0 | Feb 2026 | ✅ Final |
-| INDEX.md (este archivo) | 1.0.0 | Feb 2026 | ✅ Final |
+| INDEX.md (este archivo) | 2.0.0 | Jul 2026 | ✅ Actualizado |
 
 ---
 
@@ -430,9 +433,9 @@ Este proyecto demuestra:
 ## 🚀 ESTADO FINAL
 
 **Carpeta**: `agents_context/`  
-**Documentos**: 8  
+**Documentos**: 8 (más AGENTS.md + SKILL.md)  
 **Status**: ✅ **READY FOR PRODUCTION**  
-**Última actualización**: Febrero 2026  
+**Última actualización**: Julio 2026  
 
 ```
 📚 agents_context/

@@ -1,7 +1,7 @@
 # 📊 ESTADO DEL PROYECTO
 
 **Fecha**: Julio 2026  
-**Versión**: 2.0.0  
+**Versión**: 2.1.0  
 **Estado**: ✅ **COMPLETE**  
 **Puntuación**: 9.5/10
 
@@ -15,13 +15,13 @@ Huellitas Barinas es una **plataforma web completa** para gestión de centros de
 
 | Componente | Status | Detalles |
 |-----------|--------|----------|
-| **Backend (Django)** | ✅ REFINED | MVP pattern, permisos estandarizados, services refactorizados |
-| **Frontend (Next.js)** | ✅ COMPLETE | 18 páginas, Zustand, ErrorBoundary, animaciones |
+| **Backend (Django)** | ✅ REFINED | MVP pattern, 5 apps, permisos estandarizados, Ruff 0 errors |
+| **Frontend (Next.js)** | ✅ COMPLETE | 22 rutas, Zustand, ESLint 0 warnings, `<Image/>` migrado |
 | **Database (PostgreSQL)** | ✅ READY | Connection pooling activado |
 | **Cache (Redis)** | ✅ READY | Validación automática |
 | **Celery/Tasks** | ✅ READY | Workers configurados |
 | **Storage (R2)** | ✅ READY | Fallback a local si no config |
-| **Email** | ⚠️ OPTIONAL | Requiere Gmail App Password |
+| **Email** | ⚠️ OPTIONAL | `notifications.py` creado, requiere Gmail App Password |
 | **Monitoring (Sentry)** | ⚠️ OPTIONAL | Requiere SENTRY_DSN |
 | **API Docs** | ✅ READY | Swagger en `/api/docs/` |
 | **Tests** | ✅ COMPLETE | 92 tests (pytest), todas las apps cubiertas |
@@ -210,15 +210,17 @@ Huellitas_Barinas/
 ### 🐍 Backend (Django 5.1)
 
 **Apps**:
-- ✅ **users** - Autenticación JWT, 4 roles
+- ✅ **users** - Autenticación JWT, 4 roles, EmailAuthBackend
 - ✅ **centers** - Gestión, activación/desactivación
 - ✅ **pets** - CRUD, imágenes WebP, PetService refactorizado
-- ✅ **adoptions** - State machine (6 estados)
+- ✅ **adoptions** - State machine (6 estados), notificaciones email
+- ✅ **inquiries** - Solicitudes de ayuda/voluntariado/registro de centros
 
-**Tests**: 92 tests (12 archivos) todos pasando
+**Tests**: 92 tests (12 archivos) todos pasando ✅
 - 33 tests de permisos (todas las clases)
 - 20 tests de vistas (CRUD + acciones custom)
 - 29 tests de modelos y servicios
+- **Ruff**: 0 errors ✅ | **ruff format**: 62 files formateados ✅
 
 **Status**: ✅ **COMPLETE**
 
@@ -228,9 +230,9 @@ Huellitas_Barinas/
 
 **Stack**: Next.js 14 + React 18 + TypeScript + Tailwind CSS + Zustand + framer-motion + react-leaflet
 
-**18 páginas** en 3 route groups:
-- `(public)`: Home, Mascotas, Pet Detail, Adoptar, Centros (mapa), Contacto, Términos, Privacidad, Redes
-- `(dashboard)`: Dashboard, Pets CRUD, Adoptions Management, Centers, Users, Mis Solicitudes
+**22 rutas** (20 estáticas + 2 dinámicas) en 3 route groups:
+- `(public)`: Home, Mascotas, Pet Detail, Adoptar/[id], Centros (mapa), Contacto, Términos, Privacidad, Redes
+- `(dashboard)`: Dashboard, Pets, Pets/New, Adoptions, Centers, Users, Mis Solicitudes
 - `(auth)`: Login, Register
 
 **Componentes clave**:
@@ -328,6 +330,18 @@ MEJORA: +12%
 - [x] ESLint + Prettier config
 - [x] CHANGELOG.md, ruff config backend
 - [x] ScrollAnimation en todas las páginas públicas
+
+### Fase 8 - Auditoría y Corrección de Issues (Jul 2026) ✅
+- [x] **email oracle** — Creado `EmailAuthBackend` en `authentication.py`, login seguro
+- [x] **change_role** — Frontend corregido de endpoint inexistente a `PATCH /users/{id}/`
+- [x] **dual auth** — `auth.ts` ahora delega a `authStore`; `TokenCleanup` llama `hydrate()`
+- [x] **notificaciones email** — `notifications.py` con 4 funciones + integradas en services.py
+- [x] **capacidad centro** — `AdoptionService.approve()` chequea `center.is_full`
+- [x] **validación inquiries** — Email único + `CenterService.create_center()` en lugar de create directo
+- [x] **Ruff 0 errores** — 64 auto-fix + 7 manuales, 62 files formateados
+- [x] **ESLint 0 warnings** — ~30 warnings eliminados (unused vars, hook deps, `<img>`)
+- [x] **`<img>` → `<Image/>`** — 8 tags migrados con `fill` + contenedor `relative`
+- [x] **UserDropdown** — `<style>` inline reemplazado por `animate-fade-scale-in` en Tailwind
 
 ---
 

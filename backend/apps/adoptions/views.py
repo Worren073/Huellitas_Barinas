@@ -3,18 +3,18 @@ Adoption views (View layer).
 Delegates to services (Presenter layer).
 """
 
-from rest_framework import viewsets, permissions, status
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Adoption
+from .permissions import IsAdminOrCenterAdmin, IsApplicantOrCenterAdmin
 from .serializers import (
-    AdoptionSerializer,
     AdoptionCreateSerializer,
+    AdoptionSerializer,
     AdoptionTimelineSerializer,
 )
 from .services import AdoptionService
-from .permissions import IsApplicantOrCenterAdmin, IsAdminOrCenterAdmin
 
 
 class AdoptionViewSet(viewsets.ModelViewSet):
@@ -35,7 +35,7 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         - POST /adoptions/{id}/complete/
     """
 
-    queryset = Adoption.objects.select_related('pet', 'applicant', 'center', 'reviewed_by')
+    queryset = Adoption.objects.select_related("pet", "applicant", "center", "reviewed_by")
     serializer_class = AdoptionSerializer
 
     def get_permissions(self):
@@ -46,21 +46,26 @@ class AdoptionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = Adoption.objects.select_related('pet', 'applicant', 'center', 'reviewed_by')
+        qs = Adoption.objects.select_related("pet", "applicant", "center", "reviewed_by")
+        pet_id = self.request.query_params.get("pet")
+        if pet_id:
+            qs = qs.filter(pet_id=pet_id)
+        if self.request.query_params.get("mine") == "true":
+            return qs.filter(applicant=user)
         if user.is_superuser:
             return qs.all()
-        elif user.role == 'center_admin':
+        elif user.role == "center_admin":
             return qs.filter(center=user.center)
         return qs.filter(applicant=user)
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == "create":
             return AdoptionCreateSerializer
         return AdoptionSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request
+        context["request"] = self.request
         return context
 
     def perform_create(self, serializer):

@@ -7,3 +7,5 @@ select = ["E", "F", "W", "I", "N", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
 "config/settings/*.py" = ["F403", "F405"]
+"*/migrations/*.py" = ["E501"]
+"*/management/commands/seed_data.py" = ["E501"]
