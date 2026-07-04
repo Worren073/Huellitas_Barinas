@@ -12,7 +12,7 @@ services:
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     buildCommand: pip install -r requirements.txt
-    startCommand: ./entrypoint.sh gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+    dockerCommand: ./entrypoint.sh gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
     healthCheckPath: /api/health/
     plan: free
     region: virginia
@@ -89,10 +89,7 @@ services:
       - key: DEBUG
         value: "false"
       - key: SECRET_KEY
-        fromService:
-          name: huellitas-api
-          type: web
-          property: env.SECRET_KEY
+        sync: false
       - key: DATABASE_URL
         sync: false
       - key: REDIS_URL
@@ -128,10 +125,7 @@ services:
       - key: DEBUG
         value: "false"
       - key: SECRET_KEY
-        fromService:
-          name: huellitas-api
-          type: web
-          property: env.SECRET_KEY
+        sync: false
       - key: DATABASE_URL
         sync: false
       - key: REDIS_URL
@@ -151,7 +145,6 @@ services:
     runtime: docker
     dockerfilePath: ./frontend/Dockerfile.prod
     buildCommand: npm run build
-    startCommand: npm start
     healthCheckPath: /
     plan: free
     region: virginia
