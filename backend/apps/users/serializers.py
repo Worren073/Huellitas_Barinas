@@ -106,6 +106,7 @@ class UserUpdateRoleSerializer(serializers.ModelSerializer):
     ROLE_CHOICES = [
         ("superadmin", "Súper Administrador"),
         ("center_admin", "Administrador de Centro"),
+        ("voluntario", "Voluntario"),
         ("adoptante", "Adoptante"),
     ]
     role = serializers.ChoiceField(choices=ROLE_CHOICES)

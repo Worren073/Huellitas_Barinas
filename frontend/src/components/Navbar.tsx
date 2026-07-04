@@ -12,8 +12,7 @@ interface NavbarProps {
   variant?: 'public' | 'catalog' | 'detail';
 }
 
-// eslint-disable-next-line no-unused-vars
-export default function Navbar({ variant: _variant }: NavbarProps = {}) {
+export default function Navbar({}: NavbarProps = {}) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);

@@ -63,9 +63,9 @@ export default function AdoptarPage() {
       router.push(`/login?redirect=/adoptar/${params.id}`);
       return;
     }
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/pets/${params.id}/`)
-      .then(r => r.json())
-      .then(data => {
+    api.get(`/pets/${params.id}/`)
+      .then(res => {
+        const data = res.data;
         if (data.status !== 'available') {
           setError('Esta mascota no está disponible para adopción');
         }

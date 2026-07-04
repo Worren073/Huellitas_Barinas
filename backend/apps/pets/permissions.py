@@ -22,7 +22,7 @@ class IsSuperAdmin(BasePermission):
         return request.user and request.user.is_authenticated and request.user.role == "superadmin"
 
 
-class IsAdminUser(BasePermission):
+class IsAdminRole(BasePermission):
     """Permite acceso a superadmin y center_admin."""
 
     def has_permission(self, request, view):

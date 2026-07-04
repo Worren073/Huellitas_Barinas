@@ -28,6 +28,7 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'storages',
     'simple_history',
+    'django_celery_beat',
 ]
 
 LOCAL_APPS = [
@@ -133,6 +134,8 @@ REST_FRAMEWORK = {
         'user': '1000/hour',
         'auth_login': '5/minute',
         'auth_register': '3/minute',
+        'help_request': '5/minute',
+        'adoption_create': '5/minute',
     },
 }
 

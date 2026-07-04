@@ -11,11 +11,15 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from apps.users.views import HealthCheckView
 
 urlpatterns = [
     # Django Admin
     path('admin/', admin.site.urls),
-    
+
+    # Root-level health check (used by Render)
+    path('api/health/', HealthCheckView.as_view(), name='health_check_root'),
+
     # API v1
     path('api/v1/', include([
         # Authentication

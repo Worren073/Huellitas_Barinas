@@ -1,6 +1,7 @@
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 
 from apps.users.permissions import IsSuperAdmin
 
@@ -21,18 +22,24 @@ class HelpRequestViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         return [IsSuperAdmin()]
 
+    def get_throttles(self):
+        throttles = super().get_throttles()
+        if self.action == "create":
+            throttles.append(ScopedRateThrottle())
+            self.throttle_scope = "help_request"
+        return throttles
+
     def get_serializer_class(self):
         if self.action == "create":
             return HelpRequestCreateSerializer
         return HelpRequestSerializer
 
     def perform_create(self, serializer):
-        data = serializer.validated_data
-        HelpRequestService.create_request(data)
+        instance = serializer.save()
+        HelpRequestService.process_request(instance)
 
     @action(detail=True, methods=["post"], permission_classes=[IsSuperAdmin])
     def mark_read(self, request, pk=None):
         help_request = self.get_object()
-        help_request.is_read = True
-        help_request.save()
+        HelpRequestService.mark_as_read(help_request)
         return Response(HelpRequestSerializer(help_request).data)

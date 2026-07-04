@@ -120,7 +120,7 @@ export default function PetsPage() {
                           <span className="font-label-md text-on-surface">{pet.name}</span>
                         </div>
                       </td>
-                      <td className="p-stack-sm font-body-sm text-on-surface capitalize">{pet.species === 'dog' ? 'Perro' : 'Gato'}</td>
+                      <td className="p-stack-sm font-body-sm text-on-surface capitalize">{{ dog: 'Perro', cat: 'Gato', other: 'Otro' }[pet.species] || pet.species}</td>
                       <td className="p-stack-sm font-body-sm text-on-surface-variant">{pet.breed || '—'}</td>
                       <td className="p-stack-sm font-body-sm text-on-surface-variant">{pet.center_name || '—'}</td>
                       <td className="p-stack-sm"><StatusBadge status={pet.status} /></td>

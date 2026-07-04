@@ -2,7 +2,7 @@
 
 from rest_framework.views import APIView
 
-from apps.pets.permissions import IsAdminUser, IsCenterAdminOrSuperAdmin, IsSuperAdmin
+from apps.pets.permissions import IsAdminRole, IsCenterAdminOrSuperAdmin, IsSuperAdmin
 
 
 class MockRequest:
@@ -63,9 +63,9 @@ class TestIsSuperAdmin:
         assert not self.perm.has_permission(MockRequest(None), MockView())
 
 
-class TestIsAdminUser:
+class TestIsAdminRole:
     def setup_method(self):
-        self.perm = IsAdminUser()
+        self.perm = IsAdminRole()
 
     def test_superadmin_allowed(self, db, superadmin):
         assert self.perm.has_permission(MockRequest(superadmin), MockView())

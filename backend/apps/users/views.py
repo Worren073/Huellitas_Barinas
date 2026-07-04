@@ -113,12 +113,18 @@ class UserViewSet(viewsets.ModelViewSet):
         return UserListSerializer
 
     def partial_update(self, request, *args, **kwargs):
-        super().partial_update(request, *args, **kwargs)
-        return Response(UserListSerializer(self.get_object()).data)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(UserListSerializer(instance).data)
 
     def update(self, request, *args, **kwargs):
-        super().update(request, *args, **kwargs)
-        return Response(UserListSerializer(self.get_object()).data)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(UserListSerializer(instance).data)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -141,9 +147,44 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 class HealthCheckView(APIView):
-    """Health check endpoint."""
+    """Health check endpoint verifying DB and Redis connectivity."""
 
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        return Response({"status": "healthy"})
+        from django.core.cache import cache
+        from django.db import connection
+
+        errors = []
+
+        # Check database
+        try:
+            connection.ensure_connection()
+            db_ok = connection.is_usable()
+            if not db_ok:
+                errors.append("database: connection not usable")
+        except Exception as e:
+            errors.append(f"database: {e}")
+
+        # Check Redis / cache
+        try:
+            cache.set("health_check", 1, 5)
+            result = cache.get("health_check")
+            if result != 1:
+                errors.append("cache: write/read mismatch")
+        except Exception as e:
+            errors.append(f"cache: {e}")
+
+        if errors:
+            return Response(
+                {"status": "unhealthy", "errors": errors},
+                status=503,
+            )
+
+        return Response(
+            {
+                "status": "healthy",
+                "database": "ok",
+                "cache": "ok",
+            }
+        )

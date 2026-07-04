@@ -38,7 +38,6 @@ export default function CentrosPage() {
   useLeafletIcon();
   const [centers, setCenters] = useState<CenterWithPets[]>([]);
   const [loading, setLoading] = useState(true);
-  const [, setSelectedCenter] = useState<CenterWithPets | null>(null);
 
   useEffect(() => {
     const fetchCenters = async () => {
@@ -94,7 +93,7 @@ export default function CentrosPage() {
                     <Marker
                       key={center.id}
                       position={[center.latitude!, center.longitude!]}
-                      eventHandlers={{ click: () => setSelectedCenter(center) }}
+                      eventHandlers={{}}
                     >
                       <Popup>
                         <div className="text-center min-w-[180px]">
@@ -126,7 +125,6 @@ export default function CentrosPage() {
                 <ScrollAnimation key={center.id} variant="slideUp" delay={index * 0.05}>
                 <div
                   className="bg-surface-container-low rounded-2xl p-5 border border-outline-variant/20 hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => setSelectedCenter(center)}
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden flex-shrink-0 relative">

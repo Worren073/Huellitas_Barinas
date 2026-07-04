@@ -106,7 +106,7 @@ class CenterViewSet(viewsets.ModelViewSet):
         """
         center = self.get_object()
 
-        pets = center.pets.all().select_related("center").prefetch_related("images")
+        pets = center.pets.all().prefetch_related("images")
 
         serializer = PetSerializer(
             pets,

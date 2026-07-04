@@ -1,17 +1,25 @@
+from celery import current_app as celery_app
 from django.conf import settings
-from django.core.mail import send_mail
 
 
 def send_adoption_notification(adoption, subject, message):
     if not settings.EMAIL_HOST_USER:
         return
-    send_mail(
-        subject=subject,
-        message=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[adoption.applicant.email],
-        fail_silently=True,
-    )
+    try:
+        celery_app.send_task(
+            "apps.adoptions.tasks.send_adoption_status_email",
+            args=[adoption.id, adoption.status],
+        )
+    except Exception:
+        from django.core.mail import send_mail
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[adoption.applicant.email],
+            fail_silently=True,
+        )
 
 
 def notify_submitted(adoption):

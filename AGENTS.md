@@ -216,34 +216,63 @@ test(centers): add unit tests
 | `frontend/src/app/(public)/adoptar/[id]/page.tsx` | Adoption form page |
 | `frontend/src/app/(dashboard)/adoptions/page.tsx` | Dashboard adoptions management |
 
-## Estado del Proyecto — Jul 2026 (Post-Auditoría)
+## Estado del Proyecto — Jul 2026 (Post-Auditoría Integral)
 
-### Backend: 92 tests ✅ — Ruff: 0 errors ✅
-- Migraciones: al día ✅ — `ruff check apps/` → All checks passed ✅
-- `ruff format apps/` → 62 files reformatted, estilo consistente ✅
-- Lint auto-fix → 64 errores corregidos automáticamente, 7 manuales
-- Migraciones y seed_data excluidos de E501 (line-length) vía pyproject.toml
+### Backend: 102 tests ✅ — Ruff: 0 errors ✅
+- Migraciones: al día ✅ (13 migraciones + 1 nueva `0004_alter_center_created_by`)
+- `ruff check apps/` → All checks passed ✅
+- `ruff format apps/` → 93 files, estilo consistente ✅
+- Nueva app `inquiries` con tests: 2 model + 4 service + 4 view = 10 tests nuevos
 
 ### Frontend: Build exitoso ✅ — ESLint: 0 warnings ✅
-- **20 rutas estáticas generadas**, 2 dinámicas (`/mascotas`, `/pets/[id]`)
-- **0 errores, 0 warnings en ESLint** y build de Next.js
-- 8 `<img>` → `<Image/>` migrados con `fill` + parent `relative`
-- ~30 warnings eliminados: unused vars, hook deps faltantes, `<style>` inline
-- Animación `fadeScaleIn` movida de `<style>` a Tailwind config como `animate-fade-scale-in`
+- **18 rutas estáticas**, 2 dinámicas (`/mascotas`, `/pets/[id]`, `/adoptar/[id]`)
+- 22 componentes UI en `components/ui/`, `components/adoptions/`, `components/layout/`
+- Stores Zustand: `authStore.ts`, `uiStore.ts`
+- Páginas públicas nuevas: `/centros` (Leaflet), `/contacto`, `/privacidad`, `/terminos`, `/redes`
 
-### Issues resueltos en esta sesión
+### Issues resueltos en auditoría integral (Jul 2026)
 
-| Severidad | Issue | Solución |
-|-----------|-------|----------|
-| 🔴 HIGH | endpoint `change_role` inexistente | `centers/page.tsx:149` → usa `PATCH /users/{id}/` (partial_update) |
-| 🔴 HIGH | Login filtra existencia de usuarios (email oracle) | Creado `EmailAuthBackend` + `authenticate()` sin `User.objects.get()` previo |
-| 🟡 MED | Dual auth desincronizado | `auth.ts` ahora delega a `authStore`; `TokenCleanup.tsx` llama `hydrate()` |
-| 🟡 MED | Sin notificaciones email en adopciones | `adoptions/notifications.py` con 4 funciones + integradas en services.py |
-| 🟡 MED | Center creado sin validación desde inquiries | Validación email único + `CenterService.create_center()` |
-| 🟡 MED | No se valida capacidad del centro al aprobar | `AdoptionService.approve()` chequea `center.is_full` |
-| 🟢 LOW | `UserDropdown.tsx` usa `<style>` inline | Animación movida a `tailwind.config.js` como `animate-fade-scale-in` |
-| 🟢 LOW | 8 `<img>` tags sin `<Image/>` | Migrados a `next/image` con `fill` + contenedor `relative` |
-| 🟢 LOW | 145 ruff issues (formato) | 64 auto-fix, 62 formateados con `ruff format`, 0 restantes |
+| Severidad | Cantidad | Área |
+|-----------|----------|------|
+| 🔴 CRÍTICO | 9 | Backend: WebP signal, entrypoint, SSL, inquiries, adoption orphan, dockerignore, render.yaml, Suspense, contacto form |
+| 🟡 MEDIO | 14 | Lógica movida a services, permisos, bugs inquiries, species, R2 URLs, Celery task, voluntario role |
+| 🟢 BAJO | 7 | Renombrar IsAdminUser, select_reduntante, Secure cookies, tests inquiries, AGENTS.md, dead code |
+| **Total** | **30** | |
+
+### Fixes específicos aplicados
+
+| # | Severidad | Issue | Archivo | Solución |
+|---|-----------|-------|---------|----------|
+| 1 | 🔴 | WebP signal nunca registrado | `pets/apps.py:9` | `ready()` ahora importa `apps.pets.signals` |
+| 2 | 🔴 | Adoption se guarda antes de validar | `adoptions/views.py:106` | Nueva clase `AdoptionService.create_and_submit()` atómica |
+| 3 | 🔴 | HelpRequest sin `id` en response | `inquiries/views.py:29` | `perform_create` llama `serializer.save()` + service |
+| 4 | 🔴 | entrypoint.sh ignora CMD | `entrypoint.sh:19` | `exec "$@"` si hay args, fallback a runserver |
+| 5 | 🔴 | render.yaml sin RUN_MIGRATIONS | `render.yaml` | Variable `RUN_MIGRATIONS: "true"` en api service |
+| 6 | 🔴 | SSL redirect loop sin proxy header | `production.py:49` | `SECURE_PROXY_SSL_HEADER` antes de `SECURE_SSL_REDIRECT` |
+| 7 | 🔴 | Contacto form no funciona | `contacto/page.tsx` | `onSubmit` + `name` inputs + fetch a API |
+| 8 | 🔴 | useSearchParams sin Suspense | `login/page.tsx:13` | `LoginForm` envuelto en `<Suspense>` |
+| 9 | 🔴 | Dockerignore excluye configs build | `frontend/.dockerignore:9-10` | Eliminados `tailwind.config.js` y `postcss.config.js` |
+| 10 | 🟡 | Export permissions inconsistentes | `adoptions/views.py:44` | `export` agregado a `admin_actions` |
+| 11 | 🟡 | inquiries address mapea state | `inquiries/services.py:33` | Address generado desde state |
+| 12 | 🟡 | inquiries phone causa 500 | `inquiries/services.py:29` | Fallback `"Sin teléfono"` si phone vacío |
+| 13 | 🟡 | Stats en view en vez de service | `pets/views.py:94` | Movido a `PetService.get_stats()` |
+| 14 | 🟡 | Export pets Word en view | `pets/views.py:110` | Movido a `PetService.export_to_docx()` |
+| 15 | 🟡 | Export adoptions Word en view | `adoptions/views.py:78` | Movido a `AdoptionService.export_to_docx()` |
+| 16 | 🟡 | mark_read en view | `inquiries/views.py:33` | Movido a `HelpRequestService.mark_as_read()` |
+| 17 | 🟡 | partial_update query extra DB | `users/views.py:115` | Refactorizado sin `self.get_object()` duplicado |
+| 18 | 🟡 | Voluntario no asignable vía API | `users/serializers.py:106` | Agregado `("voluntario", "Voluntario")` |
+| 19 | 🟡 | Celery task nunca llamada | `adoptions/tasks.py` | Notifications ahora delega a task async con fallback sync |
+| 20 | 🟡 | Species binario en dashboard | `pets/page.tsx:123` | Mapa `{dog: 'Perro', cat: 'Gato', other: 'Otro'}` |
+| 21 | 🟡 | normalizeImageUrl rompe R2 | `utils.ts:6-9` | URLs con `http` se devuelven sin modificar |
+| 22 | 🟡 | selectedCenter unused state | `centros/page.tsx:41` | Estado y onClick removidos |
+| 23 | 🟡 | Navbar variant prop muerta | `Navbar.tsx:16` | Prop `variant` removida |
+| 24 | 🟡 | Adoptar usa fetch en vez de axios | `adoptar/[id]/page.tsx:66` | Cambiado a `api.get()` |
+| 25 | 🟡 | server.ts GET hardcodeado | `server.ts:29` | `method: 'GET'` removido |
+| 26 | 🟢 | IsAdminUser sombrea DRF | `pets/permissions.py:25` | Renombrado a `IsAdminRole` |
+| 27 | 🟢 | select_related redundante | `centers/views.py:109` | Eliminado `.select_related("center")` |
+| 28 | 🟢 | Cookies sin Secure flag | `cookies.ts:4` | `Secure` agregado en HTTPS |
+| 29 | 🟢 | AGENTS.md desactualizado | `AGENTS.md` | Actualizado con estado post-fix |
+| 30 | 🟢 | Sin tests para inquiries | `inquiries/tests/` | Creados: 2 model + 4 service + 4 view |
 
 ## Contacto
 

@@ -25,6 +25,7 @@ class HelpRequestCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpRequest
         fields = (
+            "id",
             "request_type",
             "first_name",
             "last_name",
@@ -33,3 +34,4 @@ class HelpRequestCreateSerializer(serializers.ModelSerializer):
             "state",
             "description",
         )
+        read_only_fields = ("id",)

@@ -3,11 +3,11 @@ Adoption views (View layer).
 Delegates to services (Presenter layer).
 """
 
-from django.http import HttpResponse
-from docx import Document
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 
 from .models import Adoption
 from .permissions import IsAdminOrCenterAdmin, IsApplicantOrCenterAdmin
@@ -41,7 +41,7 @@ class AdoptionViewSet(viewsets.ModelViewSet):
     serializer_class = AdoptionSerializer
 
     def get_permissions(self):
-        admin_actions = {"start_review", "approve", "reject", "complete"}
+        admin_actions = {"start_review", "approve", "reject", "complete", "export"}
         if self.action in admin_actions:
             return [permissions.IsAuthenticated(), IsAdminOrCenterAdmin()]
         return [permissions.IsAuthenticated(), IsApplicantOrCenterAdmin()]
@@ -70,6 +70,13 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         context["request"] = self.request
         return context
 
+    def get_throttles(self):
+        throttles = super().get_throttles()
+        if self.action == "create":
+            throttles.append(ScopedRateThrottle())
+            self.throttle_scope = "adoption_create"
+        return throttles
+
     @action(
         detail=False,
         methods=["get"],
@@ -77,36 +84,17 @@ class AdoptionViewSet(viewsets.ModelViewSet):
     )
     def export(self, request):
         """Export adoptions to Word document."""
-        qs = self.get_queryset()
-        doc = Document()
-        doc.add_heading("Reporte de Solicitudes de Adopción", 0)
-
-        table = doc.add_table(rows=1, cols=6)
-        table.style = "Light Grid Accent 1"
-        hdr = table.rows[0].cells
-        for i, text in enumerate(["ID", "Solicitante", "Mascota", "Centro", "Estado", "Fecha"]):
-            hdr[i].text = text
-
-        for adoption in qs:
-            row = table.add_row().cells
-            row[0].text = str(adoption.id)
-            row[1].text = adoption.applicant.get_full_name() or adoption.applicant.email
-            row[2].text = adoption.pet.name if adoption.pet else ""
-            row[3].text = adoption.center.name if adoption.center else ""
-            row[4].text = adoption.get_status_display()
-            row[5].text = adoption.created_at.strftime("%d/%m/%Y")
-
-        response = HttpResponse(
-            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        )
-        response["Content-Disposition"] = 'attachment; filename="solicitudes.docx"'
-        doc.save(response)
-        return response
+        return AdoptionService.export_to_docx(self.get_queryset())
 
     def perform_create(self, serializer):
-        adoption = serializer.save(applicant=self.request.user)
-        service = AdoptionService(adoption)
-        service.submit()
+        try:
+            adoption = AdoptionService.create_and_submit(
+                validated_data=serializer.validated_data,
+                applicant=self.request.user,
+            )
+            serializer.instance = adoption
+        except ValidationError as e:
+            raise ValidationError({"error": str(e)}) from e
 
     @action(detail=True, methods=["post"])
     def submit(self, request, pk=None):

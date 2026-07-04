@@ -62,6 +62,7 @@ class Center(models.Model):
         "users.User",
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name="created_centers",
         verbose_name="creado por",
     )

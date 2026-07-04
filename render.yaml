@@ -19,8 +19,8 @@ services:
     name: huellitas-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: ./entrypoint.sh
+    buildCommand: pip install -r requirements.txt
+    startCommand: ./entrypoint.sh gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
     healthCheckPath: /api/health/
     plan: free
     region: virginia
@@ -73,6 +73,9 @@ services:
       # CORS Configuration
       - key: CORS_ALLOWED_ORIGINS
         value: https://huellitas-web.onrender.com
+      # Run migrations on API container
+      - key: RUN_MIGRATIONS
+        value: "true"
       # Frontend API URL
       - key: NEXT_PUBLIC_API_URL
         value: https://huellitas-api.onrender.com

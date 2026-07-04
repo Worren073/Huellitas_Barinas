@@ -5,7 +5,9 @@ Handles business logic for adoption operations with state machine.
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.http import HttpResponse
 from django.utils import timezone
+from docx import Document
 
 from .models import Adoption, AdoptionTimeline
 from .notifications import notify_approved, notify_completed, notify_rejected, notify_submitted
@@ -25,6 +27,24 @@ class AdoptionService:
 
     def __init__(self, adoption):
         self.adoption = adoption
+
+    @classmethod
+    def create_and_submit(cls, validated_data, applicant):
+        """Create an adoption and submit it atomically."""
+        with transaction.atomic():
+            pet = validated_data.get("pet")
+            if pet and pet.status != "available":
+                raise ValidationError("Esta mascota no está disponible para adopción")
+
+            if Adoption.objects.filter(pet=pet, applicant=applicant).exists():
+                raise ValidationError("Ya tienes una solicitud de adopción para esta mascota.")
+
+            validated_data.pop("status", None)
+            adoption = Adoption.objects.create(applicant=applicant, **validated_data)
+            cls(adoption)._add_timeline("pending", "pending", notes="Solicitud creada")
+
+        notify_submitted(adoption)
+        return adoption
 
     def submit(self):
         """Submit an adoption request with full validation."""
@@ -102,6 +122,34 @@ class AdoptionService:
     def get_timeline(self):
         """Get adoption timeline."""
         return self.adoption.timeline.all().order_by("created_at")
+
+    @classmethod
+    def export_to_docx(cls, queryset):
+        """Generate a Word document with adoption data."""
+        doc = Document()
+        doc.add_heading("Reporte de Solicitudes de Adopción", 0)
+
+        table = doc.add_table(rows=1, cols=6)
+        table.style = "Light Grid Accent 1"
+        hdr = table.rows[0].cells
+        for i, text in enumerate(["ID", "Solicitante", "Mascota", "Centro", "Estado", "Fecha"]):
+            hdr[i].text = text
+
+        for adoption in queryset:
+            row = table.add_row().cells
+            row[0].text = str(adoption.id)
+            row[1].text = adoption.applicant.get_full_name() or adoption.applicant.email
+            row[2].text = adoption.pet.name if adoption.pet else ""
+            row[3].text = adoption.center.name if adoption.center else ""
+            row[4].text = adoption.get_status_display()
+            row[5].text = adoption.created_at.strftime("%d/%m/%Y")
+
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+        response["Content-Disposition"] = 'attachment; filename="solicitudes.docx"'
+        doc.save(response)
+        return response
 
     def _transition_to(self, new_status, changed_by, notes=""):
         """Execute status transition with validation."""
