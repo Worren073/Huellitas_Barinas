@@ -155,29 +155,29 @@ class HealthCheckView(APIView):
         from django.core.cache import cache
         from django.db import connection
 
-        errors = []
+        db_ok = False
+        cache_ok = False
 
         # Check database
         try:
             connection.ensure_connection()
             db_ok = connection.is_usable()
-            if not db_ok:
-                errors.append("database: connection not usable")
         except Exception as e:
-            errors.append(f"database: {e}")
+            print(f"WARNING: Database health check failed: {e}")
 
-        # Check Redis / cache
+        # Check Redis / cache (non-blocking — Redis may be unavailable)
         try:
             cache.set("health_check", 1, 5)
             result = cache.get("health_check")
-            if result != 1:
-                errors.append("cache: write/read mismatch")
+            cache_ok = result == 1
+            if not cache_ok:
+                print("WARNING: Cache write/read mismatch")
         except Exception as e:
-            errors.append(f"cache: {e}")
+            print(f"WARNING: Cache unavailable: {e}")
 
-        if errors:
+        if not db_ok:
             return Response(
-                {"status": "unhealthy", "errors": errors},
+                {"status": "unhealthy", "database": "unavailable", "cache": "ok" if cache_ok else "unavailable"},
                 status=503,
             )
 
@@ -185,6 +185,6 @@ class HealthCheckView(APIView):
             {
                 "status": "healthy",
                 "database": "ok",
-                "cache": "ok",
+                "cache": "ok" if cache_ok else "unavailable",
             }
         )
