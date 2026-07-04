@@ -64,7 +64,7 @@ def parse_database_url(url: str = None) -> dict:
     
     if db_url:
         match = re.match(
-            r'postgresql://([^:]+):([^@]+)@([^:]+):(\d+)/([^\?]+)',
+            r'postgresql://([^:]+):([^@]+)@([^:]+?)(?::(\d+))?/([^\?]+)',
             db_url
         )
         if match:
@@ -75,7 +75,7 @@ def parse_database_url(url: str = None) -> dict:
                     'USER': match.group(1),
                     'PASSWORD': match.group(2),
                     'HOST': match.group(3),
-                    'PORT': match.group(4),
+                    'PORT': match.group(4) or '5432',
                     'OPTIONS': {'sslmode': 'require'},
                     'CONN_MAX_AGE': 600,
                     'ATOMIC_REQUESTS': True,
