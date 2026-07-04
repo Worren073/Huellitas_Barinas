@@ -153,17 +153,25 @@ class HealthCheckView(APIView):
 
     def get(self, request):
         from django.core.cache import cache
-        from django.db import connection
+        from django.db import connections
+        import time
 
         db_ok = False
         cache_ok = False
 
-        # Check database
-        try:
-            connection.ensure_connection()
-            db_ok = connection.is_usable()
-        except Exception as e:
-            print(f"WARNING: Database health check failed: {e}")
+        # Check database with retry for cold start (Neon free tier)
+        for attempt in range(3):
+            try:
+                connections["default"].connect()
+                with connections["default"].cursor() as cursor:
+                    cursor.execute("SELECT 1")
+                    cursor.fetchone()
+                db_ok = True
+                break
+            except Exception as e:
+                print(f"WARNING: Database health check (attempt {attempt + 1}/3): {e}")
+                if attempt < 2:
+                    time.sleep(2)
 
         # Check Redis / cache (non-blocking — Redis may be unavailable)
         try:
