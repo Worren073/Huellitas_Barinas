@@ -174,6 +174,9 @@ CELERY_TIMEZONE = 'America/Caracas'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
+# Run tasks synchronously (no worker service on free Render plan)
+CELERY_TASK_ALWAYS_EAGER = True
+
 # ============================================================================
 # CACHE CONFIGURATION
 # ============================================================================

@@ -19,12 +19,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-cache search libpq-dev | grep -q libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install -r requirements.txt && \
     apt-get remove -y libpq-dev gcc && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY . .
+COPY backend/ .
 
 RUN chmod +x entrypoint.sh entrypoint-worker.sh entrypoint-beat.sh
 

@@ -4,11 +4,11 @@ WORKDIR /app
 
 ENV NODE_ENV=development
 
-COPY package.json package-lock.json* ./
+COPY frontend/package.json frontend/package-lock.json ./
 
 RUN npm install --prefer-offline --no-audit
 
-COPY . .
+COPY frontend/ .
 
 EXPOSE 3000
 

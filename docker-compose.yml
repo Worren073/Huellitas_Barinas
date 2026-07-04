@@ -27,8 +27,8 @@ services:
 
   api:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     volumes:
       - ./backend:/app
       - static_volume:/app/staticfiles
@@ -53,8 +53,8 @@ services:
 
   worker:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     command: ./entrypoint-worker.sh
     volumes:
       - ./backend:/app
@@ -77,8 +77,8 @@ services:
 
   beat:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     command: ./entrypoint-beat.sh
     volumes:
       - ./backend:/app
@@ -100,8 +100,8 @@ services:
 
   web:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     ports:
       - '3000:3000'
     environment:
