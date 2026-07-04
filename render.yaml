@@ -12,7 +12,7 @@ services:
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     buildCommand: pip install -r requirements.txt
-    dockerCommand: ./entrypoint.sh gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+    dockerCommand: ./entrypoint.sh gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3 --timeout 120
     healthCheckPath: /api/health/
     plan: free
     region: virginia
