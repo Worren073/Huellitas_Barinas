@@ -401,6 +401,175 @@ git push origin main
 
 ---
 
+## 🚀 FASE 9 — DEPLOY A PRODUCCIÓN (Jul 2026)
+
+### Resumen
+
+12+ problemas de infraestructura resueltos en 10 commits para desplegar Huellitas Barinas en Render.
+
+---
+
+### ✅ Problema 1: Credenciales Hardcodeadas en production.py
+
+**ANTES**: `DB_PASSWORD = 'npg_aiXy4NJFqSe5'`, `DB_HOST` hardcodeado
+
+**DESPUÉS**: Todas las credenciales vía `os.environ.get()`, con `validate_required_env()` que lanza `ValueError` si falta alguna.
+
+**Archivo**: `backend/config/settings/production.py`
+
+---
+
+### ✅ Problema 2: SECRET_KEY No Validado
+
+**ANTES**: `SECRET_KEY = os.environ.get('SECRET_KEY')` — podía ser `None`
+
+**DESPUÉS**: Validación obligatoria con mensaje de error claro.
+
+**Archivo**: `backend/config/settings/production.py`
+
+---
+
+### ✅ Problema 3: ALLOWED_HOSTS Vacío
+
+**ANTES**: `ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')` → `[]` si vacío
+
+**DESPUÉS**: Validación requerida, wildcard `.onrender.com`
+
+**Archivo**: `backend/config/settings/production.py`
+
+---
+
+### ✅ Problema 4: CORS No Configurado para Producción
+
+**ANTES**: `CORS_ALLOWED_ORIGINS` con localhost únicamente
+
+**DESPUÉS**: Variable `CORS_ALLOWED_ORIGINS` requerida, apunta a `https://huellitas-web.onrender.com`
+
+**Archivos**: `backend/config/settings/base.py`, `production.py`
+
+---
+
+### ✅ Problema 5: DATABASE_URL Parsing Roto
+
+**ANTES**: Regex sin puerto opcional, indentación incorrecta, código inaccesible
+
+**DESPUÉS**: `parse_database_url()` con regex que acepta puerto opcional `(?::(\d+))?`, fallback a variables individuales
+
+**Archivo**: `backend/config/settings/production.py`
+
+---
+
+### ✅ Problema 6: REDIS_URL No Validado
+
+**ANTES**: `CELERY_BROKER_URL = os.environ.get('REDIS_URL')` — podía ser `None`
+
+**DESPUÉS**: Validación requerida, `CELERY_RESULT_BACKEND` sincronizado, `CACHES` configurado con `django_redis`
+
+**Archivo**: `backend/config/settings/production.py`
+
+---
+
+### ✅ Problema 7: Docker COPY Paths Incorrectos
+
+**ANTES**: `COPY . .` en Dockerfile y Dockerfile.prod — contexto incorrecto para Render
+
+**DESPUÉS**: Paths relativos a raíz del repo: `COPY backend/requirements.txt .`, `COPY backend/ .`, `COPY frontend/ .`
+
+**Archivos**: `backend/Dockerfile`, `frontend/Dockerfile`, `frontend/Dockerfile.prod`, `docker-compose.yml`
+
+---
+
+### ✅ Problema 8: entrypoint.sh Ignoraba CMD
+
+**ANTES**: El entrypoint forzaba `runserver` sin respetar el `CMD` del Dockerfile
+
+**DESPUÉS**: `exec "$@"` si hay argumentos, fallback a `gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120`
+
+**Archivo**: `backend/entrypoint.sh`
+
+---
+
+### ✅ Problema 9: render.yaml con Servicios No Soportados
+
+**ANTES**: Incluía servicios `worker`, `beat`, y `db` que no funcionan en free tier de Render
+
+**DESPUÉS**: Solo 3 servicios (redis, api, web); `DATABASE_URL sync: false` para Neon externa; `CELERY_TASK_ALWAYS_EAGER = True`
+
+**Archivo**: `render.yaml`
+
+---
+
+### ✅ Problema 10: Health Check Sin Validación Real
+
+**ANTES**: El health endpoint respondía 200 sin verificar DB ni Redis
+
+**DESPUÉS**: Endpoint `/api/health/` que verifica `connection.ensure_connection()` + `cache.set/get`, responde 503 si algo falla
+
+**Archivos**: `backend/apps/users/views.py`, `backend/config/urls.py`
+
+---
+
+### ✅ Problema 11: Frontend Build Con --turbo (Turbopack)
+
+**ANTES**: `"dev": "next dev --turbo"` — causaba TransformStream error con Node.js 20
+
+**DESPUÉS**: `"dev": "next dev"` — usa webpack estable
+
+**Archivo**: `frontend/package.json`
+
+---
+
+### ✅ Problema 12: .dockerignore Excluía Configs de Build
+
+**ANTES**: `.dockerignore` excluía `tailwind.config.js` y `postcss.config.js`
+
+**DESPUÉS**: Eliminados del `.dockerignore` para que el build funcione
+
+**Archivo**: `frontend/.dockerignore`
+
+---
+
+### ✅ Problema 13: psycopg2 Fallaba en Docker
+
+**ANTES**: `psycopg2==2.9.*` requería compilación desde source (stdlib.h missing)
+
+**DESPUÉS**: `psycopg2-binary==2.9.*` con wheel precompilado
+
+**Archivo**: `backend/requirements.txt`
+
+---
+
+### ✅ Problema 14: django_celery_beat No Configurado
+
+**ANTES**: `django_celery_beat` no estaba en `INSTALLED_APPS`
+
+**DESPUÉS**: Agregado a `INSTALLED_APPS` en `base.py`, migraciones pendientes (no aplicadas porque no se usa Beat en free tier)
+
+**Archivo**: `backend/config/settings/base.py`
+
+---
+
+## 📦 ARCHIVOS NUEVOS/MODIFICADOS (Fase 9)
+
+| Archivo | Cambio |
+|---------|--------|
+| `backend/config/settings/production.py` | ✅ Reescrito completamente con validación |
+| `backend/config/settings/base.py` | ✅ +`django_celery_beat`, rate limits |
+| `backend/requirements.txt` | ✅ +gunicorn, +sentry-sdk, +django-celery-beat, psycopg2→psycopg2-binary |
+| `backend/entrypoint.sh` | ✅ exec "$@", gunicorn, CRLF→LF |
+| `backend/Dockerfile` | ✅ COPY paths relativos a raíz |
+| `backend/config/urls.py` | ✅ +`/api/health/` |
+| `backend/apps/users/views.py` | ✅ Health check con DB + Redis |
+| `frontend/package.json` | ✅ `--turbo` removido |
+| `frontend/.dockerignore` | ✅ Configs de build no excluidos |
+| `frontend/Dockerfile` | ✅ COPY paths relativos |
+| `frontend/Dockerfile.prod` | ✅ COPY paths relativos |
+| `render.yaml` | ✅ Reestructurado: solo 3 servicios |
+| `docker-compose.yml` | ✅ Contextos de build actualizados |
+| `.env.example` | ✅ +RUN_MIGRATIONS |
+
+---
+
 ## 📞 Contacto
 
 Para preguntas sobre los cambios:
@@ -409,6 +578,6 @@ Para preguntas sobre los cambios:
 
 ---
 
-**Versión**: 1.0.0  
-**Fecha**: Febrero 2026  
-**Status**: ✅ Ready for Production
+**Versión**: 2.0.0  
+**Fecha**: Julio 2026  
+**Status**: ✅ **Desplegado en Producción** 🚀

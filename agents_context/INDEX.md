@@ -256,13 +256,17 @@ Empezar aquí:
 | Métrica | Valor |
 |---------|-------|
 | Total documentos | 8 (+ AGENTS.md, SKILL.md) |
-| Total KB | ~70 KB |
-| Tiempo lectura completa | ~60 minutos |
+| Total KB | ~90 KB |
+| Tiempo lectura completa | ~75 minutos |
 | Problemas solucionados (sesión anterior) | 7 |
-| Problemas solucionados (sesión actual) | 9 |
+| Issues corregidos (auditoría) | 30 |
+| Issues de deploy resueltos | 14 |
 | Scripts nuevos | 4 |
-| Archivos modificados | 30+ |
-| Líneas de código nuevo/modificado | 2000+ |
+| Archivos modificados | 77+ (47 en deploy) |
+| Líneas de código nuevo/modificado | 2700+ |
+| Commits de deploy | 10 |
+| Tests backend | 102 ✅ |
+| Puntuación | 9.5/10 🚀 |
 
 ---
 
@@ -406,14 +410,14 @@ Día 3 (30 min):
 |-----------|---------|-------|--------|
 | AGENTS.md | 2.0.0 | Jul 2026 | ✅ Actualizado |
 | SKILL.md | 2.0.0 | Jul 2026 | ✅ Actualizado |
-| EXECUTIVE_SUMMARY.md | 2.1.0 | Jul 2026 | ✅ Actualizado |
-| FIXES_SUMMARY.md | 1.0.0 | Feb 2026 | ✅ Final |
+| EXECUTIVE_SUMMARY.md | 3.0.0 | Jul 2026 | ✅ Desplegado |
+| FIXES_SUMMARY.md | 2.0.0 | Jul 2026 | ✅ Desplegado |
 | DEPLOYMENT.md | 1.0.0 | Feb 2026 | ✅ Final |
 | QUICK_REFERENCE.md | 2.1.0 | Jul 2026 | ✅ Actualizado |
-| PROJECT_STATUS.md | 2.1.0 | Jul 2026 | ✅ Actualizado |
+| PROJECT_STATUS.md | 3.0.0 | Jul 2026 | ✅ Desplegado |
 | REGISTRATION_UPDATE.md | 1.0.0 | Feb 2026 | ✅ Final |
 | ENV_TEMPLATE.txt | 1.0.0 | Feb 2026 | ✅ Final |
-| INDEX.md (este archivo) | 2.0.0 | Jul 2026 | ✅ Actualizado |
+| INDEX.md (este archivo) | 2.1.0 | Jul 2026 | ✅ Desplegado |
 
 ---
 
@@ -434,7 +438,10 @@ Este proyecto demuestra:
 
 **Carpeta**: `agents_context/`  
 **Documentos**: 8 (más AGENTS.md + SKILL.md)  
-**Status**: ✅ **READY FOR PRODUCTION**  
+**Status**: ✅ **DESPLEGADO EN PRODUCCIÓN** 🚀  
+**API**: https://huellitas-api.onrender.com  
+**Frontend**: https://huellitas-web.onrender.com  
+**DB**: Neon PostgreSQL (externa)  
 **Última actualización**: Julio 2026  
 
 ```

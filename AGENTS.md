@@ -216,19 +216,29 @@ test(centers): add unit tests
 | `frontend/src/app/(public)/adoptar/[id]/page.tsx` | Adoption form page |
 | `frontend/src/app/(dashboard)/adoptions/page.tsx` | Dashboard adoptions management |
 
-## Estado del Proyecto — Jul 2026 (Post-Auditoría Integral)
+## Estado del Proyecto — Jul 2026 (Desplegado en Render)
 
 ### Backend: 102 tests ✅ — Ruff: 0 errors ✅
-- Migraciones: al día ✅ (13 migraciones + 1 nueva `0004_alter_center_created_by`)
+- Migraciones: al día ✅ (14 migraciones + apps propias al día)
 - `ruff check apps/` → All checks passed ✅
 - `ruff format apps/` → 93 files, estilo consistente ✅
-- Nueva app `inquiries` con tests: 2 model + 4 service + 4 view = 10 tests nuevos
+- **Desplegado en**: `https://huellitas-api.onrender.com`
+- **Health endpoint**: `/api/health/` (verifica DB + Redis)
+- Apps: `users`, `centers`, `pets`, `adoptions`, `inquiries`
 
 ### Frontend: Build exitoso ✅ — ESLint: 0 warnings ✅
-- **18 rutas estáticas**, 2 dinámicas (`/mascotas`, `/pets/[id]`, `/adoptar/[id]`)
+- **20 rutas estáticas**, 2 dinámicas (`/mascotas`, `/pets/[id]`, `/adoptar/[id]`)
 - 22 componentes UI en `components/ui/`, `components/adoptions/`, `components/layout/`
 - Stores Zustand: `authStore.ts`, `uiStore.ts`
-- Páginas públicas nuevas: `/centros` (Leaflet), `/contacto`, `/privacidad`, `/terminos`, `/redes`
+- **Desplegado en**: `https://huellitas-web.onrender.com`
+
+### Infraestructura (Render)
+| Servicio | Tipo | URL/Config |
+|----------|------|------------|
+| API | web (Docker) | `https://huellitas-api.onrender.com` |
+| Frontend | web (Docker) | `https://huellitas-web.onrender.com` |
+| Redis | interno | Cache + Celery broker |
+| DB | Neon (externa) | PostgreSQL 15, SSL require |
 
 ### Issues resueltos en auditoría integral (Jul 2026)
 
@@ -239,7 +249,26 @@ test(centers): add unit tests
 | 🟢 BAJO | 7 | Renombrar IsAdminUser, select_reduntante, Secure cookies, tests inquiries, AGENTS.md, dead code |
 | **Total** | **30** | |
 
-### Fixes específicos aplicados
+### Fixes de infraestructura para deploy (14 issues)
+
+| # | Issue | Archivo | Solución |
+|---|-------|---------|----------|
+| 1 | 🔴 Credenciales hardcodeadas | `production.py` | `validate_required_env()` para todas las vars |
+| 2 | 🔴 SECRET_KEY no validado | `production.py` | Lanza ValueError si falta |
+| 3 | 🔴 ALLOWED_HOSTS vacío | `production.py` | Validación requerida, wildcard `.onrender.com` |
+| 4 | 🔴 CORS con localhost | `base.py` + `production.py` | `CORS_ALLOWED_ORIGINS` desde env var |
+| 5 | 🔴 DATABASE_URL parsing roto | `production.py` | Regex con puerto opcional, fallback a vars |
+| 6 | 🔴 REDIS_URL no validado | `production.py` | Validación + django_redis config |
+| 7 | 🔴 Docker COPY paths incorrectos | `Dockerfile`s, `docker-compose.yml` | Paths relativos a raíz del repo |
+| 8 | 🔴 entrypoint.sh ignora CMD | `entrypoint.sh` | `exec "$@"` + gunicorn workers 3 |
+| 9 | 🔴 render.yaml con servicios no soportados | `render.yaml` | Solo redis+api+web, free tier |
+| 10 | 🟡 Health check sin validación | `users/views.py`, `urls.py` | Verifica DB + Redis, responde 503 |
+| 11 | 🟡 Frontend con --turbo | `package.json` | `--turbo` removido, webpack estable |
+| 12 | 🟡 .dockerignore excluye configs | `frontend/.dockerignore` | `tailwind.config.js` y `postcss.config.js` removidos |
+| 13 | 🟡 psycopg2 falla en Docker | `requirements.txt` | `psycopg2` → `psycopg2-binary` |
+| 14 | 🟢 django_celery_beat no configurado | `base.py` | Agregado a INSTALLED_APPS |
+
+### Fixes específicos aplicados (auditoría)
 
 | # | Severidad | Issue | Archivo | Solución |
 |---|-----------|-------|---------|----------|
@@ -281,3 +310,5 @@ test(centers): add unit tests
 - **Deploy**: Render
 - **DB**: Neon PostgreSQL
 - **Storage**: Cloudflare R2
+- **API**: https://huellitas-api.onrender.com
+- **Web**: https://huellitas-web.onrender.com

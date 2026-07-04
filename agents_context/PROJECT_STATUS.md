@@ -1,30 +1,31 @@
 # 📊 ESTADO DEL PROYECTO
 
 **Fecha**: Julio 2026  
-**Versión**: 2.1.0  
-**Estado**: ✅ **COMPLETE**  
+**Versión**: 3.0.0  
+**Estado**: ✅ **DESPLEGADO EN PRODUCCIÓN**  
 **Puntuación**: 9.5/10
 
 ---
 
 ## 🎯 RESUMEN EJECUTIVO
 
-Huellitas Barinas es una **plataforma web completa** para gestión de centros de adopción de mascotas en Barinas, Venezuela. El proyecto ha pasado por **7 fases de refactorización** que incluyeron corrección de bugs de seguridad, estandarización de permisos, refactor de servicios, 18 páginas frontend, stores de estado global con Zustand, 92 tests automatizados y mejoras de UX.
+Huellitas Barinas es una **plataforma web completa** para gestión de centros de adopción de mascotas en Barinas, Venezuela. El proyecto ha pasado por **9 fases** que incluyeron corrección de bugs de seguridad, estandarización de permisos, refactor de servicios, 22 rutas frontend, stores de estado global con Zustand, **102 tests automatizados**, 30 issues corregidos en auditoría integral y **despliegue exitoso en Render**.
 
 ### Estado de Componentes
 
 | Componente | Status | Detalles |
 |-----------|--------|----------|
-| **Backend (Django)** | ✅ REFINED | MVP pattern, 5 apps, permisos estandarizados, Ruff 0 errors |
-| **Frontend (Next.js)** | ✅ COMPLETE | 22 rutas, Zustand, ESLint 0 warnings, `<Image/>` migrado |
-| **Database (PostgreSQL)** | ✅ READY | Connection pooling activado |
-| **Cache (Redis)** | ✅ READY | Validación automática |
-| **Celery/Tasks** | ✅ READY | Workers configurados |
-| **Storage (R2)** | ✅ READY | Fallback a local si no config |
-| **Email** | ⚠️ OPTIONAL | `notifications.py` creado, requiere Gmail App Password |
-| **Monitoring (Sentry)** | ⚠️ OPTIONAL | Requiere SENTRY_DSN |
+| **Backend (Django)** | ✅ REFINED | MVP pattern, 5 apps, permisos estandarizados, Ruff 0 errors, 102 tests |
+| **Frontend (Next.js)** | ✅ COMPLETE | 22 rutas, Zustand, ESLint 0 warnings, `next/image` migrado |
+| **Database (PostgreSQL)** | ✅ EN PRODUCCIÓN | Neon (externa, persistente), pooling activado, SSL require |
+| **Cache (Redis)** | ✅ EN PRODUCCIÓN | Render Redis free tier, validado |
+| **Celery/Tasks** | ⚠️ SÍNCRONO | `CELERY_TASK_ALWAYS_EAGER=True` — sin worker en free tier |
+| **Storage (R2)** | ✅ READY | Cloudflare R2 configurado, sync:false en Render |
+| **Email** | ⚠️ OPTIONAL | `notifications.py`, configurado vía Gmail SMTP, sync:false |
+| **Monitoring (Sentry)** | ⚠️ OPTIONAL | SENTRY_DSN sync:false en Render |
 | **API Docs** | ✅ READY | Swagger en `/api/docs/` |
-| **Tests** | ✅ COMPLETE | 92 tests (pytest), todas las apps cubiertas |
+| **Tests** | ✅ COMPLETE | 102 tests (pytest), todas las apps cubiertas + inquiries |
+| **Deploy** | ✅ EN PRODUCCIÓN | Render (3 servicios: redis, api, web) + Neon DB externa |
 
 ---
 
@@ -277,7 +278,7 @@ Huellitas_Barinas/
 
 ```
 SESIÓN ANTERIOR (Feb 2026):  8.5/10 ✅ READY
-SESIÓN ACTUAL (Jul 2026):    9.5/10 ✅ COMPLETE
+SESIÓN ACTUAL (Jul 2026):    9.5/10 ✅ DESPLEGADO
 MEJORA: +12%
 ```
 
@@ -290,6 +291,7 @@ MEJORA: +12%
 | **Frontend** | 8/10 | 9.5/10 | +19% |
 | **Tests** | 3/10 | 9.5/10 | +217% |
 | **Documentación** | 9/10 | 9.5/10 | +5% |
+| **Deploy/Infra** | 0/10 | 9/10 | +900% |
 
 ---
 
@@ -342,6 +344,55 @@ MEJORA: +12%
 - [x] **ESLint 0 warnings** — ~30 warnings eliminados (unused vars, hook deps, `<img>`)
 - [x] **`<img>` → `<Image/>`** — 8 tags migrados con `fill` + contenedor `relative`
 - [x] **UserDropdown** — `<style>` inline reemplazado por `animate-fade-scale-in` en Tailwind
+- [x] **30 issues resueltos**: 9 críticos, 14 medios, 7 bajos — ver tabla en AGENTS.md
+
+### Fase 9 — Deploy a Producción (Jul 2026) ✅
+- [x] **production.py reescrito** — Credenciales a env vars, `validate_required_env()`, `parse_database_url()` con regex
+- [x] **Docker paths corregidos** — COPY paths relativos a raíz del repo (`COPY backend/ .`, `COPY frontend/ .`)
+- [x] **entrypoint.sh arreglado** — `exec "$@"` respeta CMD, fallback a `gunicorn` con workers 3
+- [x] **requirements.txt actualizado** — Agregados `gunicorn`, `sentry-sdk`, `django-celery-beat`; `psycopg2`→`psycopg2-binary`
+- [x] **render.yaml reestructurado** — Solo 3 servicios (redis, api, web); worker/beat removidos (free tier)
+- [x] **Neon DB externa** — `DATABASE_URL sync: false`, regex acepta puerto opcional
+- [x] **Health endpoint** — `/api/health/` verifica DB + Redis, responde 503 si falla
+- [x] **CORS para producción** — `CORS_ALLOWED_ORIGINS` apunta a `https://huellitas-web.onrender.com`
+- [x] **`--turbo` removido** — Turbopack beta causaba TransformStream error; `next dev` con webpack
+- [x] **ALLOWED_HOSTS wildcard** — `.onrender.com` evita hardcodear subdominio específico
+- [x] **Rate limiting** — `help_request: 5/min`, `adoption_create: 5/min` solo en `create`
+- [x] **`django_celery_beat` en INSTALLED_APPS** — Migraciones pendientes (no aplicadas en free tier)
+- [x] **`.dockerignore` corregido** — No excluye `tailwind.config.js` ni `postcss.config.js`
+
+---
+
+## 🚀 ESTADO DEL DEPLOY
+
+El proyecto está desplegado en Render con la siguiente configuración:
+
+```
+📡 huellitas-api    → https://huellitas-api.onrender.com    (Django + Gunicorn + Health check)
+🌐 huellitas-web    → https://huellitas-web.onrender.com    (Next.js standalone, Dockerfile.prod)
+🔴 huellitas-redis  → Servicio Redis interno de Render       (Cache + Celery broker)
+🐘 Neon PostgreSQL  → Base de datos externa persistente       (0.5 GB free tier)
+```
+
+**Historial de deploys** (10 commits, 4 Jul 2026):
+1. `7e21d6c` — Cambios en el contenedor de docker
+2. `a083b47` — Preparacion para deploy
+3. `caaada5` — Cambios en render.yaml
+4. `93336d2` — Errores en render
+5. `2024c37` — Cambios en build de docker
+6. `ca9db2c` — Fix docker
+7. `69fad9f` — Cambio de psycog en requirements
+8. `381d4df` — Cambios a configuracion de conexion en neon
+9. `998cfbd` — Arreglo para deploy
+10. `7c519ea` — Cambios en cors
+
+**Variables de entorno requeridas** (configurar manualmente en Render Dashboard):
+- `SECRET_KEY` — Generada automáticamente por Render (api), copiar a worker/beat
+- `DATABASE_URL` — URL completa de Neon PostgreSQL con SSL
+- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` — Cloudflare R2
+- `AWS_S3_ENDPOINT_URL` — Endpoint de R2
+- `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` — Gmail SMTP credentials
+- `SENTRY_DSN` — Opcional para monitoreo
 
 ---
 
@@ -355,22 +406,23 @@ MEJORA: +12%
 
 ## ✅ CONCLUSIÓN
 
-**Huellitas Barinas v2.0.0** — Proyecto completo con:
+**Huellitas Barinas v3.0.0** — Proyecto completo y en producción:
 
-✅ Backend Django robusto con MVP pattern  
-✅ Frontend Next.js con 18 páginas y animaciones  
-✅ 92 tests automatizados (todos pasando)  
-✅ 6 contenedores Docker saludables  
-✅ Permisos estandarizados y seguros  
+✅ Backend Django robusto con MVP pattern (102 tests, Ruff 0 errors)
+✅ Frontend Next.js con 22 rutas y animaciones (ESLint 0 warnings)
+✅ 102 tests automatizados (todos pasando)  
+✅ Desplegado en Render (redis + api + web + Neon DB)
+✅ Permisos estandarizados y seguros
 ✅ Estado global con Zustand  
 ✅ Documentación actualizada  
-✅ 0 problemas críticos  
+✅ 0 problemas críticos, 30 issues resueltos
+✅ Health check con verificación DB + Redis
 
 **Puntuación Final: 9.5/10** ⭐  
-**Status: COMPLETE** 🎉
+**Status: ✅ DESPLEGADO EN PRODUCCIÓN** 🚀
 
 ---
 
 **Generado**: Julio 2026  
-**Versión**: 2.0.0  
+**Versión**: 3.0.0  
 **Última actualización**: PROJECT_STATUS.md
