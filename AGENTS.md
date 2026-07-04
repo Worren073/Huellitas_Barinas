@@ -230,13 +230,13 @@ test(centers): add unit tests
 - **20 rutas estáticas**, 2 dinámicas (`/mascotas`, `/pets/[id]`, `/adoptar/[id]`)
 - 22 componentes UI en `components/ui/`, `components/adoptions/`, `components/layout/`
 - Stores Zustand: `authStore.ts`, `uiStore.ts`
-- **Desplegado en**: `https://huellitas-web.onrender.com`
+- **Desplegado en**: `https://huellitasvenezuela-web.onrender.com`
 
 ### Infraestructura (Render)
 | Servicio | Tipo | URL/Config |
 |----------|------|------------|
 | API | web (Docker) | `https://huellitas-api.onrender.com` |
-| Frontend | web (Docker) | `https://huellitas-web.onrender.com` |
+| Frontend | web (Docker) | `https://huellitasvenezuela-web.onrender.com` |
 | Redis | interno | Cache + Celery broker |
 | DB | Neon (externa) | PostgreSQL 15, SSL require |
 
@@ -311,4 +311,4 @@ test(centers): add unit tests
 - **DB**: Neon PostgreSQL
 - **Storage**: Cloudflare R2
 - **API**: https://huellitas-api.onrender.com
-- **Web**: https://huellitas-web.onrender.com
+- **Web**: https://huellitasvenezuela-web.onrender.com
