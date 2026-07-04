@@ -2,11 +2,12 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dependencies
-COPY package.json package-lock.json* ./
-RUN npm install
+ENV NODE_ENV=development
 
-# Copy source code
+COPY package.json package-lock.json* ./
+
+RUN npm install --prefer-offline --no-audit
+
 COPY . .
 
 EXPOSE 3000
