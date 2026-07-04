@@ -3,6 +3,8 @@ Pet views (View layer).
 Delegates to services (Presenter layer).
 """
 
+from django.http import HttpResponse
+from docx import Document
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -67,6 +69,14 @@ class PetViewSet(viewsets.ModelViewSet):
         if center:
             queryset = queryset.filter(center_id=center)
 
+        size = self.request.query_params.get("size")
+        if size:
+            queryset = queryset.filter(size=size)
+
+        gender = self.request.query_params.get("gender")
+        if gender:
+            queryset = queryset.filter(gender=gender)
+
         return queryset
 
     @action(detail=False, methods=["get"])
@@ -96,6 +106,41 @@ class PetViewSet(viewsets.ModelViewSet):
                 "adopted_pets": base_qs.filter(status="adopted").count(),
             }
         )
+
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[IsCenterAdminOrSuperAdmin],
+    )
+    def export(self, request):
+        """Export pets to Word document."""
+        qs = self.get_queryset()
+        doc = Document()
+        doc.add_heading("Reporte de Mascotas", 0)
+
+        table = doc.add_table(rows=1, cols=7)
+        table.style = "Light Grid Accent 1"
+        hdr = table.rows[0].cells
+        headers = ["Nombre", "Especie", "Raza", "Edad", "Tamaño", "Estado", "Centro"]
+        for i, text in enumerate(headers):
+            hdr[i].text = text
+
+        for pet in qs:
+            row = table.add_row().cells
+            row[0].text = pet.name
+            row[1].text = pet.get_species_display()
+            row[2].text = pet.breed
+            row[3].text = f"{pet.age_months} meses"
+            row[4].text = pet.get_size_display()
+            row[5].text = pet.get_status_display()
+            row[6].text = pet.center.name if pet.center else ""
+
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+        response["Content-Disposition"] = 'attachment; filename="mascotas.docx"'
+        doc.save(response)
+        return response
 
     @action(
         detail=True,
@@ -140,3 +185,7 @@ class PetImageViewSet(viewsets.ModelViewSet):
         if pet_id:
             queryset = queryset.filter(pet_id=pet_id)
         return queryset
+
+    def perform_create(self, serializer):
+        pet_id = self.kwargs.get("pet_pk")
+        serializer.save(pet_id=pet_id)

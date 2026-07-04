@@ -3,6 +3,8 @@ Adoption views (View layer).
 Delegates to services (Presenter layer).
 """
 
+from django.http import HttpResponse
+from docx import Document
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -67,6 +69,39 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context["request"] = self.request
         return context
+
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[permissions.IsAuthenticated, IsAdminOrCenterAdmin],
+    )
+    def export(self, request):
+        """Export adoptions to Word document."""
+        qs = self.get_queryset()
+        doc = Document()
+        doc.add_heading("Reporte de Solicitudes de Adopción", 0)
+
+        table = doc.add_table(rows=1, cols=6)
+        table.style = "Light Grid Accent 1"
+        hdr = table.rows[0].cells
+        for i, text in enumerate(["ID", "Solicitante", "Mascota", "Centro", "Estado", "Fecha"]):
+            hdr[i].text = text
+
+        for adoption in qs:
+            row = table.add_row().cells
+            row[0].text = str(adoption.id)
+            row[1].text = adoption.applicant.get_full_name() or adoption.applicant.email
+            row[2].text = adoption.pet.name if adoption.pet else ""
+            row[3].text = adoption.center.name if adoption.center else ""
+            row[4].text = adoption.get_status_display()
+            row[5].text = adoption.created_at.strftime("%d/%m/%Y")
+
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+        response["Content-Disposition"] = 'attachment; filename="solicitudes.docx"'
+        doc.save(response)
+        return response
 
     def perform_create(self, serializer):
         adoption = serializer.save(applicant=self.request.user)

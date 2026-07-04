@@ -10,7 +10,7 @@ class Pet(models.Model):
         OTHER = "other", "Otro"
 
     class Status(models.TextChoices):
-        AVAILABLE = "available", "Disponible"
+        AVAILABLE = "available", "En Adopción"
         ADOPTED = "adopted", "Adoptada"
         IN_PROCESS = "in_process", "En Proceso de Adopción"
         NOT_AVAILABLE = "not_available", "No Disponible"
@@ -32,9 +32,10 @@ class Pet(models.Model):
         max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="peso en kg"
     )
     description = models.TextField(verbose_name="descripción")
-    health_status = models.TextField(blank=True, verbose_name="estado de salud")
+    health_notes = models.TextField(blank=True, verbose_name="notas de salud")
     is_sterilized = models.BooleanField(default=False, verbose_name="esterilizado")
     is_vaccinated = models.BooleanField(default=False, verbose_name="vacunado")
+    is_dewormed = models.BooleanField(default=False, verbose_name="desparasitado")
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.AVAILABLE, verbose_name="estado"
     )

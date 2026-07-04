@@ -21,7 +21,7 @@ const speciesOptions = [
 ];
 
 const sizeOptions = [
-  { value: 'small', label: 'Pequeno' },
+  { value: 'small', label: 'Pequeño' },
   { value: 'medium', label: 'Mediano' },
   { value: 'large', label: 'Grande' },
 ];

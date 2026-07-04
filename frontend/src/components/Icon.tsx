@@ -94,6 +94,15 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function RulerIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M8 6l4-3 4 3M8 18l4 3 4-3" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 8h2M9 12h2M9 16h2M13 8h2M13 12h2M13 16h2" />
+    </svg>
+  );
+}
+
 function EmailIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
@@ -147,12 +156,14 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   pets: PawOutlineIcon,
   pets_solid: PawSolidIcon,
   photo_library: PhotoIcon,
+  add_a_photo: PhotoIcon,
   progress_activity: ArrowPathIcon,
   radio_button_unchecked: EllipsisHorizontalCircleIcon,
   schedule: ClockIcon,
   search: MagnifyingGlassIcon,
   search_off: ExclamationTriangleIcon,
   share: ArrowUpTrayIcon,
+  straighten: RulerIcon,
   trending_up: ArrowTrendingUpIcon,
   user: UserIcon,
   user_circle: UserCircleIcon,

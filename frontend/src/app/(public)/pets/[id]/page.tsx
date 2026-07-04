@@ -40,7 +40,8 @@ interface Pet {
   center_name?: string;
   is_vaccinated?: boolean;
   is_sterilized?: boolean;
-  health_status?: string;
+  is_dewormed?: boolean;
+  health_notes?: string;
 }
 
 function formatAge(months?: number): string {
@@ -57,6 +58,11 @@ function getSpeciesLabel(species: string): string {
 
 function getGenderLabel(gender?: string): string {
   return gender === 'M' || gender === 'male' ? 'Macho' : 'Hembra';
+}
+
+function getSizeLabel(size?: string): string {
+  const labels: Record<string, string> = { small: 'Pequeño', medium: 'Mediano', large: 'Grande' };
+  return size ? labels[size] || size : '';
 }
 
 export default function PetDetailPage({ params }: { params: { id: string } }) {
@@ -146,6 +152,11 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
                   <Icon name={(pet.gender === 'M' || pet.gender === 'male') ? 'male' : 'female'} className="w-4 h-4" /> {getGenderLabel(pet.gender)}
                 </span>
               )}
+              {pet.size && (
+                <span className="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-md px-3 py-1 rounded-full">
+                  <Icon name="straighten" className="w-4 h-4" /> {getSizeLabel(pet.size)}
+                </span>
+              )}
               <StatusBadge status={pet.status} />
             </div>
           </div>
@@ -164,7 +175,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
             <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px] rounded-2xl overflow-hidden bg-surface">
               <div className="col-span-4 row-span-2 md:col-span-3 md:row-span-2 relative group cursor-pointer">
                 {mainImage ? (
-                  <Image src={mainImage} alt={pet.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <Image src={mainImage} alt={pet.name} fill className="object-contain p-4 bg-surface-container-high transition-transform duration-500 group-hover:scale-105" />
                 ) : (
                   <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
                     <Icon name="pets" className="w-16 h-16 text-outline" />
@@ -208,10 +219,10 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
               <ul className="flex flex-col gap-3 font-body-md text-on-surface-variant">
                 <li className="flex items-center gap-3">
                   <Icon
-                    name={pet.is_vaccinated ? 'check_circle_solid' : 'radio_button_unchecked'}
-                    className={`w-5 h-5 ${pet.is_vaccinated ? 'text-primary-container' : 'text-outline'}`}
+                    name={pet.is_dewormed ? 'check_circle_solid' : 'radio_button_unchecked'}
+                    className={`w-5 h-5 ${pet.is_dewormed ? 'text-primary-container' : 'text-outline'}`}
                   />
-                  Vacunación al día {pet.is_vaccinated ? '' : '(Pendiente)'}
+                  Desparasitación {pet.is_dewormed ? 'completada' : '(Pendiente)'}
                 </li>
                 <li className="flex items-center gap-3">
                   <Icon
@@ -220,10 +231,10 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
                   />
                   Esterilización {pet.is_sterilized ? 'completada' : '(Pendiente)'}
                 </li>
-                {pet.health_status && (
-                  <li className="flex items-center gap-3">
-                    <Icon name="check_circle_solid" className="w-5 h-5 text-primary-container" />
-                    {pet.health_status}
+                {pet.health_notes && (
+                  <li className="flex items-start gap-3">
+                    <Icon name="description" className="w-5 h-5 text-primary mt-0.5" />
+                    <span className="font-body-md text-on-surface-variant">{pet.health_notes}</span>
                   </li>
                 )}
               </ul>

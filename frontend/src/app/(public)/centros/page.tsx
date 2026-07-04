@@ -45,7 +45,7 @@ export default function CentrosPage() {
       try {
         const res = await api.get('/centers/');
         const data = res.data.results || res.data;
-        setCenters(Array.isArray(data) ? data.filter((c: CenterWithPets) => c.latitude && c.longitude) : []);
+        setCenters(Array.isArray(data) ? data : []);
       } catch {
         // Silent fail
       } finally {
@@ -55,6 +55,7 @@ export default function CentrosPage() {
     fetchCenters();
   }, []);
 
+  const mapCenters = centers.filter((c) => c.latitude && c.longitude);
   const barinasCenter: [number, number] = [8.615, -70.207];
 
   return (
@@ -84,24 +85,30 @@ export default function CentrosPage() {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {centers.map((center) => (
-                  <Marker
-                    key={center.id}
-                    position={[center.latitude!, center.longitude!]}
-                    eventHandlers={{ click: () => setSelectedCenter(center) }}
-                  >
-                    <Popup>
-                      <div className="text-center min-w-[180px]">
-                        <h3 className="font-bold text-sm mb-1">{center.name}</h3>
-                        <p className="text-xs text-gray-500 mb-1">{center.address}</p>
-                        {center.phone && <p className="text-xs text-gray-500 mb-1">{center.phone}</p>}
-                        <p className="text-xs text-primary font-semibold">
-                          {center.pets_count || 0} mascotas disponibles
-                        </p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
+                {mapCenters.length === 0 ? (
+                  <div className="w-full h-full flex items-center justify-center bg-surface-container-low">
+                    <p className="font-body-md text-on-surface-variant">No hay centros con ubicación disponible</p>
+                  </div>
+                ) : (
+                  mapCenters.map((center) => (
+                    <Marker
+                      key={center.id}
+                      position={[center.latitude!, center.longitude!]}
+                      eventHandlers={{ click: () => setSelectedCenter(center) }}
+                    >
+                      <Popup>
+                        <div className="text-center min-w-[180px]">
+                          <h3 className="font-bold text-sm mb-1">{center.name}</h3>
+                          <p className="text-xs text-gray-500 mb-1">{center.address}</p>
+                          {center.phone && <p className="text-xs text-gray-500 mb-1">{center.phone}</p>}
+                          <p className="text-xs text-primary font-semibold">
+                            {center.pets_count || 0} mascotas disponibles
+                          </p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))
+                )}
               </MapContainer>
             </div>
           </div>

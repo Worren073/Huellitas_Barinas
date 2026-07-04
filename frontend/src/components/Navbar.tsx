@@ -17,6 +17,7 @@ export default function Navbar({ variant: _variant }: NavbarProps = {}) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileHint, setShowMobileHint] = useState(false);
 
   const navLinks = [
     { href: '/mascotas', label: 'Mascotas' },
@@ -41,6 +42,10 @@ export default function Navbar({ variant: _variant }: NavbarProps = {}) {
       }
     };
     checkAuth();
+
+    if (typeof window !== 'undefined' && !localStorage.getItem('seenMobileMenuHint')) {
+      setShowMobileHint(true);
+    }
   }, []);
 
   return (
@@ -73,12 +78,29 @@ export default function Navbar({ variant: _variant }: NavbarProps = {}) {
           {isLoggedIn ? (
             <div className="relative">
               <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"
+                onClick={() => {
+                  setShowDropdown(!showDropdown);
+                  if (showMobileHint) {
+                    setShowMobileHint(false);
+                    localStorage.setItem('seenMobileMenuHint', 'true');
+                  }
+                }}
+                className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors relative"
                 title="Menú de usuario"
               >
                 <Icon name="user_circle" className="w-7 h-7" solid />
+                {showMobileHint && (
+                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-status-error rounded-full animate-pulse md:hidden" />
+                )}
               </button>
+              {showMobileHint && (
+                <div className="absolute right-0 top-full mt-2 md:hidden animate-fade-scale-in">
+                  <div className="bg-status-error text-white font-label-sm px-3 py-2 rounded-xl shadow-lg whitespace-nowrap relative">
+                    <div className="absolute -top-1.5 right-4 w-3 h-3 bg-status-error rotate-45" />
+                    Toca para ver el menú
+                  </div>
+                </div>
+              )}
               <UserDropdown
                 show={showDropdown}
                 onClose={() => setShowDropdown(false)}

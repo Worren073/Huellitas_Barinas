@@ -39,7 +39,7 @@ export default async function HomePage() {
     
     // Handle paginated response
     pets = petsRes.results ? petsRes.results : Array.isArray(petsRes) ? petsRes : [];
-    centers = (centersRes.results ? centersRes.results : Array.isArray(centersRes) ? centersRes : []).slice(0, 2);
+    centers = centersRes.results ? centersRes.results : Array.isArray(centersRes) ? centersRes : [];
   } catch (error) {
     console.error('Error fetching data:', error);
     // Silent fail - page renders with empty state
@@ -125,7 +125,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {pets.length > 0 ? (
                 pets.map((pet) => (
-                  <PetCard key={pet.id} pet={pet} variant="compact" />
+                  <PetCard key={pet.id} pet={pet} variant="full" />
                 ))
               ) : (
                 <p className="col-span-full text-center text-on-surface-variant font-body-md py-8">
@@ -143,11 +143,11 @@ export default async function HomePage() {
                 Centros Aliados
               </h2>
             </ScrollAnimation>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex overflow-x-auto gap-6 md:grid md:grid-cols-2 snap-x snap-mandatory scrollbar-thin pb-2 md:pb-0">
               {centers.length > 0 ? (
-                centers.map((center, index) => (
-                  <ScrollAnimation key={center.id} variant="slideUp" delay={index * 0.1}>
-                    <div className="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer">
+                centers.map((center) => (
+                  <ScrollAnimation key={center.id} variant="slideUp">
+                    <div className="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer snap-start shrink-0 w-[80vw] md:w-auto">
                       <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden relative">
                         {center.logo ? (
                           <Image src={normalizeImageUrl(center.logo)} alt={center.name} fill className="object-cover" />

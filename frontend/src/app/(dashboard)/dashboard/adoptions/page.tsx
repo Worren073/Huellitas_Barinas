@@ -51,6 +51,17 @@ const ACTIONS: Record<string, { action: string; label: string; color: string; ic
   cancelled: [],
 };
 
+function downloadExport() {
+  api.get('/adoptions/export/', { responseType: 'blob' }).then(res => {
+    const url = URL.createObjectURL(new Blob([res.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'solicitudes.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
 export default function AdoptionsPage() {
   const [adoptions, setAdoptions] = useState<Adoption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,6 +149,9 @@ export default function AdoptionsPage() {
                 </button>
               ))}
             </div>
+            <button onClick={downloadExport} className="bg-surface-gray/50 text-on-surface-variant hover:bg-surface-gray font-label-sm py-1.5 px-4 rounded-lg transition-all flex items-center gap-1.5">
+              <Icon name="download" className="w-4 h-4" /> Exportar
+            </button>
           </div>
 
           {adoptions.length === 0 ? (

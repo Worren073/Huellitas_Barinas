@@ -28,6 +28,7 @@ export async function serverApi<T = any>(
   try {
     const response = await fetch(url, {
       method: 'GET',
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,

@@ -19,7 +19,9 @@ export default function SearchControls({ search }: { search: string }) {
 
   return (
     <div className="flex items-center gap-3">
-      <SearchBar value={search} onChange={handleSearchChange} />
+      <div className="hidden md:block">
+        <SearchBar value={search} onChange={handleSearchChange} />
+      </div>
       <span className="font-label-md text-on-surface-variant hidden md:block">Ordenar por:</span>
       <select className="bg-surface border border-outline-variant rounded-lg font-body-sm text-body-sm py-1.5 pl-3 pr-8 focus:ring-primary-container focus:border-primary-container">
         <option value="newest">Mas recientes</option>

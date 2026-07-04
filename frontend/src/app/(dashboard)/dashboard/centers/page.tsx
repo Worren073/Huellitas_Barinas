@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { sileo } from 'sileo';
 import AdminLayout from '@/components/AdminLayout';
 import AdminMetricCard from '@/components/AdminMetricCard';
@@ -57,7 +58,13 @@ export default function CentersPage() {
     phone: '',
     email: '',
     max_capacity: 50,
+    latitude: '',
+    longitude: '',
   });
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [selectedAdmin, setSelectedAdmin] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
@@ -135,8 +142,22 @@ export default function CentersPage() {
     }
 
     try {
-      // Create center
-      const { data: createdCenter } = await api.post('/centers/', newCenter);
+      const fd = new FormData();
+      fd.append('name', newCenter.name);
+      fd.append('description', newCenter.description);
+      fd.append('address', newCenter.address);
+      fd.append('state', newCenter.state);
+      fd.append('phone', newCenter.phone);
+      fd.append('email', newCenter.email);
+      fd.append('max_capacity', String(newCenter.max_capacity));
+      if (newCenter.latitude) fd.append('latitude', newCenter.latitude);
+      if (newCenter.longitude) fd.append('longitude', newCenter.longitude);
+      if (logoFile) fd.append('logo', logoFile);
+      if (coverFile) fd.append('cover_image', coverFile);
+
+      const { data: createdCenter } = await api.post('/centers/', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
       // If an admin is selected, assign them to this center
       if (selectedAdmin && userRole === 'superadmin') {
@@ -159,7 +180,13 @@ export default function CentersPage() {
         phone: '',
         email: '',
         max_capacity: 50,
+        latitude: '',
+        longitude: '',
       });
+      setLogoFile(null);
+      setCoverFile(null);
+      setLogoPreview(null);
+      setCoverPreview(null);
       setSelectedAdmin(null);
       fetchCenters();
     } catch (err: unknown) {
@@ -335,7 +362,7 @@ export default function CentersPage() {
       {userRole === 'superadmin' && showModal && (
         <div
           className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowModal(false)}
+          onClick={() => { setShowModal(false); setLogoFile(null); setCoverFile(null); setLogoPreview(null); setCoverPreview(null); }}
         >
           <div
             className="bg-surface rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl"
@@ -348,6 +375,10 @@ export default function CentersPage() {
                   setShowModal(false);
                   setSelectedAdmin(null);
                   setError('');
+                  setLogoFile(null);
+                  setCoverFile(null);
+                  setLogoPreview(null);
+                  setCoverPreview(null);
                 }}
                 className="text-on-surface-variant hover:text-on-surface"
               >
@@ -433,6 +464,82 @@ export default function CentersPage() {
                     setNewCenter(f => ({ ...f, max_capacity: Number(e.target.value) }))
                   }
                 />
+              </div>
+
+              <div>
+                <label className="font-label-md text-on-surface mb-1.5 block">Logo del Centro</label>
+                <div className="flex items-center gap-4">
+                  {logoPreview ? (
+                    <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-outline-variant">
+                      <Image src={logoPreview} alt="" fill className="object-cover" />
+                      <button type="button" onClick={() => { setLogoFile(null); setLogoPreview(null); }}
+                        className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center">
+                        <Icon name="close" className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-20 h-20 rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center text-outline">
+                      <Icon name="photo_library" className="w-6 h-6" />
+                    </div>
+                  )}
+                  <label className="cursor-pointer bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-label-sm text-on-surface hover:bg-surface-gray transition-colors">
+                    Seleccionar archivo
+                    <input type="file" accept="image/*" className="hidden" onChange={e => {
+                      const f = e.target.files?.[0];
+                      if (f) { setLogoFile(f); setLogoPreview(URL.createObjectURL(f)); }
+                    }} />
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label className="font-label-md text-on-surface mb-1.5 block">Imagen de Portada</label>
+                <div className="flex items-center gap-4">
+                  {coverPreview ? (
+                    <div className="relative w-28 h-16 rounded-lg overflow-hidden border border-outline-variant">
+                      <Image src={coverPreview} alt="" fill className="object-cover" />
+                      <button type="button" onClick={() => { setCoverFile(null); setCoverPreview(null); }}
+                        className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center">
+                        <Icon name="close" className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-28 h-16 rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center text-outline">
+                      <Icon name="photo_library" className="w-6 h-6" />
+                    </div>
+                  )}
+                  <label className="cursor-pointer bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-label-sm text-on-surface hover:bg-surface-gray transition-colors">
+                    Seleccionar archivo
+                    <input type="file" accept="image/*" className="hidden" onChange={e => {
+                      const f = e.target.files?.[0];
+                      if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }
+                    }} />
+                  </label>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="font-label-md text-on-surface mb-1.5 block">Latitud</label>
+                  <input
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="8.615"
+                    value={newCenter.latitude}
+                    onChange={e => setNewCenter(f => ({ ...f, latitude: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="font-label-md text-on-surface mb-1.5 block">Longitud</label>
+                  <input
+                    type="number"
+                    step="any"
+                    className={inputClass}
+                    placeholder="-70.207"
+                    value={newCenter.longitude}
+                    onChange={e => setNewCenter(f => ({ ...f, longitude: e.target.value }))}
+                  />
+                </div>
               </div>
 
               <div>

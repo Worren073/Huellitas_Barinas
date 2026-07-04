@@ -59,7 +59,7 @@ export default async function MascotasPage({
             <div className="flex justify-between items-center mb-stack-md">
               <div className="flex items-center gap-4">
                 <h1 className="font-montserrat text-headline-md text-on-surface">
-                  Mascotas Disponibles
+                  Mascotas en Adopción
                 </h1>
                 <span className="bg-surface-container-high text-on-surface-variant font-label-sm px-2 py-1 rounded-full">
                   {pets.length}

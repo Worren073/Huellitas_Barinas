@@ -21,6 +21,17 @@ interface Pet {
   images: { image: string }[];
 }
 
+function downloadExport() {
+  api.get('/pets/export/', { responseType: 'blob' }).then(res => {
+    const url = URL.createObjectURL(new Blob([res.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mascotas.docx';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
 export default function PetsPage() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [filter, setFilter] = useState('');
@@ -57,9 +68,14 @@ export default function PetsPage() {
       <div className="p-stack-lg max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-stack-lg">
           <h1 className="font-montserrat text-headline-lg text-on-surface">Mascotas</h1>
-          <Link href="/dashboard/pets/new" className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2 self-start mt-3 md:mt-0">
-            <Icon name="add" className="w-5 h-5" /> Nueva Mascota
-          </Link>
+          <div className="flex gap-2 self-start mt-3 md:mt-0">
+            <button onClick={downloadExport} className="bg-surface-gray/50 text-on-surface-variant hover:bg-surface-gray font-label-md py-2.5 px-5 rounded-lg transition-all flex items-center gap-2">
+              <Icon name="download" className="w-5 h-5" /> Exportar
+            </button>
+            <Link href="/dashboard/pets/new" className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2">
+              <Icon name="add" className="w-5 h-5" /> Nueva Mascota
+            </Link>
+          </div>
         </div>
 
         <div className="bg-surface rounded-xl ambient-shadow border border-outline-variant overflow-hidden">
@@ -67,7 +83,7 @@ export default function PetsPage() {
             {['', 'available', 'in_process', 'adopted', 'not_available'].map(s => (
               <button key={s} onClick={() => setFilter(s)}
                 className={`px-4 py-1.5 rounded-lg font-label-sm transition-all ${filter === s ? 'bg-primary-container text-on-primary-container' : 'bg-surface-gray/50 text-on-surface-variant hover:bg-surface-gray'}`}>
-                {s ? { available: 'Disponibles', in_process: 'En Proceso', adopted: 'Adoptados', not_available: 'No Disponibles' }[s] || s : 'Todas'}
+                {s ? { available: 'En Adopción', in_process: 'En Proceso', adopted: 'Adoptados', not_available: 'No Disponibles' }[s] || s : 'Todas'}
               </button>
             ))}
           </div>

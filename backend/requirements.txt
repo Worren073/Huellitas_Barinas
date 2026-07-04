@@ -37,6 +37,9 @@ pytest==8.2.*
 pytest-django==4.8.*
 factory-boy==3.3.*
 
+# Word export
+python-docx==1.1.*
+
 # Linting
 ruff==0.4.*
 

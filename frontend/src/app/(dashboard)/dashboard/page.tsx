@@ -124,7 +124,7 @@ export default function DashboardPage() {
           <AdminMetricCard
             icon="check_circle"
             value={loading ? '...' : (petStats?.available_pets ?? 0)}
-            label="Disponibles"
+            label="En Adopción"
           />
           <AdminMetricCard
             icon="schedule"

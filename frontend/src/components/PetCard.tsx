@@ -16,6 +16,7 @@ interface Pet {
   species: string;
   breed?: string;
   age_months?: number;
+  size?: string;
   gender?: string;
   status: string;
   images?: { id: number; image: string; is_primary: boolean }[];
@@ -42,6 +43,11 @@ function getSpeciesLabel(species: string): string {
 function getGenderLabel(gender?: string): string {
   if (!gender) return '';
   return gender === 'M' || gender === 'male' ? 'Macho' : 'Hembra';
+}
+
+function getSizeLabel(size?: string): string {
+  const labels: Record<string, string> = { small: 'Pequeño', medium: 'Mediano', large: 'Grande' };
+  return size ? labels[size] || size : '';
 }
 
 function getAgeBadge(months?: number): string {
@@ -72,7 +78,7 @@ export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
           <div className="p-5 flex flex-col flex-1">
             <h3 className="font-headline-sm text-on-surface mb-1">{pet.name}</h3>
             <p className="font-body-sm text-on-surface-variant mb-4 flex-1">
-              {getSpeciesLabel(pet.species)}{pet.breed ? ` - ${pet.breed}` : ''} - {formatAge(pet.age_months)} - {getGenderLabel(pet.gender)}
+              {getSpeciesLabel(pet.species)}{pet.breed ? ` - ${pet.breed}` : ''} - {formatAge(pet.age_months)} - {getGenderLabel(pet.gender)}{pet.size ? ` - ${getSizeLabel(pet.size)}` : ''}
             </p>
             <div className="flex items-center justify-between">
               <span className="font-label-sm bg-surface-container-low px-2 py-1 rounded">
@@ -122,6 +128,12 @@ export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
               <Icon name="pets" className="w-3.5 h-3.5" />
               {getSpeciesLabel(pet.species)} {pet.breed ? pet.breed : ''}
             </span>
+            {pet.size && (
+              <span className="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm flex items-center gap-1 flex-shrink-0">
+                <Icon name="straighten" className="w-3.5 h-3.5" />
+                {getSizeLabel(pet.size)}
+              </span>
+            )}
             {pet.gender && (
               <span className="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm flex items-center gap-1 flex-shrink-0">
                 <Icon name={(pet.gender === 'M' || pet.gender === 'male') ? 'male' : 'female'} className="w-3.5 h-3.5" />
