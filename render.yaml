@@ -1,12 +1,4 @@
 services:
-  # PostgreSQL Database
-  - type: pserv
-    name: huellitas-db
-    dbName: huellitas_barinas
-    user: neondb_owner
-    plan: free
-    region: virginia
-
   # Redis Cache & Celery Broker
   - type: redis
     name: huellitas-redis
@@ -35,9 +27,7 @@ services:
         scope: runtime
         value: huellitas-api.onrender.com
       - key: DATABASE_URL
-        fromDatabase:
-          name: huellitas-db
-          property: connectionString
+        sync: false
       - key: REDIS_URL
         fromService:
           name: huellitas-redis
@@ -104,9 +94,7 @@ services:
           type: web
           property: env.SECRET_KEY
       - key: DATABASE_URL
-        fromDatabase:
-          name: huellitas-db
-          property: connectionString
+        sync: false
       - key: REDIS_URL
         fromService:
           name: huellitas-redis
@@ -145,9 +133,7 @@ services:
           type: web
           property: env.SECRET_KEY
       - key: DATABASE_URL
-        fromDatabase:
-          name: huellitas-db
-          property: connectionString
+        sync: false
       - key: REDIS_URL
         fromService:
           name: huellitas-redis
