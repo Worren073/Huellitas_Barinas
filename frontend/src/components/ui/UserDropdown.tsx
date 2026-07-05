@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
@@ -16,7 +15,6 @@ interface UserDropdownProps {
 const ADMIN_ROLES = ['superadmin', 'center_admin'];
 
 export default function UserDropdown({ show, onClose, userRole }: UserDropdownProps) {
-  const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,8 +40,7 @@ export default function UserDropdown({ show, onClose, userRole }: UserDropdownPr
   const handleLogout = () => {
     auth.logout();
     sileo.success({ title: 'Sesión cerrada', description: 'Has cerrado sesión correctamente.' });
-    router.push('/');
-    onClose();
+    window.location.href = '/';
   };
 
   if (!show) return null;

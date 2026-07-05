@@ -90,7 +90,7 @@ export default function NewPetPage() {
         title: 'Mascota creada',
         description: `${form.name} ha sido registrada correctamente.`,
       });
-      router.push('/dashboard/pets');
+      window.location.href = '/dashboard/pets';
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: Record<string, any> } };
       const detail = apiErr?.response?.data;
@@ -155,7 +155,7 @@ export default function NewPetPage() {
                   <input
                     type="number"
                     min={1}
-                    className={`${baseInputClass} w-24 text-center ${fieldErrors.age ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'}`}
+                    className={`${baseInputClass} flex-1 text-center ${fieldErrors.age ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'}`}
                     value={ageValue || ''}
                     onChange={e => { setAgeValue(e.target.value === '' ? 0 : Math.max(1, parseInt(e.target.value) || 1)); clearField('age'); }}
                   />
