@@ -77,7 +77,7 @@ export default async function HomePage() {
               <div className="relative">
                 <div className="absolute -inset-4 bg-primary-container/20 rounded-3xl blur-3xl"></div>
                 <div className="relative rounded-2xl shadow-card w-full h-[400px] bg-surface-container-high flex items-center justify-center overflow-hidden">
-                  <Image src="/perrito.webp" alt="Perrito disponible para adopción" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+                  <Image src="/perrito.webp" alt="Perrito disponible para adopción" fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                 </div>
               </div>
             </ScrollAnimation>
