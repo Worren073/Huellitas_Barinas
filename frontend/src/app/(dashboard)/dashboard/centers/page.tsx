@@ -663,8 +663,8 @@ export default function CentersPage() {
               <LoadingButton
                 onClick={() => handleDelete(showDeleteConfirm)}
                 loading={deleting}
-                variant="danger"
-                className="flex-1 py-2.5"
+                variant="secondary"
+                className="flex-1 py-2.5 bg-status-error text-white hover:brightness-110"
               >
                 Eliminar
               </LoadingButton>
