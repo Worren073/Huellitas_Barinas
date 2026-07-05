@@ -5,6 +5,7 @@ Delegates to services (Presenter layer).
 
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -73,6 +74,19 @@ class LoginView(APIView):
         )
 
 
+class DeactivateAccountView(APIView):
+    """Allow authenticated users to request deletion of their own account."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        UserService.request_deactivation(request.user)
+        return Response(
+            {"message": "Tu cuenta será eliminada en 30 días. Durante este período no podrás acceder."},
+            status=status.HTTP_200_OK,
+        )
+
+
 class ProfileView(generics.RetrieveUpdateAPIView):
     """Get and update current user profile."""
 
@@ -92,6 +106,8 @@ class UserViewSet(viewsets.ModelViewSet):
         - GET /users/{id}/
         - PUT/PATCH /users/{id}/
         - DELETE /users/{id}/
+        - POST /users/{id}/deactivate/
+        - POST /users/{id}/restore/
     """
 
     queryset = User.objects.select_related("center").all()
@@ -105,6 +121,9 @@ class UserViewSet(viewsets.ModelViewSet):
         role = self.request.query_params.get("role")
         if role:
             queryset = queryset.filter(role=role)
+        deleted = self.request.query_params.get("deleted")
+        if deleted:
+            queryset = queryset.filter(deletion_requested_at__isnull=False)
         return queryset
 
     def get_serializer_class(self):
@@ -125,6 +144,25 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(UserListSerializer(instance).data)
+
+    @action(detail=True, methods=["post"])
+    def deactivate(self, request, pk=None):
+        """Super admin deactivates a user account."""
+        user = self.get_object()
+        if user == request.user:
+            return Response(
+                {"error": "No puedes desactivar tu propia cuenta desde aquí. Usa Eliminar Cuenta en Mis Solicitudes."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        UserService.request_deactivation(user)
+        return Response({"message": f"Cuenta de {user.get_full_name()} programada para eliminación en 30 días."})
+
+    @action(detail=True, methods=["post"])
+    def restore(self, request, pk=None):
+        """Super admin restores a deactivated account within the grace period."""
+        user = self.get_object()
+        UserService.restore_account(user)
+        return Response({"message": f"Cuenta de {user.get_full_name()} restaurada exitosamente."})
 
 
 class ChangePasswordView(generics.UpdateAPIView):

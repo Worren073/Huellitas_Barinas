@@ -32,7 +32,7 @@ function SidebarContent({ visibleLinks, pathname, user, onClose }: { visibleLink
   const handleLogout = () => {
     auth.logout();
     sileo.success({ title: 'Sesión cerrada', description: 'Has cerrado sesión correctamente.' });
-    router.push('/login');
+    router.push('/');
   };
 
   return (

@@ -32,11 +32,20 @@ export default function PrivacidadPage() {
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">4. Tus Derechos</h2>
-            <p>Tienes derecho a acceder, rectificar y eliminar tus datos personales. Puedes ejercer estos derechos contactándonos a través de nuestro correo electrónico.</p>
+            <p>Tienes derecho a acceder, rectificar y solicitar la eliminación de tus datos personales. Puedes ejercer estos derechos desde la sección "Mis Solicitudes" en tu cuenta o contactándonos a través de nuestro correo electrónico.</p>
+            <h3 className="font-label-md text-on-surface mt-4 mb-1">Eliminación de Cuenta</h3>
+            <p>Al solicitar la eliminación de tu cuenta:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Tu cuenta será desactivada inmediatamente y no podrás acceder a la plataforma.</li>
+              <li>Las solicitudes de adopción activas (pendientes o en revisión) serán canceladas.</li>
+              <li>Las adopciones completadas se conservarán en nuestros registros por razones legales y de trazabilidad animal.</li>
+              <li>Tienes un período de gracia de 30 días durante el cual un administrador puede restaurar tu cuenta.</li>
+              <li>Pasados los 30 días, tus datos personales (nombre, correo electrónico, usuario) serán anonimizados irreversiblemente.</li>
+            </ul>
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">5. Contacto</h2>
-            <p>Para cualquier consulta sobre nuestra política de privacidad, escríbenos a: info@huellitasbarinas.org</p>
+            <p>Para cualquier consulta sobre nuestra política de privacidad, escríbenos a: huellitasvnz@gmail.com</p>
           </section>
         </div>
         </ScrollAnimation>

@@ -95,11 +95,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.clear();
+    sessionStorage.clear();
     removeCookie('access_token');
     removeCookie('refresh_token');
-    set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
+    set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false, error: null });
   },
 
   fetchProfile: async () => {

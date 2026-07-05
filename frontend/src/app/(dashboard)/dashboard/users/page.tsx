@@ -7,6 +7,7 @@ import AdminLayout from '@/components/AdminLayout';
 import AdminMetricCard from '@/components/AdminMetricCard';
 import Icon from '@/components/Icon';
 import LoadingButton from '@/components/LoadingButton';
+import Modal from '@/components/ui/Modal';
 import { auth } from '@/lib/auth';
 import api from '@/lib/api';
 
@@ -23,11 +24,7 @@ interface User {
   center_name: string;
   center: number;
   date_joined: string;
-}
-
-interface Center {
-  id: number;
-  name: string;
+  deletion_requested_at: string | null;
 }
 
 const ROLE_LABELS: Record<string, string> = {
@@ -42,17 +39,23 @@ const ROLE_OPTIONS = [
   { value: 'adoptante', label: 'Adoptante' },
 ];
 
+function daysUntilDeletion(dateStr: string): number {
+  const diff = new Date(dateStr).getTime() + 30 * 24 * 60 * 60 * 1000 - Date.now();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
 export default function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
-  const [centers, setCenters] = useState<Center[]>([]);
   const [filter, setFilter] = useState('');
+  const [deletedFilter, setDeletedFilter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newRole, setNewRole] = useState('');
-  const [selectedCenter, setSelectedCenter] = useState<number | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [actionModal, setActionModal] = useState<{ type: 'deactivate' | 'restore'; user: User } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
@@ -70,7 +73,9 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const params = filter ? `?role=${filter}` : '';
+      let params = '';
+      if (filter) params = `?role=${filter}`;
+      if (deletedFilter) params = `${params ? '&' : '?'}deleted=true`;
       const { data } = await api.get<any>(`/users/${params}`);
       setUsers(data.results || data || []);
     } catch {
@@ -81,46 +86,55 @@ export default function UsersPage() {
     }
   };
 
-  const fetchCenters = async () => {
-    try {
-      const { data } = await api.get<any>('/centers/');
-      setCenters(data.results || data || []);
-    } catch {
-      setCenters([]);
-    }
-  };
-
   useEffect(() => {
     fetchUsers();
-    fetchCenters();
-  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filter, deletedFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChangeRole = async () => {
     if (!editingUser || !newRole) return;
 
     setUpdating(true);
     try {
-      const payload: any = { role: newRole };
-      if (newRole === 'center_admin' && selectedCenter) {
-        payload.center = selectedCenter;
-      }
+      await api.patch(`/users/${editingUser.id}/`, { role: newRole });
 
-      await api.patch(`/users/${editingUser.id}/`,payload);
-      
-      sileo.success({
-        title: 'Rol actualizado',
-        description: `El rol de ${editingUser.first_name} ha sido actualizado a ${ROLE_LABELS[newRole]}.`,
-      });
-
-      setUsers(users.map(u => u.id === editingUser.id ? { ...u, role: newRole, center: selectedCenter || u.center } : u));
+      setUsers(users.map(u => u.id === editingUser.id ? { ...u, role: newRole } : u));
       setEditingUser(null);
       setNewRole('');
-      setSelectedCenter(null);
     } catch (err: any) {
-      const message = err.response?.data?.center?.[0] || err.response?.data?.detail || 'Error al cambiar el rol';
+      const message = err.response?.data?.detail || 'Error al cambiar el rol';
       sileo.error({ title: 'Error', description: message });
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleDeactivateUser = async () => {
+    if (!actionModal || actionModal.type !== 'deactivate') return;
+    setActionLoading(true);
+    try {
+      await api.post(`/users/${actionModal.user.id}/deactivate/`);
+      sileo.success({ title: 'Cuenta desactivada', description: `La cuenta de ${actionModal.user.first_name} será eliminada en 30 días.` });
+      setActionModal(null);
+      fetchUsers();
+    } catch (err: any) {
+      sileo.error({ title: 'Error', description: err.response?.data?.error || 'Error al desactivar cuenta' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRestoreUser = async () => {
+    if (!actionModal || actionModal.type !== 'restore') return;
+    setActionLoading(true);
+    try {
+      await api.post(`/users/${actionModal.user.id}/restore/`);
+      sileo.success({ title: 'Cuenta restaurada', description: `La cuenta de ${actionModal.user.first_name} ha sido restaurada.` });
+      setActionModal(null);
+      fetchUsers();
+    } catch {
+      sileo.error({ title: 'Error', description: 'Error al restaurar cuenta' });
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -145,9 +159,9 @@ export default function UsersPage() {
             {['', 'superadmin', 'center_admin', 'adoptante'].map(r => (
               <button
                 key={r}
-                onClick={() => setFilter(r)}
+                onClick={() => { setFilter(r); setDeletedFilter(false); }}
                 className={`px-4 py-1.5 rounded-lg font-label-sm transition-all ${
-                  filter === r
+                  filter === r && !deletedFilter
                     ? 'bg-primary-container text-on-primary-container'
                     : 'bg-surface-gray/50 text-on-surface-variant hover:bg-surface-gray'
                 }`}
@@ -155,6 +169,16 @@ export default function UsersPage() {
                 {r ? ROLE_LABELS[r] || r : 'Todos'}
               </button>
             ))}
+            <button
+              onClick={() => { setDeletedFilter(true); setFilter(''); }}
+              className={`px-4 py-1.5 rounded-lg font-label-sm transition-all ${
+                deletedFilter
+                  ? 'bg-red-100 text-red-800 border border-red-300'
+                  : 'bg-surface-gray/50 text-on-surface-variant hover:bg-surface-gray'
+              }`}
+            >
+              Eliminados
+            </button>
           </div>
 
           {loading ? (
@@ -180,54 +204,63 @@ export default function UsersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/10">
-                  {users.map(u => (
-                    <tr key={u.id} className="hover:bg-surface-container-low/50 group">
-                      <td className="p-stack-sm pl-stack-md">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface-variant">
-                            {(u.first_name?.[0] || u.username[0]).toUpperCase()}
+                  {users.map(u => {
+                    const daysLeft = u.deletion_requested_at ? daysUntilDeletion(u.deletion_requested_at) : 0;
+                    return (
+                      <tr key={u.id} className="hover:bg-surface-container-low/50 group">
+                        <td className="p-stack-sm pl-stack-md">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface-variant">
+                              {(u.first_name?.[0] || u.username[0]).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-label-md text-on-surface">{u.first_name} {u.last_name}</p>
+                              <p className="font-label-sm text-on-surface-variant">@{u.username}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-label-md text-on-surface">{u.first_name} {u.last_name}</p>
-                            <p className="font-label-sm text-on-surface-variant">@{u.username}</p>
+                        </td>
+                        <td className="p-stack-sm font-body-sm text-on-surface-variant">{u.email}</td>
+                        <td className="p-stack-sm">
+                          <span
+                            className={`inline-block px-3 py-1 rounded-full text-label-sm font-medium border ${
+                              u.role === 'superadmin'
+                                ? 'bg-purple-100 text-purple-800 border-purple-300'
+                                : u.role === 'center_admin'
+                                ? 'bg-blue-100 text-blue-800 border-blue-300'
+                                : 'bg-gray-100 text-gray-800 border-gray-300'
+                            }`}
+                          >
+                            {ROLE_LABELS[u.role] || u.role}
+                          </span>
+                        </td>
+                        <td className="p-stack-sm font-body-sm text-on-surface-variant">{u.center_name || '—'}</td>
+                        <td className="p-stack-sm">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${u.is_active ? 'bg-status-approved' : 'bg-status-error'}`} />
+                              <span className="font-body-sm">{u.is_active ? 'Activo' : 'Inactivo'}</span>
+                            </div>
+                            {u.deletion_requested_at && (
+                              <span className="font-label-xs text-status-error">
+                                Elim. en {daysLeft} días
+                              </span>
+                            )}
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-stack-sm font-body-sm text-on-surface-variant">{u.email}</td>
-                      <td className="p-stack-sm">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-label-sm font-medium border ${
-                            u.role === 'superadmin'
-                              ? 'bg-purple-100 text-purple-800 border-purple-300'
-                              : u.role === 'center_admin'
-                              ? 'bg-blue-100 text-blue-800 border-blue-300'
-                              : 'bg-gray-100 text-gray-800 border-gray-300'
-                          }`}
-                        >
-                          {ROLE_LABELS[u.role] || u.role}
-                        </span>
-                      </td>
-                      <td className="p-stack-sm font-body-sm text-on-surface-variant">{u.center_name || '—'}</td>
-                      <td className="p-stack-sm">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${u.is_active ? 'bg-status-approved' : 'bg-status-error'}`} />
-                          <span className="font-body-sm">{u.is_active ? 'Activo' : 'Inactivo'}</span>
-                        </div>
-                      </td>
-                      <td className="p-stack-sm">
-                        <button
-                          onClick={() => {
-                            setEditingUser(u);
-                            setNewRole(u.role);
-                            setSelectedCenter(u.center);
-                          }}
-                          className="text-primary hover:text-primary-container font-label-sm transition-colors"
-                        >
-                          Cambiar rol
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="p-stack-sm">
+                          <button
+                            onClick={() => {
+                              setEditingUser(u);
+                              setNewRole(u.role);
+                            }}
+                            className="text-primary hover:text-primary-container font-label-sm transition-colors"
+                          >
+                            Detalles
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -235,11 +268,12 @@ export default function UsersPage() {
         </div>
       </div>
 
+      {/* User Details Modal */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-surface rounded-2xl p-stack-lg max-w-md w-full">
+          <div className="bg-surface rounded-2xl p-stack-lg max-w-md w-full max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-stack-md">
-              <h3 className="font-headline-md text-on-surface">Cambiar Rol</h3>
+              <h3 className="font-headline-md text-on-surface">Detalles del Usuario</h3>
               <button
                 onClick={() => setEditingUser(null)}
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
@@ -250,10 +284,16 @@ export default function UsersPage() {
 
             <div className="mb-stack-md">
               <p className="font-body-sm text-on-surface-variant">
-                Cambiar rol de <strong>{editingUser.first_name} {editingUser.last_name}</strong>
+                <strong className="text-on-surface">{editingUser.first_name} {editingUser.last_name}</strong>
+                {editingUser.deletion_requested_at && (
+                  <span className="block mt-1 text-status-error">
+                    Eliminación programada en {daysUntilDeletion(editingUser.deletion_requested_at)} días
+                  </span>
+                )}
               </p>
             </div>
 
+            {/* Role Change */}
             <div className="space-y-stack-sm mb-stack-md">
               <label className="block font-label-md text-on-surface mb-2">Nuevo Rol</label>
               <select
@@ -268,27 +308,9 @@ export default function UsersPage() {
                   </option>
                 ))}
               </select>
-
-              {newRole === 'center_admin' && (
-                <div>
-                  <label className="block font-label-md text-on-surface mb-2">Centro</label>
-                  <select
-                    value={selectedCenter || ''}
-                    onChange={e => setSelectedCenter(e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full px-4 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container"
-                  >
-                    <option value="">Selecciona un centro</option>
-                    {centers.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 mb-stack-lg">
               <button
                 onClick={() => setEditingUser(null)}
                 className="flex-1 px-4 py-2 border border-outline-variant text-on-surface rounded-lg font-label-md transition-colors hover:bg-surface-container-low"
@@ -304,9 +326,121 @@ export default function UsersPage() {
                 Cambiar Rol
               </LoadingButton>
             </div>
+
+            <hr className="border-outline-variant/20 mb-stack-md" />
+
+            {/* Deactivate / Restore Section */}
+            {editingUser.deletion_requested_at ? (
+              <div>
+                <p className="font-body-sm text-on-surface-variant mb-3">
+                  Este usuario solicitó la eliminación de su cuenta. Puedes restaurarla dentro del período de 30 días.
+                </p>
+                <LoadingButton
+                  onClick={() => setActionModal({ type: 'restore', user: editingUser })}
+                  loading={false}
+                  className="w-full py-2"
+                  variant="primary"
+                >
+                  Restaurar Cuenta
+                </LoadingButton>
+              </div>
+            ) : (
+              <div>
+                <p className="font-body-sm text-on-surface-variant mb-3">
+                  Desactivar la cuenta del usuario. Las adopciones completadas se conservarán en los registros.
+                </p>
+                <LoadingButton
+                  onClick={() => setActionModal({ type: 'deactivate', user: editingUser })}
+                  loading={false}
+                  className="w-full py-2"
+                  variant="danger"
+                >
+                  Desactivar / Eliminar Cuenta
+                </LoadingButton>
+              </div>
+            )}
           </div>
         </div>
       )}
+
+      {/* Confirm Deactivate Modal */}
+      <Modal
+        open={actionModal?.type === 'deactivate'}
+        onClose={() => !actionLoading && setActionModal(null)}
+        title="Desactivar Cuenta"
+        maxWidth="sm"
+      >
+        <div className="space-y-4">
+          <p className="font-body-md text-on-surface-variant">
+            ¿Estás seguro de que deseas desactivar la cuenta de <strong>{actionModal?.user.first_name} {actionModal?.user.last_name}</strong>?
+          </p>
+          <ul className="space-y-2 font-body-sm text-on-surface-variant">
+            <li className="flex items-start gap-2">
+              <Icon name="check_circle" className="w-4 h-4 text-status-approved mt-0.5 shrink-0" />
+              La cuenta quedará <strong>desactivada inmediatamente</strong>
+            </li>
+            <li className="flex items-start gap-2">
+              <Icon name="check_circle" className="w-4 h-4 text-status-approved mt-0.5 shrink-0" />
+              Los datos se eliminarán después de <strong>30 días</strong>
+            </li>
+            <li className="flex items-start gap-2">
+              <Icon name="check_circle" className="w-4 h-4 text-status-approved mt-0.5 shrink-0" />
+              Las adopciones completadas se <strong>conservarán</strong>
+            </li>
+          </ul>
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => setActionModal(null)}
+              disabled={actionLoading}
+              className="flex-1 px-4 py-2.5 border border-outline-variant text-on-surface rounded-xl font-label-md transition-colors hover:bg-surface-container-low disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <LoadingButton
+              onClick={handleDeactivateUser}
+              loading={actionLoading}
+              className="flex-1 py-2.5"
+              variant="danger"
+            >
+              Desactivar
+            </LoadingButton>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Confirm Restore Modal */}
+      <Modal
+        open={actionModal?.type === 'restore'}
+        onClose={() => !actionLoading && setActionModal(null)}
+        title="Restaurar Cuenta"
+        maxWidth="sm"
+      >
+        <div className="space-y-4">
+          <p className="font-body-md text-on-surface-variant">
+            ¿Restaurar la cuenta de <strong>{actionModal?.user.first_name} {actionModal?.user.last_name}</strong>?
+          </p>
+          <p className="font-body-sm text-on-surface-variant">
+            El usuario podrá acceder nuevamente a su cuenta y la eliminación programada será cancelada.
+          </p>
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => setActionModal(null)}
+              disabled={actionLoading}
+              className="flex-1 px-4 py-2.5 border border-outline-variant text-on-surface rounded-xl font-label-md transition-colors hover:bg-surface-container-low disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <LoadingButton
+              onClick={handleRestoreUser}
+              loading={actionLoading}
+              className="flex-1 py-2.5"
+              variant="primary"
+            >
+              Restaurar
+            </LoadingButton>
+          </div>
+        </div>
+      </Modal>
     </AdminLayout>
   );
 }

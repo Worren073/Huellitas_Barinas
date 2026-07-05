@@ -32,11 +32,31 @@ export default function TerminosPage() {
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">4. Privacidad de Datos</h2>
-            <p>Protegemos tus datos personales según nuestra política de privacidad. No compartimos tu información con terceros sin tu consentimiento explícito.</p>
+            <p>Protegemos tus datos personales según nuestra política de privacidad. No compartimos tu información con terceros sin tu consentimiento explícito. Puedes solicitar la eliminación de tu cuenta en cualquier momento; las adopciones completadas se conservarán en nuestros registros.</p>
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">5. Modificaciones</h2>
             <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios serán comunicados a través de la plataforma.</p>
+          </section>
+          <section>
+            <h2 className="font-headline-sm text-on-surface mt-6 mb-2">6. Uso de la Plataforma</h2>
+            <p>El usuario se compromete a usar la plataforma únicamente para fines legales y de acuerdo con estos términos. No está permitido publicar información falsa, realizar actividades fraudulentas, o utilizar la plataforma para cualquier propósito ilegal.</p>
+          </section>
+          <section>
+            <h2 className="font-headline-sm text-on-surface mt-6 mb-2">7. Registro de Cuenta y Eliminación</h2>
+            <p>Al registrarte, eres responsable de mantener la confidencialidad de tus credenciales. Debes notificar inmediatamente cualquier uso no autorizado de tu cuenta. Puedes solicitar la eliminación de tu cuenta desde la sección "Mis Solicitudes". Al hacerlo, tu cuenta se desactivará inmediatamente y tus datos serán anonimizados después de 30 días. Las adopciones completadas se conservarán en nuestros registros. Durante el período de gracia de 30 días, un administrador puede restaurar tu cuenta.</p>
+          </section>
+          <section>
+            <h2 className="font-headline-sm text-on-surface mt-6 mb-2">8. Proceso de Adopción</h2>
+            <p>Huellitas Barinas actúa como intermediario entre centros de adopción y adoptantes. Cada centro de adopción establece sus propios requisitos y procesos de adopción. No garantizamos la aprobación de ninguna solicitud de adopción.</p>
+          </section>
+          <section>
+            <h2 className="font-headline-sm text-on-surface mt-6 mb-2">9. Limitación de Responsabilidad</h2>
+            <p>Huellitas Barinas no se hace responsable por daños directos o indirectos derivados del uso de la plataforma, incluyendo pero no limitado a adopciones fallidas, información incorrecta proporcionada por centros o usuarios, o disputas entre centros y adoptantes.</p>
+          </section>
+          <section>
+            <h2 className="font-headline-sm text-on-surface mt-6 mb-2">10. Contacto</h2>
+            <p>Para cualquier consulta sobre estos términos, puedes contactarnos a través de nuestro formulario de contacto en la plataforma o mediante correo electrónico a huellitasvnz@gmail.com.</p>
           </section>
         </div>
         </ScrollAnimation>

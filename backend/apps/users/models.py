@@ -52,6 +52,10 @@ class User(AbstractUser):
         verbose_name="centro",
     )
 
+    deletion_requested_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="fecha de solicitud de eliminación"
+    )
+
     class Meta:
         verbose_name = "usuario"
         verbose_name_plural = "usuarios"

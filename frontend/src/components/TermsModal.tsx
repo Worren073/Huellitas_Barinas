@@ -35,8 +35,8 @@ const TERMS_SECTIONS = [
     content: 'El usuario se compromete a usar la plataforma únicamente para fines legales y de acuerdo con estos términos. No está permitido publicar información falsa, realizar actividades fraudulentas, o utilizar la plataforma para cualquier propósito ilegal.',
   },
   {
-    title: '7. Registro de Cuenta',
-    content: 'Al registrarte, eres responsable de mantener la confidencialidad de tus credenciales. Debes notificar inmediatamente cualquier uso no autorizado de tu cuenta.',
+    title: '7. Registro de Cuenta y Eliminación',
+    content: 'Al registrarte, eres responsable de mantener la confidencialidad de tus credenciales. Debes notificar inmediatamente cualquier uso no autorizado de tu cuenta. Puedes solicitar la eliminación de tu cuenta desde la sección "Mis Solicitudes". Al hacerlo, tu cuenta se desactivará inmediatamente y las adopciones activas serán canceladas. Las adopciones completadas se conservarán en nuestros registros por razones legales. Tus datos personales serán anonimizados después de 30 días; durante ese período un administrador puede restaurar tu cuenta.',
   },
   {
     title: '8. Proceso de Adopción',
@@ -48,7 +48,7 @@ const TERMS_SECTIONS = [
   },
   {
     title: '10. Contacto',
-    content: 'Para cualquier consulta sobre estos términos, puedes contactarnos a través de nuestro formulario de contacto en la plataforma o mediante correo electrónico.',
+    content: 'Para cualquier consulta sobre estos términos, puedes contactarnos a través de nuestro formulario de contacto en la plataforma o mediante correo electrónico a huellitasvnz@gmail.com.',
   },
 ];
 

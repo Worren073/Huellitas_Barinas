@@ -187,6 +187,15 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "cleanup-expired-deletions": {
+        "task": "apps.users.tasks.cleanup_expired_deletions",
+        "schedule": crontab(hour=3, minute=0),
+    },
+}
+
 # Cache Settings
 CACHES = {
     'default': {

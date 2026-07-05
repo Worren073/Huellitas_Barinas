@@ -1,7 +1,6 @@
 """
 User serializers for the API.
 """
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -114,14 +113,6 @@ class UserUpdateRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "role", "center")
-
-    def validate(self, attrs):
-        # center_admin must have a center assigned
-        if attrs.get("role") == "center_admin" and not attrs.get("center"):
-            raise serializers.ValidationError(
-                {"center": "Un administrador de centro debe tener un centro asignado."}
-            )
-        return attrs
 
 
 class ChangePasswordSerializer(serializers.Serializer):

@@ -53,8 +53,7 @@ export default function ContactoPage() {
             </p>
             <div className="flex flex-col gap-4">
               {[
-                { icon: 'email', label: 'Correo Electrónico', value: 'info@huellitasbarinas.org' },
-                { icon: 'phone', label: 'Teléfono', value: '+58 412-1234567' },
+                { icon: 'email', label: 'Correo Electrónico', value: 'huellitasvnz@gmail.com' },
                 { icon: 'location', label: 'Dirección', value: 'Barinas, Venezuela' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3">
