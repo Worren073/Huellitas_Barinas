@@ -84,7 +84,37 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section id="sobre-nosotros" className="bg-surface-gray py-stack-lg">
+        <section id="quienes-somos" className="bg-surface-gray py-stack-lg">
+          <div className="max-w-container-max mx-auto px-4 md:px-8">
+            <ScrollAnimation variant="slideUp">
+              <h2 className="font-montserrat text-headline-lg text-on-surface text-center mb-stack-md">
+                Quiénes Somos
+              </h2>
+              <p className="font-body-lg text-on-surface-variant max-w-3xl mx-auto text-center mb-stack-lg">
+                Huellitas Barinas es un proyecto sin fines de lucro que centraliza información de animales que buscan adopción en Venezuela. Nuestra misión es formar alianzas con centros de adopción para ofrecer toda la información y procesos adecuados para la adopción de nuevos integrantes a la familia.
+              </p>
+            </ScrollAnimation>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { icon: 'volunteer_activism', title: 'Sin fines de lucro', desc: 'Trabajamos por el bienestar animal sin ningún interés económico, impulsados por la pasión de ayudar.' },
+                { icon: 'handshake', title: 'Alianzas con centros', desc: 'Colaboramos con centros de adopción en toda Venezuela para centralizar y dar visibilidad a sus animales.' },
+                { icon: 'home_heart', title: 'Información centralizada', desc: 'Unificamos datos de mascotas disponibles, requisitos y procesos para facilitar la adopción responsable.' },
+              ].map((item, index) => (
+                <ScrollAnimation key={item.title} variant="slideUp" delay={index * 0.1}>
+                  <div className="bg-surface p-8 rounded-2xl shadow-sm border border-surface-container-high text-center hover:shadow-md transition-shadow">
+                    <div className="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <Icon name={item.icon} className="w-6 h-6" solid />
+                    </div>
+                    <h3 className="font-headline-sm text-on-surface mb-3">{item.title}</h3>
+                    <p className="font-body-md text-on-surface-variant">{item.desc}</p>
+                  </div>
+                </ScrollAnimation>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="como-funciona" className="py-stack-lg">
           <div className="max-w-container-max mx-auto px-4 md:px-8">
             <ScrollAnimation variant="slideUp">
               <h2 className="font-montserrat text-headline-lg text-on-surface text-center mb-stack-lg">
@@ -93,9 +123,9 @@ export default async function HomePage() {
             </ScrollAnimation>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { step: '1', title: 'Explora', icon: 'search', desc: 'Busca entre cientos de mascotas disponibles en centros de adopción de Barinas.' },
-                { step: '2', title: 'Conecta', icon: 'favorite', desc: 'Elige a tu favorita y contacta directamente con el centro de adopción.' },
-                { step: '3', title: 'Adelante', icon: 'celebration', desc: 'Completa el proceso de adopción y dale un hogar a quien más lo necesita.' },
+                { step: '1', title: 'Explora', icon: 'search', desc: 'Busca entre cientos de mascotas disponibles en centros aliados de toda Venezuela.' },
+                { step: '2', title: 'Conecta', icon: 'favorite', desc: 'Elige a tu favorito y envía tu solicitud de adopción al centro encargado.' },
+                { step: '3', title: 'Adopta', icon: 'celebration', desc: 'El centro evalúa tu solicitud y pronto tendrás un nuevo miembro en la familia.' },
               ].map((item, index) => (
                 <ScrollAnimation key={item.step} variant="slideUp" delay={index * 0.1}>
                   <div className="bg-surface p-8 rounded-2xl shadow-sm border border-surface-container-high hover:shadow-md relative overflow-hidden group">

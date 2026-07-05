@@ -7,6 +7,7 @@ import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
 import LoadingButton from '@/components/LoadingButton';
+import TermsModal from '@/components/TermsModal';
 
 const COUNTRIES = [
   { code: 'VE', name: 'Venezuela', prefix: '+58', flag: '🇻🇪', char: 'VE' },
@@ -26,6 +27,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('VE');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsModalOpen, setTermsModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -245,9 +248,30 @@ export default function RegisterPage() {
             </div>
           </div>
 
+          <div className="flex items-start gap-3">
+            <input
+              id="terms"
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={() => setTermsModalOpen(true)}
+              className="mt-1 w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container/20 cursor-pointer"
+            />
+            <label htmlFor="terms" className="font-body-sm text-on-surface-variant cursor-pointer">
+              Acepto los{' '}
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); setTermsModalOpen(true); }}
+                className="text-primary hover:underline font-label-md"
+              >
+                términos y condiciones
+              </button>
+            </label>
+          </div>
+
           <LoadingButton
             type="submit"
             loading={loading}
+            disabled={!termsAccepted}
             className="w-full"
             variant="primary"
           >
@@ -262,6 +286,12 @@ export default function RegisterPage() {
           </p>
         </form>
       </div>
+
+      <TermsModal
+        open={termsModalOpen}
+        onAccept={() => setTermsAccepted(true)}
+        onClose={() => setTermsModalOpen(false)}
+      />
     </div>
   );
 }
