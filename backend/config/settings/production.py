@@ -65,7 +65,7 @@ def parse_database_url(url: str = None) -> dict:
     if db_url:
         try:
             result = urlparse(db_url)
-            if result.scheme == 'postgresql':
+            if result.scheme and result.scheme.startswith('postgres'):
                 return {
                     'default': {
                         'ENGINE': 'django.db.backends.postgresql',
