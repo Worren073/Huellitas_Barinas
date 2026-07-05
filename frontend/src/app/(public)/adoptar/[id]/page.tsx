@@ -106,12 +106,19 @@ export default function AdoptarPage() {
       });
       setSuccess(true);
     } catch (err: unknown) {
-      const apiError = err as { response?: { data?: Record<string, string[]> } };
+      const apiError = err as { response?: { data?: Record<string, any> } };
       const detail = apiError?.response?.data;
       if (detail) {
-        const messages = Object.values(detail).flat().join('. ');
-        setError(messages || 'Error al enviar la solicitud');
-        sileo.error({ title: 'Error', description: messages || 'Error al enviar la solicitud' });
+        const mapped: Record<string, string> = {};
+        for (const [key, msgs] of Object.entries(detail)) {
+          const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
+          if (msg) mapped[key] = msg;
+        }
+        if (Object.keys(mapped).length > 0) {
+          setFormErrors(mapped);
+        } else {
+          setError('Error al enviar la solicitud');
+        }
       } else {
         setError('Error al enviar la solicitud');
         sileo.error({ title: 'Error', description: 'Error al enviar la solicitud' });
@@ -265,8 +272,8 @@ export default function AdoptarPage() {
                   type="number"
                   min={1}
                   className={inputClass}
-                  value={formData.family_members}
-                  onChange={e => updateField('family_members', parseInt(e.target.value) || 1)}
+                  value={formData.family_members || ''}
+                  onChange={e => updateField('family_members', e.target.value === '' ? 0 : Math.max(1, parseInt(e.target.value) || 1))}
                 />
                 {formErrors.family_members && <p className={errorClass}>{formErrors.family_members}</p>}
               </div>

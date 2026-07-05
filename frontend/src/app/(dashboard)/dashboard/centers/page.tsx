@@ -68,6 +68,7 @@ export default function CentersPage() {
   const [selectedAdmin, setSelectedAdmin] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userCenter, setUserCenter] = useState<number | null>(null);
   const [loadingAdmins, setLoadingAdmins] = useState(false);
@@ -130,10 +131,15 @@ export default function CentersPage() {
     }
   };
 
+  const clearField = (field: string) => {
+    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
     setError('');
+    setFieldErrors({});
 
     if (userRole === 'superadmin' && !selectedAdmin) {
       setError('Debe seleccionar un administrador para el centro');
@@ -190,12 +196,19 @@ export default function CentersPage() {
       setSelectedAdmin(null);
       fetchCenters();
     } catch (err: unknown) {
-      const apiErr = err as { response?: { data?: Record<string, string[]> } };
-      setError(
-        apiErr?.response?.data
-          ? Object.values(apiErr.response.data).flat().join('. ')
-          : 'Error al crear centro'
-      );
+      const apiErr = err as { response?: { data?: Record<string, any> } };
+      const detail = apiErr?.response?.data;
+      if (detail) {
+        const mapped: Record<string, string> = {};
+        for (const [key, msgs] of Object.entries(detail)) {
+          const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
+          if (msg) mapped[key] = msg;
+        }
+        if (Object.keys(mapped).length > 0) setFieldErrors(mapped);
+        else setError(Object.values(detail).flat().join('. '));
+      } else {
+        setError('Error al crear centro');
+      }
     } finally {
       setCreating(false);
     }
@@ -208,8 +221,10 @@ export default function CentersPage() {
     }
   };
 
-  const inputClass =
-    'w-full bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all';
+  const inputClass = (field: string = '') =>
+    `w-full bg-surface-container-lowest border rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
+      field && fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
+    }`;
 
   // Filter centers based on user role
   const displayedCenters =
@@ -394,36 +409,38 @@ export default function CentersPage() {
               <div>
                 <label className="font-label-md text-on-surface mb-1.5 block">Nombre</label>
                 <input
-                  className={inputClass}
+                  className={inputClass('name')}
                   value={newCenter.name}
-                  onChange={e => setNewCenter(f => ({ ...f, name: e.target.value }))}
+                  onChange={e => { setNewCenter(f => ({ ...f, name: e.target.value })); clearField('name'); }}
                   required
                 />
+                {fieldErrors.name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.name}</p>}
               </div>
               <div>
                 <label className="font-label-md text-on-surface mb-1.5 block">Descripción</label>
                 <textarea
                   rows={3}
-                  className={`${inputClass} resize-none`}
+                  className={`${inputClass('description')} resize-none`}
                   value={newCenter.description}
-                  onChange={e => setNewCenter(f => ({ ...f, description: e.target.value }))}
+                  onChange={e => { setNewCenter(f => ({ ...f, description: e.target.value })); clearField('description'); }}
                   required
                 />
+                {fieldErrors.description && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.description}</p>}
               </div>
               <div>
                 <label className="font-label-md text-on-surface mb-1.5 block">Dirección</label>
                 <input
-                  className={inputClass}
+                  className={inputClass('address')}
                   value={newCenter.address}
-                  onChange={e => setNewCenter(f => ({ ...f, address: e.target.value }))}
+                  onChange={e => { setNewCenter(f => ({ ...f, address: e.target.value })); clearField('address'); }}
                 />
               </div>
               <div>
                 <label className="font-label-md text-on-surface mb-1.5 block">Estado</label>
                 <select
-                  className={inputClass}
+                  className={inputClass('state')}
                   value={newCenter.state}
-                  onChange={e => setNewCenter(f => ({ ...f, state: e.target.value }))}
+                  onChange={e => { setNewCenter(f => ({ ...f, state: e.target.value })); clearField('state'); }}
                 >
                   {['Amazonas','Anzoátegui','Apure','Aragua','Barinas','Bolívar','Carabobo','Cojedes','Delta Amacuro','Distrito Capital','Falcón','Guárico','Lara','Mérida','Miranda','Monagas','Nueva Esparta','Portuguesa','Sucre','Táchira','Trujillo','La Guaira','Yaracuy','Zulia'].map(s => (
                     <option key={s} value={s}>{s}</option>
@@ -434,21 +451,25 @@ export default function CentersPage() {
                 <div>
                   <label className="font-label-md text-on-surface mb-1.5 block">Teléfono</label>
                   <input
-                    className={inputClass}
+                    type="tel"
+                    inputMode="numeric"
+                    className={inputClass('phone')}
                     value={newCenter.phone}
-                    onChange={e => setNewCenter(f => ({ ...f, phone: e.target.value }))}
+                    onChange={e => { setNewCenter(f => ({ ...f, phone: e.target.value })); clearField('phone'); }}
                     required
                   />
+                  {fieldErrors.phone && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.phone}</p>}
                 </div>
                 <div>
                   <label className="font-label-md text-on-surface mb-1.5 block">Email</label>
                   <input
                     type="email"
-                    className={inputClass}
+                    className={inputClass('email')}
                     value={newCenter.email}
-                    onChange={e => setNewCenter(f => ({ ...f, email: e.target.value }))}
+                    onChange={e => { setNewCenter(f => ({ ...f, email: e.target.value })); clearField('email'); }}
                     required
                   />
+                  {fieldErrors.email && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.email}</p>}
                 </div>
               </div>
               <div>
@@ -458,12 +479,14 @@ export default function CentersPage() {
                 <input
                   type="number"
                   min={1}
-                  className={inputClass}
-                  value={newCenter.max_capacity}
-                  onChange={e =>
-                    setNewCenter(f => ({ ...f, max_capacity: Number(e.target.value) }))
-                  }
+                  className={inputClass('max_capacity')}
+                  value={newCenter.max_capacity || ''}
+                  onChange={e => {
+                    setNewCenter(f => ({ ...f, max_capacity: e.target.value === '' ? 0 : Number(e.target.value) }));
+                    clearField('max_capacity');
+                  }}
                 />
+                {fieldErrors.max_capacity && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.max_capacity}</p>}
               </div>
 
               <div>

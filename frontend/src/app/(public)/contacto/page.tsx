@@ -8,9 +8,15 @@ import Icon from '@/components/Icon';
 
 export default function ContactoPage() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const clearField = (field: string) => {
+    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFieldErrors({});
     setStatus('sending');
 
     const form = e.currentTarget;
@@ -29,13 +35,33 @@ export default function ContactoPage() {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error('Error al enviar');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        if (errData && typeof errData === 'object') {
+          const mapped: Record<string, string> = {};
+          for (const [key, msgs] of Object.entries(errData)) {
+            const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
+            if (msg) mapped[key] = msg;
+          }
+          if (Object.keys(mapped).length > 0) {
+            setFieldErrors(mapped);
+            setStatus('idle');
+            return;
+          }
+        }
+        throw new Error('Error al enviar');
+      }
       setStatus('sent');
       form.reset();
     } catch {
       setStatus('error');
     }
   };
+
+  const inputClass = (field: string) =>
+    `w-full px-3 py-2 rounded-lg border bg-surface focus:outline-none focus:border-primary transition-all ${
+      fieldErrors[field] ? 'border-red-400' : 'border-outline-variant/30'
+    }`;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -82,18 +108,44 @@ export default function ContactoPage() {
                   Error al enviar el mensaje. Intenta de nuevo más tarde.
                 </div>
               )}
-              <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+              <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
                 <div>
                   <label htmlFor="contact-name" className="font-label-sm text-on-surface-variant block mb-1">Nombre</label>
-                  <input id="contact-name" name="first_name" type="text" required className="w-full px-3 py-2 rounded-lg border border-outline-variant/30 bg-surface focus:outline-none focus:border-primary" />
+                  <input
+                    id="contact-name"
+                    name="first_name"
+                    type="text"
+                    required
+                    pattern="[a-zA-ZáéíóúñÑ\s]+"
+                    title="Solo letras"
+                    className={inputClass('first_name')}
+                    onChange={() => clearField('first_name')}
+                  />
+                  {fieldErrors.first_name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.first_name}</p>}
                 </div>
                 <div>
                   <label htmlFor="contact-email" className="font-label-sm text-on-surface-variant block mb-1">Correo Electrónico</label>
-                  <input id="contact-email" name="email" type="email" required className="w-full px-3 py-2 rounded-lg border border-outline-variant/30 bg-surface focus:outline-none focus:border-primary" />
+                  <input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    required
+                    className={inputClass('email')}
+                    onChange={() => clearField('email')}
+                  />
+                  {fieldErrors.email && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.email}</p>}
                 </div>
                 <div>
                   <label htmlFor="contact-message" className="font-label-sm text-on-surface-variant block mb-1">Mensaje</label>
-                  <textarea id="contact-message" name="description" rows={4} required className="w-full px-3 py-2 rounded-lg border border-outline-variant/30 bg-surface focus:outline-none focus:border-primary resize-none" />
+                  <textarea
+                    id="contact-message"
+                    name="description"
+                    rows={4}
+                    required
+                    className={`${inputClass('description')} resize-none`}
+                    onChange={() => clearField('description')}
+                  />
+                  {fieldErrors.description && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.description}</p>}
                 </div>
                 <button type="submit" disabled={status === 'sending'} className="bg-primary text-on-primary font-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity self-start disabled:opacity-50">
                   {status === 'sending' ? 'Enviando...' : 'Enviar Mensaje'}

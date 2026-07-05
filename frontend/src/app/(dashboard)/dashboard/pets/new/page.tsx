@@ -18,13 +18,20 @@ export default function NewPetPage() {
   const [centers, setCenters] = useState<Center[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [form, setForm] = useState({
-    name: '', species: 'dog', breed: '', age_months: 1, size: 'medium',
+    name: '', species: 'dog', breed: '', size: 'medium',
     gender: 'M', weight_kg: 10, description: '', health_notes: '',
     is_sterilized: false, is_vaccinated: false, is_dewormed: false, status: 'available', center: '',
   });
+  const [ageValue, setAgeValue] = useState(1);
+  const [ageUnit, setAgeUnit] = useState('months');
+
+  const clearField = (field: string) => {
+    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
+  };
 
   useEffect(() => {
     api.get<{ results: Center[] }>('/centers/')
@@ -45,13 +52,27 @@ export default function NewPetPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const ageToMonths = (value: number, unit: string): number => {
+    if (unit === 'days') return Math.round(value / 30);
+    if (unit === 'years') return value * 12;
+    return value;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.center) { setError('Selecciona un centro'); return; }
-    setSubmitting(true);
     setError('');
+    setFieldErrors({});
+
+    if (!form.center) { setFieldErrors({ center: 'Selecciona un centro' }); return; }
+    if (!ageValue || ageValue < 1) { setFieldErrors({ age: 'Indica una edad válida' }); return; }
+
+    setSubmitting(true);
     try {
-      const { data: pet } = await api.post<any>('/pets/', { ...form, center: Number(form.center) });
+      const { data: pet } = await api.post<any>('/pets/', {
+        ...form,
+        age_months: ageToMonths(ageValue, ageUnit),
+        center: Number(form.center),
+      });
       const petId = pet.id;
 
       for (const file of imageFiles) {
@@ -64,14 +85,25 @@ export default function NewPetPage() {
 
       router.push('/dashboard/pets');
     } catch (err: unknown) {
-      const apiErr = err as { response?: { data?: Record<string, string[]> } };
+      const apiErr = err as { response?: { data?: Record<string, any> } };
       const detail = apiErr?.response?.data;
-      if (detail) setError(Object.values(detail).flat().join('. '));
-      else setError('Error al crear la mascota');
+      if (detail) {
+        const mapped: Record<string, string> = {};
+        for (const [key, msgs] of Object.entries(detail)) {
+          const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
+          if (msg) mapped[key === 'age_months' ? 'age' : key] = msg;
+        }
+        if (Object.keys(mapped).length > 0) setFieldErrors(mapped);
+        else setError(Object.values(detail).flat().join('. '));
+      } else {
+        setError('Error al crear la mascota');
+      }
     } finally { setSubmitting(false) }
   };
 
-  const inputClass = 'w-full bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all';
+  const baseInputClass = 'w-full bg-surface-container-lowest border rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all';
+  const inputClass = (field: string) =>
+    `${baseInputClass} ${fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'}`;
   const labelClass = 'font-label-md text-on-surface mb-1.5 block';
 
   return (
@@ -90,56 +122,90 @@ export default function NewPetPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
               <div>
                 <label className={labelClass}>Nombre</label>
-                <input className={inputClass} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
+                <input
+                  className={inputClass('name')}
+                  value={form.name}
+                  onChange={e => { setForm(f => ({ ...f, name: e.target.value })); clearField('name'); }}
+                  required
+                />
+                {fieldErrors.name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.name}</p>}
               </div>
               <div>
                 <label className={labelClass}>Especie</label>
-                <select className={inputClass} value={form.species} onChange={e => setForm(f => ({ ...f, species: e.target.value }))}>
+                <select className={inputClass('species')} value={form.species} onChange={e => setForm(f => ({ ...f, species: e.target.value }))}>
                   <option value="dog">Perro</option>
                   <option value="cat">Gato</option>
                 </select>
+                {fieldErrors.species && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.species}</p>}
               </div>
               <div>
                 <label className={labelClass}>Raza</label>
-                <input className={inputClass} value={form.breed} onChange={e => setForm(f => ({ ...f, breed: e.target.value }))} />
+                <input className={inputClass('breed')} value={form.breed} onChange={e => setForm(f => ({ ...f, breed: e.target.value }))} />
               </div>
               <div>
-                <label className={labelClass}>Edad (meses)</label>
-                <input type="number" min={1} className={inputClass} value={form.age_months} onChange={e => setForm(f => ({ ...f, age_months: Number(e.target.value) }))} />
+                <label className={labelClass}>Edad</label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="number"
+                    min={1}
+                    className={`${baseInputClass} w-24 text-center ${fieldErrors.age ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'}`}
+                    value={ageValue || ''}
+                    onChange={e => { setAgeValue(e.target.value === '' ? 0 : Math.max(1, parseInt(e.target.value) || 1)); clearField('age'); }}
+                  />
+                  <select
+                    className={`${baseInputClass} flex-1 ${fieldErrors.age ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'}`}
+                    value={ageUnit}
+                    onChange={e => setAgeUnit(e.target.value)}
+                  >
+                    <option value="days">Días</option>
+                    <option value="months">Meses</option>
+                    <option value="years">Años</option>
+                  </select>
+                </div>
+                {fieldErrors.age && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.age}</p>}
               </div>
               <div>
                 <label className={labelClass}>Tamaño</label>
-                <select className={inputClass} value={form.size} onChange={e => setForm(f => ({ ...f, size: e.target.value }))}>
+                <select className={inputClass('size')} value={form.size} onChange={e => setForm(f => ({ ...f, size: e.target.value }))}>
                   <option value="small">Pequeño</option>
                   <option value="medium">Mediano</option>
                   <option value="large">Grande</option>
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Genero</label>
-                <select className={inputClass} value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}>
+                <label className={labelClass}>Género</label>
+                <select className={inputClass('gender')} value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}>
                   <option value="M">Macho</option>
                   <option value="F">Hembra</option>
                 </select>
               </div>
               <div>
                 <label className={labelClass}>Peso (kg)</label>
-                <input type="number" step="0.1" min={0.1} className={inputClass} value={form.weight_kg} onChange={e => setForm(f => ({ ...f, weight_kg: Number(e.target.value) }))} />
+                <input
+                  type="number"
+                  step="0.1"
+                  min={0.1}
+                  className={inputClass('weight_kg')}
+                  value={form.weight_kg || ''}
+                  onChange={e => { setForm(f => ({ ...f, weight_kg: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })); clearField('weight_kg'); }}
+                />
+                {fieldErrors.weight_kg && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.weight_kg}</p>}
               </div>
               <div>
                 <label className={labelClass}>Centro</label>
-                <select className={inputClass} value={form.center} onChange={e => setForm(f => ({ ...f, center: e.target.value }))} required>
+                <select className={inputClass('center')} value={form.center} onChange={e => { setForm(f => ({ ...f, center: e.target.value })); clearField('center'); }} required>
                   <option value="">Seleccionar...</option>
                   {centers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
+                {fieldErrors.center && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.center}</p>}
               </div>
               <div>
                 <label className={labelClass}>Notas de Salud</label>
-                <textarea rows={2} className={`${inputClass} resize-none`} value={form.health_notes} onChange={e => setForm(f => ({ ...f, health_notes: e.target.value }))} />
+                <textarea rows={2} className={`${baseInputClass} resize-none border-outline-variant focus:border-primary-container`} value={form.health_notes} onChange={e => setForm(f => ({ ...f, health_notes: e.target.value }))} />
               </div>
               <div>
                 <label className={labelClass}>Estado</label>
-                <select className={inputClass} value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}>
+                <select className={inputClass('status')} value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}>
                   <option value="available">En Adopción</option>
                   <option value="in_process">En Proceso</option>
                   <option value="adopted">Adoptado</option>
@@ -150,7 +216,7 @@ export default function NewPetPage() {
 
             <div>
               <label className={labelClass}>Descripción</label>
-              <textarea rows={4} className={`${inputClass} resize-none`} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+              <textarea rows={4} className={`${baseInputClass} resize-none border-outline-variant focus:border-primary-container`} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
 
             <div>

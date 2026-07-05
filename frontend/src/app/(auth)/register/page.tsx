@@ -22,17 +22,30 @@ const COUNTRIES = [
   { code: 'US', name: 'Estados Unidos', prefix: '+1', flag: '🇺🇸', char: 'US' },
 ];
 
+const FIELD_MAP: Record<string, string> = {
+  first_name: 'firstName',
+  last_name: 'lastName',
+  password_confirm: 'confirmPassword',
+  non_field_errors: '__all__',
+};
+
 export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('VE');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
 
+  const clearField = (field: string) => {
+    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -40,7 +53,7 @@ export default function RegisterPage() {
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setFieldErrors({ confirmPassword: 'Las contraseñas no coinciden' });
       setLoading(false);
       return;
     }
@@ -64,23 +77,18 @@ export default function RegisterPage() {
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: Record<string, any> } };
       const errorData = apiErr?.response?.data;
-      
+
       if (errorData) {
-        // Extract first error message from API response
-        const firstError = Object.values(errorData)[0];
-        if (Array.isArray(firstError)) {
-          setError(firstError[0] as string);
-          sileo.error({ title: 'Error', description: firstError[0] as string });
-        } else if (typeof firstError === 'string') {
-          setError(firstError);
-          sileo.error({ title: 'Error', description: firstError });
-        } else {
-          setError('Error al registrar. Intenta de nuevo.');
-          sileo.error({ title: 'Error', description: 'Error al registrar. Intenta de nuevo.' });
+        const mapped: Record<string, string> = {};
+        for (const [key, msgs] of Object.entries(errorData)) {
+          const field = FIELD_MAP[key] || key;
+          const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
+          if (msg && field === '__all__') setError(msg);
+          else if (msg) mapped[field] = msg;
         }
+        setFieldErrors(mapped);
       } else {
         setError('Error al registrar. Intenta de nuevo.');
-        sileo.error({ title: 'Error', description: 'Error al registrar. Intenta de nuevo.' });
       }
     } finally {
       setLoading(false);
@@ -88,6 +96,11 @@ export default function RegisterPage() {
   };
 
   const selectedCountryObj = COUNTRIES.find(c => c.code === selectedCountry);
+
+  const inputClass = (field: string) =>
+    `block w-full px-3 py-2 border rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
+      fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
+    }`;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-off-white py-12 px-4">
@@ -106,7 +119,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           {error && (
             <div className="bg-error-container text-on-error-container p-3 rounded-lg font-body-sm">
               {error}
@@ -124,8 +137,12 @@ export default function RegisterPage() {
                   name="firstName"
                   type="text"
                   required
-                  className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                  pattern="[a-zA-ZáéíóúñÑ\s]+"
+                  title="Solo letras"
+                  className={inputClass('firstName')}
+                  onChange={() => clearField('firstName')}
                 />
+                {fieldErrors.firstName && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.firstName}</p>}
               </div>
               <div>
                 <label htmlFor="lastName" className="block font-label-md text-on-surface-variant uppercase tracking-wider mb-2">
@@ -136,8 +153,12 @@ export default function RegisterPage() {
                   name="lastName"
                   type="text"
                   required
-                  className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                  pattern="[a-zA-ZáéíóúñÑ\s]+"
+                  title="Solo letras"
+                  className={inputClass('lastName')}
+                  onChange={() => clearField('lastName')}
                 />
+                {fieldErrors.lastName && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.lastName}</p>}
               </div>
             </div>
 
@@ -150,8 +171,12 @@ export default function RegisterPage() {
                 name="username"
                 type="text"
                 required
-                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                pattern="[a-zA-Z0-9_]+"
+                title="Solo letras, números y guión bajo"
+                className={inputClass('username')}
+                onChange={() => clearField('username')}
               />
+              {fieldErrors.username && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.username}</p>}
             </div>
 
             <div>
@@ -163,8 +188,10 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 required
-                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                className={inputClass('email')}
+                onChange={() => clearField('email')}
               />
+              {fieldErrors.email && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -211,10 +238,16 @@ export default function RegisterPage() {
                       id="phone"
                       name="phone"
                       type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9+\s()]+"
                       placeholder="Número"
-                      className="flex-1 px-3 py-2 border border-outline-variant rounded-r-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                      className={`flex-1 px-3 py-2 border rounded-r-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
+                        fieldErrors.phone ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
+                      }`}
+                      onChange={() => clearField('phone')}
                     />
                   </div>
+                  {fieldErrors.phone && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.phone}</p>}
                 </div>
               </div>
             </div>
@@ -229,8 +262,10 @@ export default function RegisterPage() {
                 type="password"
                 required
                 minLength={8}
-                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                className={inputClass('password')}
+                onChange={() => clearField('password')}
               />
+              {fieldErrors.password && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.password}</p>}
             </div>
 
             <div>
@@ -243,8 +278,10 @@ export default function RegisterPage() {
                 type="password"
                 required
                 minLength={8}
-                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                className={inputClass('confirmPassword')}
+                onChange={() => clearField('confirmPassword')}
               />
+              {fieldErrors.confirmPassword && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.confirmPassword}</p>}
             </div>
           </div>
 

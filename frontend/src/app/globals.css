@@ -22,9 +22,10 @@
   }
 }
 
-/* Asegurar que sileo toasts aparezcan sobre el navbar */
-[role="status"],
-[role="alert"],
-.sonner-container {
-  z-index: 100 !important;
+/* Sileo toasts — fondo primary-container */
+[data-sileo-toast] {
+  --sileo-tone: #005750;
+}
+[data-sileo-toast] [data-sileo-description] {
+  color: #005750;
 }

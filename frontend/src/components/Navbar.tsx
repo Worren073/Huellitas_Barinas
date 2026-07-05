@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { auth } from '@/lib/auth';
 import Icon from './Icon';
 import ActiveLink from './ActiveLink';
@@ -89,16 +90,17 @@ export default function Navbar({}: NavbarProps = {}) {
               >
                 <Icon name="user_circle" className="w-7 h-7" solid />
                 {showMobileHint && (
-                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-status-error rounded-full animate-pulse md:hidden" />
+                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full animate-pulse md:hidden" />
                 )}
               </button>
-              {showMobileHint && (
-                <div className="absolute right-0 top-full mt-2 md:hidden animate-fade-scale-in">
-                  <div className="bg-status-error text-white font-label-sm px-3 py-2 rounded-xl shadow-lg whitespace-nowrap relative">
-                    <div className="absolute -top-1.5 right-4 w-3 h-3 bg-status-error rotate-45" />
+              {showMobileHint && createPortal(
+                <div className="fixed top-[88px] right-4 z-[9999] md:hidden animate-fade-scale-in">
+                  <div className="bg-primary-container text-on-primary-container font-label-sm px-3 py-2 rounded-xl shadow-lg whitespace-nowrap relative">
+                    <div className="absolute -top-1.5 right-4 w-3 h-3 bg-primary-container rotate-45" />
                     Toca para ver el menú
                   </div>
-                </div>
+                </div>,
+                document.body
               )}
               <UserDropdown
                 show={showDropdown}

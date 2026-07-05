@@ -13,11 +13,17 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/dashboard';
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+
+  const clearField = (field: string) => {
+    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -28,7 +34,6 @@ function LoginForm() {
       const { access, refresh } = await auth.login(email, password);
       auth.setTokens(access, refresh);
 
-      // Determine redirect based on role
       let destination = redirectTo;
       if (redirectTo === '/dashboard') {
         try {
@@ -47,18 +52,30 @@ function LoginForm() {
       }
       router.push(destination);
     } catch (err: unknown) {
-      const apiErr = err as { response?: { status?: number; data?: { detail?: string } } };
+      const apiErr = err as { response?: { status?: number; data?: Record<string, any> } };
       if (apiErr?.response?.status === 429) {
         setError('Demasiados intentos. Espera un momento e intenta de nuevo.');
-        sileo.error({ title: 'Error', description: 'Demasiados intentos. Intenta más tarde.' });
       } else {
-        setError('Credenciales inválidas');
-        sileo.error({ title: 'Error', description: 'Email o contraseña incorrectos.' });
+        const data = apiErr?.response?.data;
+        if (data?.email) {
+          setFieldErrors({ email: Array.isArray(data.email) ? data.email[0] : data.email });
+        }
+        if (data?.password) {
+          setFieldErrors({ password: Array.isArray(data.password) ? data.password[0] : data.password });
+        }
+        if (!data?.email && !data?.password) {
+          setError(data?.detail || 'Credenciales inválidas');
+        }
       }
     } finally {
       setLoading(false);
     }
   };
+
+  const inputClass = (field: string) =>
+    `block w-full px-3 py-2 border rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
+      fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
+    }`;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-off-white py-12 px-4">
@@ -77,7 +94,7 @@ function LoginForm() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           {error && (
             <div className="bg-error-container text-on-error-container p-3 rounded-lg font-body-sm">
               {error}
@@ -94,8 +111,10 @@ function LoginForm() {
                 name="email"
                 type="email"
                 required
-                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                className={inputClass('email')}
+                onChange={() => clearField('email')}
               />
+              {fieldErrors.email && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.email}</p>}
             </div>
 
             <div>
@@ -107,8 +126,10 @@ function LoginForm() {
                 name="password"
                 type="password"
                 required
-                className="block w-full px-3 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+                className={inputClass('password')}
+                onChange={() => clearField('password')}
               />
+              {fieldErrors.password && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.password}</p>}
             </div>
           </div>
 

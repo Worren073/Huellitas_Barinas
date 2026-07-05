@@ -1,12 +1,15 @@
 /**
  * Normalize image URLs for frontend use.
- * Converts absolute URLs (from Docker or localhost) to relative paths
- * so Next.js Image optimization works server-side.
+ * Strips the API base URL so Next.js Image optimization uses the
+ * rewrite proxy (/media/* -> API) instead of fetching externally.
  */
 export function normalizeImageUrl(url: string): string {
   if (!url) return url;
-  if (url.startsWith('http')) return url;
-  return url.replace(/^https?:\/\/[^/]+\//, '/');
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  if (url.startsWith(apiUrl)) {
+    return url.replace(apiUrl, '');
+  }
+  return url;
 }
 
 /**
