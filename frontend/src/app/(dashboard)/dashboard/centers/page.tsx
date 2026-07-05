@@ -546,10 +546,10 @@ export default function CentersPage() {
                   <input
                     type="number"
                     step="any"
-                    className={inputClass}
+                    className={inputClass('latitude')}
                     placeholder="8.615"
                     value={newCenter.latitude}
-                    onChange={e => setNewCenter(f => ({ ...f, latitude: e.target.value }))}
+                    onChange={e => { setNewCenter(f => ({ ...f, latitude: e.target.value })); clearField('latitude'); }}
                   />
                 </div>
                 <div>
@@ -557,10 +557,10 @@ export default function CentersPage() {
                   <input
                     type="number"
                     step="any"
-                    className={inputClass}
+                    className={inputClass('longitude')}
                     placeholder="-70.207"
                     value={newCenter.longitude}
-                    onChange={e => setNewCenter(f => ({ ...f, longitude: e.target.value }))}
+                    onChange={e => { setNewCenter(f => ({ ...f, longitude: e.target.value })); clearField('longitude'); }}
                   />
                 </div>
               </div>
@@ -581,9 +581,9 @@ export default function CentersPage() {
                   </div>
                 ) : (
                   <select
-                    className={inputClass}
+                    className={inputClass('admin')}
                     value={selectedAdmin || ''}
-                    onChange={e => setSelectedAdmin(e.target.value ? parseInt(e.target.value) : null)}
+                    onChange={e => { setSelectedAdmin(e.target.value ? parseInt(e.target.value) : null); clearField('admin'); }}
                   >
                     <option value="">Selecciona un administrador</option>
                     {centerAdmins.map(admin => (
