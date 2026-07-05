@@ -58,29 +58,29 @@ X_FRAME_OPTIONS = 'DENY'
 
 def parse_database_url(url: str = None) -> dict:
     """Parse DATABASE_URL or individual DB environment variables."""
-    import re
+    from urllib.parse import urlparse, unquote
     
     db_url = url or os.environ.get('DATABASE_URL', '').strip()
     
     if db_url:
-        match = re.match(
-            r'postgresql://([^:]+):([^@]+)@([^:]+?)(?::(\d+))?/([^\?]+)',
-            db_url
-        )
-        if match:
-            return {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': match.group(5),
-                    'USER': match.group(1),
-                    'PASSWORD': match.group(2),
-                    'HOST': match.group(3),
-                    'PORT': match.group(4) or '5432',
-                    'OPTIONS': {'sslmode': 'require'},
-                    'CONN_MAX_AGE': 0,
-                    'ATOMIC_REQUESTS': True,
+        try:
+            result = urlparse(db_url)
+            if result.scheme == 'postgresql':
+                return {
+                    'default': {
+                        'ENGINE': 'django.db.backends.postgresql',
+                        'NAME': result.path.lstrip('/').split('?')[0],
+                        'USER': unquote(result.username) if result.username else '',
+                        'PASSWORD': unquote(result.password) if result.password else '',
+                        'HOST': result.hostname or '',
+                        'PORT': str(result.port) if result.port else '5432',
+                        'OPTIONS': {'sslmode': 'require'},
+                        'CONN_MAX_AGE': 0,
+                        'ATOMIC_REQUESTS': True,
+                    }
                 }
-            }
+        except Exception as e:
+            print(f"WARNING: Failed to parse DATABASE_URL: {e}", file=sys.stderr)
     
     return {
         'default': {
