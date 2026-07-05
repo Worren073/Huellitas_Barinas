@@ -39,7 +39,7 @@ allowed_hosts_str = validate_required_env(
     'ALLOWED_HOSTS',
     'CRITICAL: ALLOWED_HOSTS not set. Example: "yourdomain.com,www.yourdomain.com,api.yourdomain.com"'
 )
-ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_str.split(',')]
+ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_str.split(',')] + ['localhost']
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
