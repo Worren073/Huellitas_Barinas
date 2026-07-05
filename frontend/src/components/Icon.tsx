@@ -170,6 +170,8 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   user_circle_solid: UserCircleSolidIcon,
   visibility: EyeIcon,
   volunteer_activism: HandRaisedIcon,
+  handshake: UsersIcon,
+  home_heart: HomeModernIcon,
 };
 
 interface IconProps {
