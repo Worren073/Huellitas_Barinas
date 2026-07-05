@@ -43,5 +43,5 @@ def convert_to_webp(image_file, quality=85, max_width=1200):
     new_file_name = old_name.rsplit(".", 1)[0] + ".webp"
 
     return InMemoryUploadedFile(
-        buffer, image_file.field_name, new_file_name, "image/webp", buffer.tell(), None
+        buffer, 'image', new_file_name, "image/webp", buffer.tell(), None
     )
