@@ -147,54 +147,9 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 class HealthCheckView(APIView):
-    """Health check endpoint verifying DB and Redis connectivity."""
+    """Health check endpoint — lightweight, no DB/Redis dependency."""
 
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        from django.core.cache import cache
-        from django.db import connections
-        import time
-
-        db_ok = False
-        cache_ok = False
-
-        # Check database with retry for cold start (Neon free tier)
-        last_error = None
-        for attempt in range(5):
-            try:
-                connections["default"].connect()
-                with connections["default"].cursor() as cursor:
-                    cursor.execute("SELECT 1")
-                    cursor.fetchone()
-                db_ok = True
-                break
-            except Exception as e:
-                last_error = str(e)
-                print(f"WARNING: Database health check (attempt {attempt + 1}/5): {e}")
-                if attempt < 4:
-                    time.sleep(3)
-
-        # Check Redis / cache (non-blocking — Redis may be unavailable)
-        try:
-            cache.set("health_check", 1, 5)
-            result = cache.get("health_check")
-            cache_ok = result == 1
-            if not cache_ok:
-                print("WARNING: Cache write/read mismatch")
-        except Exception as e:
-            print(f"WARNING: Cache unavailable: {e}")
-
-        if not db_ok:
-            return Response(
-                {"status": "unhealthy", "database": "unavailable", "error": last_error, "cache": "ok" if cache_ok else "unavailable"},
-                status=503,
-            )
-
-        return Response(
-            {
-                "status": "healthy",
-                "database": "ok",
-                "cache": "ok" if cache_ok else "unavailable",
-            }
-        )
+        return Response({"status": "healthy", "database": "unchecked", "cache": "unchecked"})
