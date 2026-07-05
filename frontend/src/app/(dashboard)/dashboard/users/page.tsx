@@ -352,8 +352,7 @@ export default function UsersPage() {
                 <LoadingButton
                   onClick={() => setActionModal({ type: 'deactivate', user: editingUser })}
                   loading={false}
-                  className="w-full py-2"
-                  variant="danger"
+                  className="w-full py-2 !bg-red-600"
                 >
                   Desactivar / Eliminar Cuenta
                 </LoadingButton>
@@ -399,8 +398,7 @@ export default function UsersPage() {
             <LoadingButton
               onClick={handleDeactivateUser}
               loading={actionLoading}
-              className="flex-1 py-2.5"
-              variant="danger"
+              className="flex-1 py-2.5 !bg-red-600"
             >
               Desactivar
             </LoadingButton>

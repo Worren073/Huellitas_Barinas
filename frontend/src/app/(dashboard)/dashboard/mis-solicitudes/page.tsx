@@ -376,8 +376,7 @@ export default function MisSolicitudesPage() {
             <LoadingButton
               onClick={handleDeleteAccount}
               loading={deleting}
-              className="flex-1 py-2.5"
-              variant="danger"
+              className="flex-1 py-2.5 !bg-red-600"
             >
               Eliminar mi cuenta
             </LoadingButton>
