@@ -77,7 +77,7 @@ export default async function HomePage() {
               <div className="relative">
                 <div className="absolute -inset-4 bg-primary-container/20 rounded-3xl blur-3xl"></div>
                 <div className="relative rounded-2xl shadow-card w-full h-[400px] bg-surface-container-high flex items-center justify-center overflow-hidden">
-                  <Image src="/perrito.jpg" alt="Perrito disponible para adopción" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+                  <Image src="/perrito.webp" alt="Perrito disponible para adopción" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                 </div>
               </div>
             </ScrollAnimation>
@@ -98,7 +98,7 @@ export default async function HomePage() {
               {[
                 { icon: 'volunteer_activism', title: 'Sin fines de lucro', desc: 'Trabajamos por el bienestar animal sin ningún interés económico, impulsados por la pasión de ayudar.' },
                 { icon: 'handshake', title: 'Alianzas con centros', desc: 'Colaboramos con centros de adopción en toda Venezuela para centralizar y dar visibilidad a sus animales.' },
-                { icon: 'home_heart', title: 'Información centralizada', desc: 'Unificamos datos de mascotas disponibles, requisitos y procesos para facilitar la adopción responsable.' },
+                { icon: 'home_heart', title: 'Información centralizada', desc: 'Unificamos datos de mascotas en adopción, requisitos y procesos para facilitar la adopción responsable.' },
               ].map((item, index) => (
                 <ScrollAnimation key={item.title} variant="slideUp" delay={index * 0.1}>
                   <div className="bg-surface p-8 rounded-2xl shadow-sm border border-surface-container-high text-center hover:shadow-md transition-shadow">

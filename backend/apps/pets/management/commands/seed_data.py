@@ -96,20 +96,20 @@ class Command(BaseCommand):
 
         # Create superadmin if not exists
         admin, created = User.objects.get_or_create(
-            username="admin",
+            username="worren",
             defaults={
-                "email": "admin@huellitas.com",
-                "first_name": "Admin",
-                "last_name": "General",
+                "email": "worrenalexanderbz@gmail.com",
+                "first_name": "Worren",
+                "last_name": "Barrios",
                 "role": "superadmin",
                 "is_staff": True,
                 "is_superuser": True,
             },
         )
         if created:
-            admin.set_password("admin123")
+            admin.set_password("Atreus.30707073")
             admin.save()
-            self.stdout.write(self.style.SUCCESS("Created admin user"))
+            self.stdout.write(self.style.SUCCESS("Created superuser: Worren Barrios"))
 
         # Create centers
         centers_data = [

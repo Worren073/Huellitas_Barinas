@@ -31,9 +31,6 @@ export default function Footer() {
             <Link href="/privacidad" className="font-label-sm text-on-surface-variant hover:text-primary transition-colors">
               Privacidad
             </Link>
-            <Link href="/redes" className="font-label-sm text-on-surface-variant hover:text-primary transition-colors">
-              Redes Sociales
-            </Link>
           </nav>
         </div>
       </div>

@@ -27,6 +27,7 @@ const sizeOptions = [
 ];
 
 const genderOptions = [
+  { value: '', label: 'Ambos' },
   { value: 'male', label: 'Macho' },
   { value: 'female', label: 'Hembra' },
 ];
