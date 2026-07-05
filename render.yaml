@@ -7,7 +7,7 @@ services:
     ipAllowList: []
 
   # PostgreSQL Database
-  - type: pgsql
+  - type: psql
     name: huellitasvenezuela-db
     plan: free
     region: virginia
