@@ -22,10 +22,10 @@
   }
 }
 
-/* Sileo toasts — fondo primary-container */
+/* Sileo toasts — fondo negro */
 [data-sileo-toast] {
-  --sileo-tone: #005750;
+  --sileo-tone: #ffffff;
 }
 [data-sileo-toast] [data-sileo-description] {
-  color: #005750;
+  color: #ffffff;
 }

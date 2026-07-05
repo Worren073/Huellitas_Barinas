@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="es" className={`${inter.variable} ${montserrat.variable}`}>
       <body className="font-inter text-on-surface bg-surface-off-white antialiased">
         <TokenCleanup />
-        <Toaster position="bottom-right" options={{ fill: '#4fd1c5' }} />
+        <Toaster position="bottom-right" options={{ fill: '#000000' }} />
         <ErrorBoundary>{children}</ErrorBoundary>
       </body>
     </html>

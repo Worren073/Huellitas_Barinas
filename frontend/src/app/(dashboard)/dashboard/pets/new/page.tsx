@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { sileo } from 'sileo';
 import AdminLayout from '@/components/AdminLayout';
 import Icon from '@/components/Icon';
 import api from '@/lib/api';
@@ -15,6 +16,7 @@ interface Center {
 export default function NewPetPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
   const [centers, setCenters] = useState<Center[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -60,13 +62,14 @@ export default function NewPetPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setFieldErrors({});
-
+    if (submittingRef.current) return;
     if (!form.center) { setFieldErrors({ center: 'Selecciona un centro' }); return; }
     if (!ageValue || ageValue < 1) { setFieldErrors({ age: 'Indica una edad válida' }); return; }
 
+    submittingRef.current = true;
     setSubmitting(true);
+    setError('');
+    setFieldErrors({});
     try {
       const { data: pet } = await api.post<any>('/pets/', {
         ...form,
@@ -83,6 +86,10 @@ export default function NewPetPage() {
         });
       }
 
+      sileo.success({
+        title: 'Mascota creada',
+        description: `${form.name} ha sido registrada correctamente.`,
+      });
       router.push('/dashboard/pets');
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: Record<string, any> } };
@@ -98,7 +105,7 @@ export default function NewPetPage() {
       } else {
         setError('Error al crear la mascota');
       }
-    } finally { setSubmitting(false) }
+    } finally { submittingRef.current = false; setSubmitting(false) }
   };
 
   const baseInputClass = 'w-full bg-surface-container-lowest border rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all';
