@@ -160,7 +160,8 @@ class HealthCheckView(APIView):
         cache_ok = False
 
         # Check database with retry for cold start (Neon free tier)
-        for attempt in range(3):
+        last_error = None
+        for attempt in range(5):
             try:
                 connections["default"].connect()
                 with connections["default"].cursor() as cursor:
@@ -169,9 +170,10 @@ class HealthCheckView(APIView):
                 db_ok = True
                 break
             except Exception as e:
-                print(f"WARNING: Database health check (attempt {attempt + 1}/3): {e}")
-                if attempt < 2:
-                    time.sleep(2)
+                last_error = str(e)
+                print(f"WARNING: Database health check (attempt {attempt + 1}/5): {e}")
+                if attempt < 4:
+                    time.sleep(3)
 
         # Check Redis / cache (non-blocking — Redis may be unavailable)
         try:
@@ -185,7 +187,7 @@ class HealthCheckView(APIView):
 
         if not db_ok:
             return Response(
-                {"status": "unhealthy", "database": "unavailable", "cache": "ok" if cache_ok else "unavailable"},
+                {"status": "unhealthy", "database": "unavailable", "error": last_error, "cache": "ok" if cache_ok else "unavailable"},
                 status=503,
             )
 

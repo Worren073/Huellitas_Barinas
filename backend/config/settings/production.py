@@ -77,7 +77,7 @@ def parse_database_url(url: str = None) -> dict:
                     'HOST': match.group(3),
                     'PORT': match.group(4) or '5432',
                     'OPTIONS': {'sslmode': 'require'},
-                    'CONN_MAX_AGE': 600,
+                    'CONN_MAX_AGE': 0,
                     'ATOMIC_REQUESTS': True,
                 }
             }
@@ -91,7 +91,7 @@ def parse_database_url(url: str = None) -> dict:
             'HOST': validate_required_env('DB_HOST'),
             'PORT': os.environ.get('DB_PORT', '5432'),
             'OPTIONS': {'sslmode': 'require'},
-            'CONN_MAX_AGE': 600,
+            'CONN_MAX_AGE': 0,
             'ATOMIC_REQUESTS': True,
         }
     }
