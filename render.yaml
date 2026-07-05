@@ -8,7 +8,7 @@ services:
 
   # Django API Server
   - type: web
-    name: huellitas-api
+    name: huellitasvenezuela-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     buildCommand: pip install -r requirements.txt
@@ -68,7 +68,7 @@ services:
         value: "true"
       # Frontend API URL
       - key: NEXT_PUBLIC_API_URL
-        value: https://huellitas-api.onrender.com
+        value: https://huellitasvenezuela-api.onrender.com
       # Monitoring
       - key: SENTRY_DSN
         sync: false
@@ -86,9 +86,9 @@ services:
     region: virginia
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        value: https://huellitas-api.onrender.com
+        value: https://huellitasvenezuela-api.onrender.com
       - key: API_SERVER_URL
-        value: https://huellitas-api.onrender.com
+        value: https://huellitasvenezuela-api.onrender.com
       - key: NODE_ENV
         value: production
 
