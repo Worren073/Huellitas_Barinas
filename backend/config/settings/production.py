@@ -74,7 +74,10 @@ def parse_database_url(url: str = None) -> dict:
                         'PASSWORD': unquote(result.password) if result.password else '',
                         'HOST': result.hostname or '',
                         'PORT': str(result.port) if result.port else '5432',
-                        'OPTIONS': {'sslmode': 'require'},
+                        'OPTIONS': {
+                            'sslmode': 'require',
+                            'connect_timeout': 5,
+                        },
                         'CONN_MAX_AGE': 0,
                         'ATOMIC_REQUESTS': True,
                     }
@@ -90,7 +93,10 @@ def parse_database_url(url: str = None) -> dict:
             'PASSWORD': validate_required_env('DB_PASSWORD'),
             'HOST': validate_required_env('DB_HOST'),
             'PORT': os.environ.get('DB_PORT', '5432'),
-            'OPTIONS': {'sslmode': 'require'},
+            'OPTIONS': {
+                'sslmode': 'require',
+                'connect_timeout': 5,
+            },
             'CONN_MAX_AGE': 0,
             'ATOMIC_REQUESTS': True,
         }

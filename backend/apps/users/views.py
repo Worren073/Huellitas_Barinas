@@ -147,17 +147,9 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 class HealthCheckView(APIView):
-    """Health check endpoint — always returns 200 with DB status info."""
+    """Health check endpoint — returns 200 immediately (no DB dependency)."""
 
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        try:
-            from django.db import connections
-            connections["default"].connect()
-            with connections["default"].cursor() as cursor:
-                cursor.execute("SELECT 1")
-                cursor.fetchone()
-            return Response({"status": "healthy", "database": "ok"})
-        except Exception as e:
-            return Response({"status": "healthy", "database": f"warning: {e}"})
+        return Response({"status": "healthy"})
