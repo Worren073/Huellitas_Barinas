@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Montserrat } from 'next/font/google';
 import { Toaster } from 'sileo';
 import TokenCleanup from '@/components/TokenCleanup';
+import ToastReader from '@/components/ToastReader';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import './globals.css';
 
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="es" className={`${inter.variable} ${montserrat.variable}`}>
       <body className="font-inter text-on-surface bg-surface-off-white antialiased">
         <TokenCleanup />
+        <ToastReader />
         <Toaster position="bottom-right" options={{ fill: '#000000' }} />
         <ErrorBoundary>{children}</ErrorBoundary>
       </body>

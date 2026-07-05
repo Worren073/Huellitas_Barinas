@@ -6,7 +6,9 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import StatusBadge from '@/components/StatusBadge';
+import CenterInfoModal from '@/components/CenterInfoModal';
 import Icon from '@/components/Icon';
+import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import api from '@/lib/api';
 import { normalizeImageUrl } from '@/lib/utils';
@@ -69,6 +71,8 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasExistingRequest, setHasExistingRequest] = useState(false);
+  const [selectedCenter, setSelectedCenter] = useState<any>(null);
+  const [centerLoading, setCenterLoading] = useState(false);
   const petId = params.id;
 
   useEffect(() => {
@@ -98,6 +102,22 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
       .then(res => setHasExistingRequest(res.data.count > 0))
       .catch(() => setHasExistingRequest(false));
   }, [petId]);
+
+  const openCenterModal = async () => {
+    if (!pet?.center) return;
+    const centerId = typeof pet.center === 'object' && pet.center !== null
+      ? (pet.center as any).id
+      : pet.center;
+    setCenterLoading(true);
+    try {
+      const res = await api.get(`/centers/${centerId}/`);
+      setSelectedCenter(res.data);
+    } catch {
+      sileo.error({ title: 'Error', description: 'No se pudo cargar la información del centro.' });
+    } finally {
+      setCenterLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -284,23 +304,24 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
                         <Icon name="location" className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <h4 className="font-label-md text-on-surface">{pet.center.name}</h4>
-                        <p className="font-body-sm text-on-surface-variant mt-1">{pet.center.address || 'Barinas, Venezuela'}</p>
+                        <h4 className="font-label-md text-on-surface">{pet.center_name || 'Centro de adopción'}</h4>
+                        <p className="font-body-sm text-on-surface-variant mt-1">Barinas, Venezuela</p>
                       </div>
                     </div>
-                    {pet.center.phone && (
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
-                          <Icon name="call" className="w-5 h-5 text-primary" />
-                        </div>
-                        <p className="font-body-sm text-on-surface-variant">{pet.center.phone}</p>
-                      </div>
-                    )}
-                    <Link href={`/centers/${pet.center.id}`} className="font-label-md text-primary hover:underline">
-                      Ver perfil del centro
-                    </Link>
+                    <button
+                      onClick={openCenterModal}
+                      disabled={centerLoading}
+                      className="font-label-md text-primary hover:underline disabled:opacity-50 flex items-center gap-1.5"
+                    >
+                      <Icon name="info" className="w-4 h-4" />
+                      {centerLoading ? 'Cargando...' : 'Ver información del centro'}
+                    </button>
                   </div>
                 </div>
+              )}
+
+              {selectedCenter && (
+                <CenterInfoModal center={selectedCenter} onClose={() => setSelectedCenter(null)} />
               )}
             </div>
           </div>

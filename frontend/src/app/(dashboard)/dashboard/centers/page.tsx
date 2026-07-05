@@ -9,6 +9,7 @@ import AdminMetricCard from '@/components/AdminMetricCard';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
 import LoadingButton from '@/components/LoadingButton';
+import CenterInfoModal from '@/components/CenterInfoModal';
 import { auth } from '@/lib/auth';
 import api from '@/lib/api';
 
@@ -25,6 +26,10 @@ interface Center {
   current_capacity: number;
   pets_count: number;
   is_full: boolean;
+  logo?: string | null;
+  cover_image?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 interface User {
@@ -72,6 +77,9 @@ export default function CentersPage() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userCenter, setUserCenter] = useState<number | null>(null);
   const [loadingAdmins, setLoadingAdmins] = useState(false);
+  const [selectedCenter, setSelectedCenter] = useState<Center | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchCenters = async () => {
     try {
@@ -128,6 +136,20 @@ export default function CentersPage() {
       fetchCenters();
     } catch (err: any) {
       sileo.error({ title: 'Error', description: 'Error al actualizar centro' });
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    setDeleting(true);
+    try {
+      await api.delete(`/centers/${id}/`);
+      sileo.success({ title: 'Centro eliminado', description: 'El centro ha sido eliminado correctamente.' });
+      setShowDeleteConfirm(null);
+      fetchCenters();
+    } catch {
+      sileo.error({ title: 'Error', description: 'No se pudo eliminar el centro.' });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -305,7 +327,8 @@ export default function CentersPage() {
             {displayedCenters.map(c => (
               <div
                 key={c.id}
-                className="bg-surface rounded-xl ambient-shadow border border-outline-variant p-stack-md hover:shadow-card-hover transition-all"
+                className="bg-surface rounded-xl ambient-shadow border border-outline-variant p-stack-md hover:shadow-card-hover transition-all cursor-pointer"
+                onClick={() => setSelectedCenter(c)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -354,18 +377,26 @@ export default function CentersPage() {
                     </span>
                   </div>
                   {userRole === 'superadmin' && (
-                    <button
-                      onClick={() => handleToggleStatus(c)}
-                      className={`px-3 py-1.5 rounded-lg font-label-sm transition-all ${
-                        c.status === 'active'
-                          ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                          : c.status === 'pending'
-                          ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                          : 'bg-green-100 text-green-700 hover:bg-green-200'
-                      }`}
-                    >
-                      {c.status === 'active' ? 'Desactivar' : c.status === 'pending' ? 'Aprobar' : 'Activar'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleToggleStatus(c); }}
+                        className={`px-3 py-1.5 rounded-lg font-label-sm transition-all ${
+                          c.status === 'active'
+                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                            : c.status === 'pending'
+                            ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                        }`}
+                      >
+                        {c.status === 'active' ? 'Desactivar' : c.status === 'pending' ? 'Aprobar' : 'Activar'}
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(c.id); }}
+                        className="px-3 py-1.5 rounded-lg font-label-sm bg-surface-container-high text-status-error hover:bg-red-100 transition-all"
+                      >
+                        <Icon name="delete" className="w-4 h-4" />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -607,6 +638,37 @@ export default function CentersPage() {
                 Crear Centro
               </LoadingButton>
             </form>
+          </div>
+        </div>
+      )}
+
+      {selectedCenter && (
+        <CenterInfoModal center={selectedCenter} onClose={() => setSelectedCenter(null)} />
+      )}
+
+      {showDeleteConfirm !== null && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowDeleteConfirm(null)}>
+          <div className="bg-surface rounded-2xl max-w-sm w-full shadow-xl p-stack-md" onClick={e => e.stopPropagation()}>
+            <h3 className="font-headline-sm text-on-surface mb-2">Eliminar Centro</h3>
+            <p className="font-body-md text-on-surface-variant mb-6">
+              ¿Estás seguro de eliminar este centro? Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-outline-variant text-on-surface font-label-md hover:bg-surface-container-low transition-colors"
+              >
+                Cancelar
+              </button>
+              <LoadingButton
+                onClick={() => handleDelete(showDeleteConfirm)}
+                loading={deleting}
+                variant="danger"
+                className="flex-1 py-2.5"
+              >
+                Eliminar
+              </LoadingButton>
+            </div>
           </div>
         </div>
       )}

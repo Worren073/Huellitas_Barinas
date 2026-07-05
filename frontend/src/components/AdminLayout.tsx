@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from './Icon';
 
@@ -30,9 +29,12 @@ function SidebarContent({ visibleLinks, pathname, user, onClose }: { visibleLink
   const router = useRouter();
 
   const handleLogout = () => {
+    sessionStorage.setItem('pendingToast', JSON.stringify({
+      title: 'Sesión cerrada',
+      description: 'Has cerrado sesión correctamente.',
+    }));
     auth.logout();
-    sileo.success({ title: 'Sesión cerrada', description: 'Has cerrado sesión correctamente.' });
-    router.push('/');
+    window.location.href = '/';
   };
 
   return (

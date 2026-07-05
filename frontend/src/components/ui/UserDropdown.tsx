@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { sileo } from 'sileo';
 import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
 
@@ -38,8 +37,11 @@ export default function UserDropdown({ show, onClose, userRole }: UserDropdownPr
   }, [show, onClose]);
 
   const handleLogout = () => {
+    sessionStorage.setItem('pendingToast', JSON.stringify({
+      title: 'Sesión cerrada',
+      description: 'Has cerrado sesión correctamente.',
+    }));
     auth.logout();
-    sileo.success({ title: 'Sesión cerrada', description: 'Has cerrado sesión correctamente.' });
     window.location.href = '/';
   };
 

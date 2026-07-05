@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { sileo } from 'sileo';
 import AdminLayout from '@/components/AdminLayout';
 import Icon from '@/components/Icon';
 import api from '@/lib/api';
@@ -86,10 +85,10 @@ export default function NewPetPage() {
         });
       }
 
-      sileo.success({
+      sessionStorage.setItem('pendingToast', JSON.stringify({
         title: 'Mascota creada',
         description: `${form.name} ha sido registrada correctamente.`,
-      });
+      }));
       window.location.href = '/dashboard/pets';
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: Record<string, any> } };
