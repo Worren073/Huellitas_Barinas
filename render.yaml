@@ -6,12 +6,6 @@ services:
     region: virginia
     ipAllowList: []
 
-  # PostgreSQL Database
-  - type: psql
-    name: huellitasvenezuela-db
-    plan: free
-    region: virginia
-
   # Django API Server
   - type: web
     name: huellitasvenezuela-api
@@ -33,9 +27,8 @@ services:
         scope: runtime
         value: ".onrender.com"
       - key: DATABASE_URL
-        fromService:
+        fromDatabase:
           name: huellitasvenezuela-db
-          type: pgsql
           property: connectionString
       - key: REDIS_URL
         fromService:
@@ -103,6 +96,11 @@ services:
 
 # Environment: Production
 # Autoscaling: Not available on free tier
+databases:
+  - name: huellitasvenezuela-db
+    plan: free
+    region: virginia
+
 # Backups: pg_dump before DB expires (30-day free tier)
 # Monitoring: Sentry (optional, set SENTRY_DSN)
 # Logging: Check Render logs dashboard
