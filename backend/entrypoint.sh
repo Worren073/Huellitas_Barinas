@@ -13,6 +13,9 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
         sleep 2
     done
 
+    echo "Generating pending migrations..."
+    python manage.py makemigrations --noinput
+
     echo "Running migrations..."
     python manage.py migrate --noinput
 

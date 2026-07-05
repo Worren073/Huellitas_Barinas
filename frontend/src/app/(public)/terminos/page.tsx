@@ -44,7 +44,7 @@ export default function TerminosPage() {
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">7. Registro de Cuenta y Eliminación</h2>
-            <p>Al registrarte, eres responsable de mantener la confidencialidad de tus credenciales. Debes notificar inmediatamente cualquier uso no autorizado de tu cuenta. Puedes solicitar la eliminación de tu cuenta desde la sección "Mis Solicitudes". Al hacerlo, tu cuenta se desactivará inmediatamente y tus datos serán anonimizados después de 30 días. Las adopciones completadas se conservarán en nuestros registros. Durante el período de gracia de 30 días, un administrador puede restaurar tu cuenta.</p>
+            <p>Al registrarte, eres responsable de mantener la confidencialidad de tus credenciales. Debes notificar inmediatamente cualquier uso no autorizado de tu cuenta. Puedes solicitar la eliminación de tu cuenta desde la sección &ldquo;Mis Solicitudes&rdquo;. Al hacerlo, tu cuenta se desactivará inmediatamente y tus datos serán anonimizados después de 30 días. Las adopciones completadas se conservarán en nuestros registros. Durante el período de gracia de 30 días, un administrador puede restaurar tu cuenta.</p>
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">8. Proceso de Adopción</h2>
@@ -65,3 +65,4 @@ export default function TerminosPage() {
     </div>
   );
 }
+

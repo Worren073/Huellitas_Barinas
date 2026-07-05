@@ -32,7 +32,7 @@ export default function PrivacidadPage() {
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">4. Tus Derechos</h2>
-            <p>Tienes derecho a acceder, rectificar y solicitar la eliminación de tus datos personales. Puedes ejercer estos derechos desde la sección "Mis Solicitudes" en tu cuenta o contactándonos a través de nuestro correo electrónico.</p>
+            <p>Tienes derecho a acceder, rectificar y solicitar la eliminación de tus datos personales. Puedes ejercer estos derechos desde la sección &ldquo;Mis Solicitudes&rdquo; en tu cuenta o contactándonos a través de nuestro correo electrónico.</p>
             <h3 className="font-label-md text-on-surface mt-4 mb-1">Eliminación de Cuenta</h3>
             <p>Al solicitar la eliminación de tu cuenta:</p>
             <ul className="list-disc pl-5 space-y-1">
