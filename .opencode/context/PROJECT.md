@@ -19,7 +19,7 @@
 7. ✅ API-first design (futuro móvil)
 
 ### Base de Datos
-1. ✅ PostgreSQL (Neon free tier - no expira como Render)
+1. ✅ PostgreSQL (Render)
 2. ✅ django-simple-history para auditoría
 3. ✅ Django FileSystemStorage + Render disk para archivos
 
@@ -103,11 +103,8 @@
 > NO commitear este archivo si contiene credenciales reales.  
 > Usar el template `.env.example` como referencia.
 
-### Neon PostgreSQL
-- **URL**: `postgresql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:5432/<DB_NAME>?sslmode=require`
-
-### Storage
-- **Bucket**: `huellitas-barinas`
+### Render PostgreSQL
+- **URL**: Configurada via `DATABASE_URL` en variables de entorno de Render
 
 ### Render
 - **Username**: Worren Barrios
@@ -125,9 +122,9 @@
 
 ## Notas Importantes
 
-- Neon free tier no expira (vs Render que expira a 30 días)
-- Celery worker y beat corren en servicios separados en Render
-- Nginx maneja static files y proxy reverso
+- Render PostgreSQL no expira (a diferencia del free tier de Render DB que expira a 30 días si no se usa)
+- Celery worker y beat están consolidados dentro del servicio API (CELERY_TASK_ALWAYS_EAGER=True en prod)
+- Whitenoise sirve static files; no hay Nginx
 - Frontend es estático (Next.js export) en Render
 
 ---

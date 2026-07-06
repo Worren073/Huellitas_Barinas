@@ -6,7 +6,6 @@ node_modules
 *.md
 .eslintrc.json
 .prettierrc
-tsconfig.json
 .test_cache
 .coverage
 dist

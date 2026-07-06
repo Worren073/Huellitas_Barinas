@@ -22,8 +22,6 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Collecting static files..."
     python manage.py collectstatic --noinput
 
-    echo "Seeding superuser..."
-    python manage.py seed_data
 fi
 
 # Workers don't run migrations

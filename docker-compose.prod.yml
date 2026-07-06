@@ -1,3 +1,7 @@
+# OBSOLETO — Render usa el Dockerfile directo desde render.yaml.
+# Este archivo NO se usa en producción. Build context ./backend está roto
+# intencionalmente (Dockerfile espera la raíz del repo).
+# Referencias a worker/beat/nginx que ya no existen como servicios separados.
 services:
   api:
     build: ./backend

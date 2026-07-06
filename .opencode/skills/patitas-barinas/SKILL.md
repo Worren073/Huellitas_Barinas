@@ -14,7 +14,7 @@ Aplicación web para el control de centros de adopción en el estado Barinas, Ve
 ### Backend
 - **Framework**: Django 5.x + Django REST Framework (DRF)
 - **Auth**: JWT (djangorestframework-simplejwt) - 15min access, 7 días refresh
-- **ORM**: Django ORM + PostgreSQL (Neon)
+- **ORM**: Django ORM + PostgreSQL (Render)
 - **Archivos**: Django FileSystemStorage + Render disk
 - **Imágenes**: Pillow + WebP automático (calidad 85%, max 1200px)
 - **Tareas**: Celery + Redis
@@ -28,13 +28,12 @@ Aplicación web para el control de centros de adopción en el estado Barinas, Ve
 - **State**: Zustand
 
 ### Infraestructura
-- **DB**: PostgreSQL (Neon free tier - no expira)
+- **DB**: PostgreSQL (Render)
 - **Cache/Queue**: Redis 7 (Render)
 - **Storage**: Local filesystem (Render disk)
 - **Container**: Docker + Docker Compose
-- **Deploy**: Render (Web Service + Worker + Beat)
+- **Deploy**: Render (Web Services)
 - **CI/CD**: GitHub Actions
-- **Reverse Proxy**: Nginx
 
 ## Patrón Arquitectónico: Model-View-Presenter (MVP)
 
@@ -201,21 +200,18 @@ pending ──────────→ cancelled (en cualquier momento antes 
 ### Docker
 - Multi-stage builds para optimizar tamaño
 - docker-compose.yml para dev (con volumes)
-- docker-compose.prod.yml para prod (con nginx)
+- docker-compose.prod.yml para prod — OBSOLETO (Render usa Dockerfile directo)
 
 ## Deployment en Render
 
 ### Servicios (render.yaml)
-1. **huellitas-api** - Django API (web service)
-2. **huellitas-worker** - Celery worker
-3. **huellitas-beat** - Celery beat scheduler
-4. **huellitas-redis** - Redis (managed)
-5. **huellitas-web** - Next.js (static)
+1. **huellitas-api** - Django API (web service) — incluye Celery worker inline
+2. **huellitas-redis** - Redis (managed)
+3. **huellitas-web** - Next.js (static)
 
 ### Variables de Entorno Requeridas
-- `DATABASE_URL` - Neon PostgreSQL connection string
+- `DATABASE_URL` - Render PostgreSQL connection string
 - `CELERY_BROKER_URL` - Redis connection
-- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` - Cloudflare R2
 - `SECRET_KEY` - Django secret key
 - `EMAIL_HOST` / `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` - SMTP
 
@@ -272,7 +268,7 @@ ruff format apps/ --check
 
 ## Credenciales (no commitear)
 
-- **Neon DB**: Ver .env
+- **Render PostgreSQL**: Ver .env
 
 - **Render**: Usuario Worren Barrios
 - **GitHub**: repo Worren073/Huellitas_Barinas

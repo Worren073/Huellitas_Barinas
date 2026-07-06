@@ -6,7 +6,7 @@
 
 ## Stack
 
-- **Backend**: Django 5.x + DRF + PostgreSQL (Neon) + Redis + Celery
+- **Backend**: Django 5.x + DRF + PostgreSQL (Render) + Redis + Celery
 - **Frontend**: Next.js 14 + Tailwind CSS + TypeScript
 - **Deploy**: Docker + Render
 - **filesystem**: Local filesystem (Render disk)
@@ -238,7 +238,7 @@ test(centers): add unit tests
 | API | web (Docker) | `https://huellitas-api.onrender.com` |
 | Frontend | web (Docker) | `https://huellitasvenezuela-web.onrender.com` |
 | Redis | interno | Cache + Celery broker |
-| DB | Neon (externa) | PostgreSQL 15, SSL require |
+| DB | Render PostgreSQL | PostgreSQL 15, SSL require |
 
 ### Issues resueltos en auditoría integral (Jul 2026)
 
@@ -308,7 +308,7 @@ test(centers): add unit tests
 - **Repo**: https://github.com/Worren073/Huellitas_Barinas.git
 - **Email**: worrenalexanderbz@gmail.com
 - **Deploy**: Render
-- **DB**: Neon PostgreSQL
+- **DB**: Render PostgreSQL
 - **filesystem**: Local filesystem (Render disk)
 - **API**: https://huellitas-api.onrender.com
 - **Web**: https://huellitasvenezuela-web.onrender.com
