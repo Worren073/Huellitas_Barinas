@@ -45,7 +45,7 @@ export default function Modal({ open, onClose, title, subtitle, children, maxWid
         className={`bg-surface rounded-2xl w-full ${maxWidthClasses[maxWidth]} max-h-[85vh] overflow-y-auto shadow-xl`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-stack-md border-b border-outline-variant/30 flex justify-between items-center sticky top-0 bg-surface rounded-t-2xl">
+        <div className="p-stack-md border-b border-outline-variant/30 flex justify-between items-center sticky top-0 z-10 bg-surface rounded-t-2xl">
           <div>
             <h3 className="font-headline-sm text-on-surface">{title}</h3>
             {subtitle && <p className="font-body-sm text-on-surface-variant">{subtitle}</p>}

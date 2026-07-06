@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ScrollAnimation from '@/components/ScrollAnimation';
+import CenterInfoModal from '@/components/CenterInfoModal';
 import Icon from '@/components/Icon';
 import type { Center } from '@/lib/types';
 import api from '@/lib/api';
@@ -38,6 +39,7 @@ export default function CentrosPage() {
   useLeafletIcon();
   const [centers, setCenters] = useState<CenterWithPets[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCenter, setSelectedCenter] = useState<CenterWithPets | null>(null);
 
   useEffect(() => {
     const fetchCenters = async () => {
@@ -125,6 +127,7 @@ export default function CentrosPage() {
                 <ScrollAnimation key={center.id} variant="slideUp" delay={index * 0.05}>
                 <div
                   className="bg-surface-container-low rounded-2xl p-5 border border-outline-variant/20 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => setSelectedCenter(center)}
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden flex-shrink-0 relative">
@@ -158,6 +161,10 @@ export default function CentrosPage() {
           )}
         </div>
       </main>
+
+      {selectedCenter && (
+        <CenterInfoModal center={selectedCenter} onClose={() => setSelectedCenter(null)} />
+      )}
       <Footer />
     </div>
   );

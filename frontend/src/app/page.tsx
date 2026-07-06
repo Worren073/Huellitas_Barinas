@@ -3,10 +3,10 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PetCard from '@/components/PetCard';
+import CenterCardHome from '@/components/CenterCardHome';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import Icon from '@/components/Icon';
 import HowToHelpButton from '@/components/HowToHelpButton';
-import { normalizeImageUrl } from '@/lib/utils';
 import { serverApi } from '@/lib/server';
 
 interface Pet {
@@ -176,25 +176,7 @@ export default async function HomePage() {
             <div className="flex overflow-x-auto gap-6 md:grid md:grid-cols-2 snap-x snap-mandatory scrollbar-thin pb-2 md:pb-0">
               {centers.length > 0 ? (
                 centers.map((center) => (
-                  <ScrollAnimation key={center.id} variant="slideUp">
-                    <div className="bg-surface rounded-2xl p-6 flex items-center gap-6 shadow-sm border border-surface-container-high hover:border-primary-container transition-colors cursor-pointer snap-start shrink-0 w-[80vw] md:w-auto">
-                      <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden relative">
-                        {center.logo ? (
-                          <Image src={normalizeImageUrl(center.logo)} alt={center.name} fill className="object-cover" />
-                        ) : (
-                          <Icon name="location" className="w-8 h-8 text-primary m-6" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-headline-sm text-on-surface mb-1">{center.name}</h3>
-                        <p className="font-body-sm text-on-surface-variant mb-2">{center.address || 'Barinas, Venezuela'}</p>
-                        <div className="flex items-center gap-2 text-primary font-label-sm">
-                          <Icon name="pets" className="w-4 h-4" />
-                          {center.pets_count || 0} Mascotas disponibles
-                        </div>
-                      </div>
-                    </div>
-                  </ScrollAnimation>
+                  <CenterCardHome key={center.id} center={center} />
                 ))
               ) : (
                 <p className="col-span-full text-center text-on-surface-variant font-body-md py-8">

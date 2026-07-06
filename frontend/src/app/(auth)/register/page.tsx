@@ -37,6 +37,7 @@ export default function RegisterPage() {
   const [selectedCountry, setSelectedCountry] = useState('VE');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const clearField = (field: string) => {
     if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
@@ -46,6 +47,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setFieldErrors({});
+    setSubmitted(true);
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -99,7 +101,11 @@ export default function RegisterPage() {
 
   const inputClass = (field: string) =>
     `block w-full px-3 py-2 border rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
-      fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
+      fieldErrors[field]
+        ? 'border-red-400'
+        : submitted
+          ? 'invalid:border-red-400 border-outline-variant focus:border-primary-container'
+          : 'border-outline-variant focus:border-primary-container'
     }`;
 
   return (
@@ -137,6 +143,7 @@ export default function RegisterPage() {
                   name="firstName"
                   type="text"
                   required
+                  maxLength={30}
                   pattern="[a-zA-ZáéíóúñÑ\s]+"
                   title="Solo letras"
                   className={inputClass('firstName')}
@@ -153,6 +160,7 @@ export default function RegisterPage() {
                   name="lastName"
                   type="text"
                   required
+                  maxLength={30}
                   pattern="[a-zA-ZáéíóúñÑ\s]+"
                   title="Solo letras"
                   className={inputClass('lastName')}
@@ -188,6 +196,7 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 required
+                maxLength={100}
                 className={inputClass('email')}
                 onChange={() => clearField('email')}
               />
@@ -239,6 +248,7 @@ export default function RegisterPage() {
                       name="phone"
                       type="tel"
                       inputMode="numeric"
+                      maxLength={11}
                       pattern="[0-9+\s()]+"
                       placeholder="Número"
                       className={`flex-1 px-3 py-2 border rounded-r-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
@@ -265,6 +275,9 @@ export default function RegisterPage() {
                 className={inputClass('password')}
                 onChange={() => clearField('password')}
               />
+              <p className="font-body-xs text-on-surface-variant/60 mt-1">
+                La contraseña debe tener al menos 8 caracteres
+              </p>
               {fieldErrors.password && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.password}</p>}
             </div>
 
