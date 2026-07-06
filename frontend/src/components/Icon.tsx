@@ -162,6 +162,7 @@ const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
   schedule: ClockIcon,
   search: MagnifyingGlassIcon,
   search_off: ExclamationTriangleIcon,
+  error: ExclamationTriangleIcon,
   share: ArrowUpTrayIcon,
   straighten: RulerIcon,
   trending_up: ArrowTrendingUpIcon,

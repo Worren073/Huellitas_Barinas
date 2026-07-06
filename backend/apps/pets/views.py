@@ -31,7 +31,6 @@ class PetViewSet(viewsets.ModelViewSet):
         - POST /pets/{id}/mark_in_process/
     """
 
-    queryset = Pet.objects.select_related("center").prefetch_related("images")
     serializer_class = PetSerializer
     search_fields = ["name", "breed", "description"]
     ordering_fields = ["created_at", "name", "age_months"]

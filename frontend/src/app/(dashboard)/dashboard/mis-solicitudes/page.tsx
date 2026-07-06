@@ -238,7 +238,7 @@ export default function MisSolicitudesPage() {
                   <StatusBadge status={selectedAdoption.status} />
                 </div>
                 <p className="font-body-sm text-on-surface-variant">
-                  {selectedAdoption.pet.species === 'dog' ? 'Perro' : 'Gato'}
+                  {{ dog: 'Perro', cat: 'Gato', rabbit: 'Conejo', other: 'Otro' }[selectedAdoption.pet.species] || selectedAdoption.pet.species}
                   {selectedAdoption.pet.breed && ` · ${selectedAdoption.pet.breed}`}
                 </p>
                 <p className="font-body-xs text-on-surface-variant/60">{selectedAdoption.center.name}</p>

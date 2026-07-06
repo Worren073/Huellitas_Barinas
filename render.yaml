@@ -34,11 +34,6 @@ services:
           name: huellitas-redis
           type: redis
           property: connectionString
-      - key: CELERY_BROKER_URL
-        fromService:
-          name: huellitas-redis
-          type: redis
-          property: connectionString
       # Email Configuration
       - key: EMAIL_HOST
         value: smtp.gmail.com

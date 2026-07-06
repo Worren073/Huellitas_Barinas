@@ -141,6 +141,8 @@ export default function NewPetPage() {
                 <select className={inputClass('species')} value={form.species} onChange={e => setForm(f => ({ ...f, species: e.target.value }))}>
                   <option value="dog">Perro</option>
                   <option value="cat">Gato</option>
+                  <option value="rabbit">Conejo</option>
+                  <option value="other">Otro</option>
                 </select>
                 {fieldErrors.species && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.species}</p>}
               </div>
@@ -215,7 +217,7 @@ export default function NewPetPage() {
                   <option value="available">En Adopción</option>
                   <option value="in_process">En Proceso</option>
                   <option value="adopted">Adoptado</option>
-                  <option value="removed">Removido</option>
+                  <option value="not_available">No Disponible</option>
                 </select>
               </div>
             </div>

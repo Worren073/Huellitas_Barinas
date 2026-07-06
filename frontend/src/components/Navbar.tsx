@@ -9,11 +9,7 @@ import Icon from './Icon';
 import ActiveLink from './ActiveLink';
 import UserDropdown from './ui/UserDropdown';
 
-interface NavbarProps {
-  variant?: 'public' | 'catalog' | 'detail';
-}
-
-export default function Navbar({}: NavbarProps = {}) {
+export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
