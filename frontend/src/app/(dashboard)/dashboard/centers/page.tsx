@@ -369,7 +369,7 @@ export default function CentersPage() {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between pt-3 border-t border-outline-variant/30">
+                <div className="pt-3 border-t border-outline-variant/30 space-y-2">
                   <div className="flex items-center gap-2">
                     <StatusBadge status={c.status} />
                     <span className="font-label-sm text-on-surface-variant">

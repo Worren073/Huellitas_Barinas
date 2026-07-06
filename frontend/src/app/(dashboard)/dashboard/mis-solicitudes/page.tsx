@@ -43,6 +43,8 @@ export default function MisSolicitudesPage() {
   const [selectedAdoption, setSelectedAdoption] = useState<Adoption | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [erroredImages, setErroredImages] = useState<Set<number>>(new Set());
+  const [modalImgError, setModalImgError] = useState(false);
 
   const fetchAdoptions = useCallback(async () => {
     setLoading(true);
@@ -160,8 +162,8 @@ export default function MisSolicitudesPage() {
                       <td className="p-4 pl-6">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl bg-surface-container-high overflow-hidden relative shrink-0">
-                            {adoption.pet.images?.[0]?.image ? (
-                              <Image src={normalizeImageUrl(adoption.pet.images[0].image)} alt={adoption.pet.name} fill className="object-cover" />
+                            {adoption.pet.images?.[0]?.image && !erroredImages.has(adoption.id) ? (
+                              <Image src={normalizeImageUrl(adoption.pet.images[0].image)} alt={adoption.pet.name} fill className="object-cover" onError={() => setErroredImages(prev => new Set(prev).add(adoption.id))} />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
                                 <Icon name="pets" className="w-5 h-5 text-on-surface-variant/40" />
@@ -184,7 +186,7 @@ export default function MisSolicitudesPage() {
                       </td>
                       <td className="p-4">
                         <button
-                          onClick={() => setSelectedAdoption(adoption)}
+                          onClick={() => { setSelectedAdoption(adoption); setModalImgError(false); }}
                           className="font-label-sm text-primary hover:underline"
                         >
                           Ver detalles
@@ -222,8 +224,8 @@ export default function MisSolicitudesPage() {
           <div className="space-y-6">
             <div className="flex gap-4 items-start">
               <div className="w-20 h-20 rounded-xl bg-surface-container-high overflow-hidden flex-shrink-0 relative">
-                {selectedAdoption.pet.images?.[0]?.image ? (
-                  <Image src={normalizeImageUrl(selectedAdoption.pet.images[0].image)} alt={selectedAdoption.pet.name} fill className="object-cover" />
+                {selectedAdoption.pet.images?.[0]?.image && !modalImgError ? (
+                  <Image src={normalizeImageUrl(selectedAdoption.pet.images[0].image)} alt={selectedAdoption.pet.name} fill className="object-cover" onError={() => setModalImgError(true)} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <Icon name="pets" className="w-8 h-8 text-on-surface-variant/40" />

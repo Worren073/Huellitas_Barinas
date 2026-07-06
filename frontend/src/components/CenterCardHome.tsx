@@ -22,6 +22,7 @@ interface CenterCardHomeProps {
 
 export default function CenterCardHome({ center }: CenterCardHomeProps) {
   const [selectedCenter, setSelectedCenter] = useState<any>(null);
+  const [imgError, setImgError] = useState(false);
 
   const handleClick = async () => {
     try {
@@ -40,8 +41,8 @@ export default function CenterCardHome({ center }: CenterCardHomeProps) {
           onClick={handleClick}
         >
           <div className="w-20 h-20 rounded-full bg-surface-container-high flex-shrink-0 overflow-hidden relative">
-            {center.logo ? (
-              <Image src={normalizeImageUrl(center.logo)} alt={center.name} fill className="object-cover" />
+            {center.logo && !imgError ? (
+              <Image src={normalizeImageUrl(center.logo)} alt={center.name} fill className="object-cover" onError={() => setImgError(true)} />
             ) : (
               <Icon name="location" className="w-8 h-8 text-primary m-6" />
             )}

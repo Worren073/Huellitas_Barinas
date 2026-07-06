@@ -10,6 +10,7 @@ import CenterInfoModal from '@/components/CenterInfoModal';
 import Icon from '@/components/Icon';
 import type { Center } from '@/lib/types';
 import api from '@/lib/api';
+import { normalizeImageUrl } from '@/lib/utils';
 
 const MapContainer = dynamic(() => import('react-leaflet').then((m) => m.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import('react-leaflet').then((m) => m.TileLayer), { ssr: false });
@@ -40,6 +41,7 @@ export default function CentrosPage() {
   const [centers, setCenters] = useState<CenterWithPets[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCenter, setSelectedCenter] = useState<CenterWithPets | null>(null);
+  const [erroredLogos, setErroredLogos] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchCenters = async () => {
@@ -131,8 +133,8 @@ export default function CentrosPage() {
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden flex-shrink-0 relative">
-                      {center.logo ? (
-                        <Image src={center.logo} alt={center.name} fill className="object-cover" />
+                      {center.logo && !erroredLogos.has(center.id) ? (
+                        <Image src={normalizeImageUrl(center.logo)} alt={center.name} fill className="object-cover" onError={() => setErroredLogos(prev => new Set(prev).add(center.id))} />
                       ) : (
                         <Icon name="location" className="w-6 h-6 text-primary" />
                       )}

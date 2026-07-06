@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { normalizeImageUrl } from '@/lib/utils';
 import Icon from '@/components/Icon';
 import Image from 'next/image';
@@ -33,6 +34,8 @@ export default function CenterInfoModal({ center, onClose }: CenterInfoModalProp
 
   const coverSrc = center.cover_image ? normalizeImageUrl(center.cover_image) : null;
   const logoSrc = center.logo ? normalizeImageUrl(center.logo) : null;
+  const [coverError, setCoverError] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   return (
     <div
@@ -44,9 +47,9 @@ export default function CenterInfoModal({ center, onClose }: CenterInfoModalProp
         onClick={e => e.stopPropagation()}
       >
         <div className="relative">
-          {coverSrc ? (
+          {coverSrc && !coverError ? (
             <div className="h-40 w-full relative">
-              <Image src={coverSrc} alt="" fill className="object-cover rounded-t-2xl" />
+              <Image src={coverSrc} alt="" fill className="object-cover rounded-t-2xl" onError={() => setCoverError(true)} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-t-2xl" />
             </div>
           ) : (
@@ -64,8 +67,8 @@ export default function CenterInfoModal({ center, onClose }: CenterInfoModalProp
 
           <div className="absolute -bottom-10 left-stack-md">
             <div className="w-20 h-20 rounded-full border-4 border-surface bg-surface-container-high flex items-center justify-center overflow-hidden shadow-md">
-              {logoSrc ? (
-                <Image src={logoSrc} alt={center.name} width={80} height={80} className="object-cover w-full h-full" />
+              {logoSrc && !logoError ? (
+                <Image src={logoSrc} alt={center.name} width={80} height={80} className="object-cover w-full h-full" onError={() => setLogoError(true)} />
               ) : (
                 <Icon name="location" className="w-8 h-8 text-primary" />
               )}

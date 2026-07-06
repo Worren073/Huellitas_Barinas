@@ -36,6 +36,7 @@ export default function PetsPage() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const [erroredImages, setErroredImages] = useState<Set<number>>(new Set());
 
   const fetchPets = async () => {
     try {
@@ -111,8 +112,8 @@ export default function PetsPage() {
                       <td className="p-stack-sm pl-stack-md">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center overflow-hidden relative">
-                            {pet.images?.[0]?.image ? (
-                              <Image src={normalizeImageUrl(pet.images[0].image)} alt="" fill className="object-cover" />
+                            {pet.images?.[0]?.image && !erroredImages.has(pet.id) ? (
+                              <Image src={normalizeImageUrl(pet.images[0].image)} alt="" fill className="object-cover" onError={() => setErroredImages(prev => new Set(prev).add(pet.id))} />
                             ) : (
                               <Icon name="pets" className="w-5 h-5 text-primary-container" />
                             )}

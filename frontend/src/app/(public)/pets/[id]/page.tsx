@@ -73,6 +73,8 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   const [hasExistingRequest, setHasExistingRequest] = useState(false);
   const [selectedCenter, setSelectedCenter] = useState<any>(null);
   const [centerLoading, setCenterLoading] = useState(false);
+  const [mainImgError, setMainImgError] = useState(false);
+  const [thumbErrors, setThumbErrors] = useState<Set<number>>(new Set());
   const petId = params.id;
 
   useEffect(() => {
@@ -194,22 +196,22 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
           <div className="lg:col-span-8 flex flex-col gap-stack-lg">
             <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px] rounded-2xl overflow-hidden bg-surface">
               <div className="col-span-4 row-span-2 md:col-span-3 md:row-span-2 relative group cursor-pointer">
-                {mainImage ? (
-                  <Image src={mainImage} alt={pet.name} fill className="object-contain p-4 bg-surface-container-high transition-transform duration-500 group-hover:scale-105" />
+                {mainImage && !mainImgError ? (
+                  <Image src={mainImage} alt={pet.name} fill className="object-contain p-4 bg-surface-container-high transition-transform duration-500 group-hover:scale-105" onError={() => setMainImgError(true)} />
                 ) : (
                   <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
                     <Icon name="pets" className="w-16 h-16 text-outline" />
                   </div>
                 )}
               </div>
-              {images[1] && (
+              {images[1] && !thumbErrors.has(1) && (
                 <div className="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-bl-lg">
-                  <Image src={images[1].image} alt="" fill className="object-cover group-hover:scale-110" />
+                  <Image src={images[1].image} alt="" fill className="object-cover group-hover:scale-110" onError={() => setThumbErrors(prev => new Set(prev).add(1))} />
                 </div>
               )}
-              {images[2] && (
+              {images[2] && !thumbErrors.has(2) && (
                 <div className="hidden md:block col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-tl-lg">
-                  <Image src={images[2].image} alt="" fill className="object-cover group-hover:scale-110" />
+                  <Image src={images[2].image} alt="" fill className="object-cover group-hover:scale-110" onError={() => setThumbErrors(prev => new Set(prev).add(2))} />
                   {images.length > 3 && (
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center hover:bg-black/10">
                       <span className="text-white font-label-md flex items-center gap-1">
