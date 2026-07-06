@@ -6,12 +6,15 @@ Handles WebP conversion for uploaded images.
 from io import BytesIO
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 def convert_to_webp(image_file, quality=85, max_width=1200):
     """
     Convert an image to WebP format.
+
+    Applies EXIF orientation to prevent auto-rotation issues
+    from phone/camera photos.
 
     Args:
         image_file: The uploaded image file
@@ -22,6 +25,9 @@ def convert_to_webp(image_file, quality=85, max_width=1200):
         InMemoryUploadedFile with WebP image
     """
     img = Image.open(image_file)
+
+    # Apply EXIF orientation before any processing
+    img = ImageOps.exif_transpose(img) or img
 
     # Convert RGBA to RGB (WebP doesn't support transparency in all browsers)
     if img.mode == "RGBA":
