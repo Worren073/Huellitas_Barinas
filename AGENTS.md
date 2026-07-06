@@ -9,7 +9,7 @@
 - **Backend**: Django 5.x + DRF + PostgreSQL (Neon) + Redis + Celery
 - **Frontend**: Next.js 14 + Tailwind CSS + TypeScript
 - **Deploy**: Docker + Render
-- **Storage**: Cloudflare R2
+- **filesystem**: Local filesystem (Render disk)
 
 ## Reglas Principales
 
@@ -137,7 +137,7 @@ def convert_to_webp(image_file, quality=85, max_width=1200):
 - Calidad: 85%
 - Max width: 1200px
 - Max upload: 10MB
-- Storage: Cloudflare R2
+- filesystem: filesystem (Render)
 
 ### 8. Docker Commands
 
@@ -309,6 +309,6 @@ test(centers): add unit tests
 - **Email**: worrenalexanderbz@gmail.com
 - **Deploy**: Render
 - **DB**: Neon PostgreSQL
-- **Storage**: Cloudflare R2
+- **filesystem**: Local filesystem (Render disk)
 - **API**: https://huellitas-api.onrender.com
 - **Web**: https://huellitasvenezuela-web.onrender.com

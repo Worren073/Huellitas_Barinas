@@ -21,7 +21,7 @@
 ### Base de Datos
 1. ✅ PostgreSQL (Neon free tier - no expira como Render)
 2. ✅ django-simple-history para auditoría
-3. ✅ django-storages + Cloudflare R2 para archivos
+3. ✅ Django FileSystemStorage + Render disk para archivos
 
 ### Frontend
 1. ✅ Tailwind CSS (no Material UI, no Bootstrap)
@@ -33,7 +33,7 @@
 1. ✅ Conversión automática a WebP
 2. ✅ Calidad 85%, max 1200px width
 3. ✅ Max 10MB upload
-4. ✅ Cloudflare R2 storage
+4. ✅ Local filesystem storage (Render disk)
 
 ## Alcance MVP
 
@@ -106,12 +106,8 @@
 ### Neon PostgreSQL
 - **URL**: `postgresql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:5432/<DB_NAME>?sslmode=require`
 
-### Cloudflare R2
-- **Account ID**: `{{R2_ACCOUNT_ID}}`
-- **Access Key ID**: `{{R2_ACCESS_KEY_ID}}`
-- **Secret**: `{{R2_SECRET_ACCESS_KEY}}`
+### Storage
 - **Bucket**: `huellitas-barinas`
-- **Endpoint**: `https://{{R2_ACCOUNT_ID}}.r2.cloudflarestorage.com`
 
 ### Render
 - **Username**: Worren Barrios
@@ -130,7 +126,6 @@
 ## Notas Importantes
 
 - Neon free tier no expira (vs Render que expira a 30 días)
-- Cloudflare R2 tiene 10GB gratis (suficiente para MVP)
 - Celery worker y beat corren en servicios separados en Render
 - Nginx maneja static files y proxy reverso
 - Frontend es estático (Next.js export) en Render

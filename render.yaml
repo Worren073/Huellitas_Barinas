@@ -5,7 +5,6 @@ services:
     plan: free
     region: virginia
     ipAllowList: []
-
   # Django API Server
   - type: web
     name: huellitasvenezuela-api
@@ -40,17 +39,6 @@ services:
           name: huellitas-redis
           type: redis
           property: connectionString
-      # AWS / Cloudflare R2 Credentials
-      - key: AWS_ACCESS_KEY_ID
-        sync: false
-      - key: AWS_SECRET_ACCESS_KEY
-        sync: false
-      - key: AWS_STORAGE_BUCKET_NAME
-        value: huellitas-barinas
-      - key: AWS_S3_ENDPOINT_URL
-        sync: false
-      - key: AWS_S3_REGION_NAME
-        value: auto
       # Email Configuration
       - key: EMAIL_HOST
         value: smtp.gmail.com
@@ -76,7 +64,6 @@ services:
         sync: false
       - key: ENVIRONMENT
         value: production
-
   # Next.js Frontend
   - type: web
     name: huellitasvenezuela-web
@@ -93,14 +80,12 @@ services:
         value: https://huellitasvenezuela-api.onrender.com
       - key: NODE_ENV
         value: production
-
 # Environment: Production
 # Autoscaling: Not available on free tier
 databases:
   - name: huellitasvenezuela-db
     plan: free
     region: virginia
-
 # Backups: pg_dump before DB expires (30-day free tier)
 # Monitoring: Sentry (optional, set SENTRY_DSN)
 # Logging: Check Render logs dashboard

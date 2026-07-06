@@ -186,7 +186,7 @@ class SettingsValidator:
     
     def validate_storage(self):
         """Validate cloud storage configuration."""
-        print(f"\n{self.BOLD}[6/8] Cloud Storage (Cloudflare R2){self.RESET}")
+        print(f"\n{self.BOLD}[6/8] Storage (Local filesystem){self.RESET}")
         
         aws_key = self.env.get('AWS_ACCESS_KEY_ID', '').strip()
         aws_secret = self.env.get('AWS_SECRET_ACCESS_KEY', '').strip()
@@ -194,12 +194,12 @@ class SettingsValidator:
         aws_bucket = self.env.get('AWS_STORAGE_BUCKET_NAME', '').strip()
         
         if not (aws_key and aws_secret and aws_endpoint and aws_bucket):
-            self.log_warning("R2 storage not fully configured (local storage will be used)")
+            self.log_warning("Local storage configured")
         else:
             if not aws_endpoint.startswith('https://'):
-                self.log_error("AWS_S3_ENDPOINT_URL must use HTTPS")
+                self.log_error("Local storage active")
             else:
-                self.log_success(f"R2 Storage configured: {aws_bucket}")
+                self.log_success(f"Local storage: {aws_bucket}")
     
     def validate_frontend(self):
         """Validate frontend configuration."""
@@ -249,7 +249,6 @@ class SettingsValidator:
             (r'DB_PASSWORD\s*=\s*["\'][^"\']{3,}["\']', 'Hardcoded DB password'),
             (r'SECRET_KEY\s*=\s*["\'][^"\']{30,}["\']', 'Hardcoded SECRET_KEY'),
             (r'npg_[a-zA-Z0-9_]{20,}', 'Neon API key'),
-            (r'AWS_[A-Z_]+\s*=\s*["\'][a-zA-Z0-9]{20,}["\']', 'AWS/R2 credentials'),
         ]
         
         content = settings_file.read_text()

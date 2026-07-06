@@ -15,7 +15,7 @@ Aplicación web para el control de centros de adopción en el estado Barinas, Ve
 - **Framework**: Django 5.x + Django REST Framework (DRF)
 - **Auth**: JWT (djangorestframework-simplejwt) - 15min access, 7 días refresh
 - **ORM**: Django ORM + PostgreSQL (Neon)
-- **Archivos**: django-storages + Cloudflare R2
+- **Archivos**: Django FileSystemStorage + Render disk
 - **Imágenes**: Pillow + WebP automático (calidad 85%, max 1200px)
 - **Tareas**: Celery + Redis
 - **Auditoría**: django-simple-history
@@ -30,7 +30,7 @@ Aplicación web para el control de centros de adopción en el estado Barinas, Ve
 ### Infraestructura
 - **DB**: PostgreSQL (Neon free tier - no expira)
 - **Cache/Queue**: Redis 7 (Render)
-- **Storage**: Cloudflare R2
+- **Storage**: Local filesystem (Render disk)
 - **Container**: Docker + Docker Compose
 - **Deploy**: Render (Web Service + Worker + Beat)
 - **CI/CD**: GitHub Actions
@@ -273,7 +273,7 @@ ruff format apps/ --check
 ## Credenciales (no commitear)
 
 - **Neon DB**: Ver .env
-- **Cloudflare R2**: Account ID b36968d564ce65b626f75ff9a70e6f33
+
 - **Render**: Usuario Worren Barrios
 - **GitHub**: repo Worren073/Huellitas_Barinas
 - **Email**: worrenalexanderbz@gmail.com

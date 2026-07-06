@@ -117,22 +117,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # MEDIA FILES & STORAGE
 # ============================================================================
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '').strip()
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '').strip()
-
-if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_STORAGE_BUCKET_NAME = validate_required_env('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_ENDPOINT_URL = validate_required_env('AWS_S3_ENDPOINT_URL')
-    AWS_S3_REGION_NAME = 'auto'
-    AWS_S3_SIGNATURE_VERSION = 's3v4'
-    AWS_DEFAULT_ACL = None
-    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_QUERYSTRING_AUTH = False
-else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # ============================================================================
 # CORS CONFIGURATION
@@ -255,3 +241,4 @@ if SENTRY_DSN:
     )
 
 print("Production settings loaded successfully")
+

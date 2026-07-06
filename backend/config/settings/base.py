@@ -166,18 +166,6 @@ SPECTACULAR_SETTINGS = {
     'SCHEMA_PATH_PREFIX': '/api/v1/',
 }
 
-# Cloudflare R2 Settings (S3 Compatible)
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', 'huellitas-barinas')
-AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL', '')
-AWS_S3_REGION_NAME = 'auto'
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_DEFAULT_ACL = None
-AWS_S3_OBJECT_PARAMETERS = {
-    'cache_control': 'max-age=86400',
-}
-AWS_S3_FILE_OVERWRITE = False
 
 # Celery Settings
 CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
