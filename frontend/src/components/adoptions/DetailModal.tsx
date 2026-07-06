@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Modal from '@/components/ui/Modal';
 
 interface AdoptionDetail {
@@ -17,7 +18,20 @@ interface AdoptionDetail {
   other_pets_details: string;
   family_members: number;
   review_notes: string;
+  pet?: { id: number; name: string; species: string; breed?: string; images?: { image: string }[] };
 }
+
+function normalizeImageUrl(url: string): string {
+  if (url.startsWith('http')) return url;
+  return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${url}`;
+}
+
+const SPECIES_LABEL: Record<string, string> = {
+  dog: 'Perro',
+  cat: 'Gato',
+  rabbit: 'Conejo',
+  other: 'Otro',
+};
 
 interface DetailModalProps {
   adoption: AdoptionDetail | null;
@@ -42,10 +56,20 @@ const HOME_TYPE: Record<string, string> = {
 export default function DetailModal({ adoption, onClose }: DetailModalProps) {
   if (!adoption) return null;
 
+  const pet = adoption.pet;
+  const mainImage = pet?.images?.[0]?.image;
+
   return (
     <Modal open={!!adoption} onClose={onClose} title={`Detalle de Solicitud #${adoption.id}`} maxWidth="lg">
       <div className="space-y-stack-md">
         <div className="grid grid-cols-2 gap-stack-md">
+          {mainImage && (
+            <div className="col-span-2">
+              <div className="relative w-full h-48 rounded-lg overflow-hidden bg-surface-gray/30">
+                <Image src={normalizeImageUrl(mainImage)} alt={pet?.name || adoption.pet_name} fill className="object-contain" />
+              </div>
+            </div>
+          )}
           <div>
             <p className="font-label-sm text-on-surface-variant mb-1">Solicitante</p>
             <p className="font-body-md text-on-surface">{adoption.applicant_name || `Usuario #${adoption.applicant}`}</p>
@@ -53,6 +77,11 @@ export default function DetailModal({ adoption, onClose }: DetailModalProps) {
           <div>
             <p className="font-label-sm text-on-surface-variant mb-1">Mascota</p>
             <p className="font-body-md text-on-surface">{adoption.pet_name}</p>
+            {pet && (
+              <p className="font-body-sm text-on-surface-variant">
+                {SPECIES_LABEL[pet.species] || pet.species}{pet.breed ? ` · ${pet.breed}` : ''}
+              </p>
+            )}
           </div>
           <div>
             <p className="font-label-sm text-on-surface-variant mb-1">Centro</p>

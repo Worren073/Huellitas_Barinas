@@ -330,10 +330,10 @@ export default function UsersPage() {
             <hr className="border-outline-variant/20 mb-stack-md" />
 
             {/* Deactivate / Restore Section */}
-            {editingUser.deletion_requested_at ? (
+            {!editingUser.is_active ? (
               <div>
                 <p className="font-body-sm text-on-surface-variant mb-3">
-                  Este usuario solicitó la eliminación de su cuenta. Puedes restaurarla dentro del período de 30 días.
+                  Este usuario está desactivado. Puedes reactivar su cuenta para que pueda acceder nuevamente al sistema.
                 </p>
                 <LoadingButton
                   onClick={() => setActionModal({ type: 'restore', user: editingUser })}
@@ -341,7 +341,7 @@ export default function UsersPage() {
                   className="w-full py-2"
                   variant="primary"
                 >
-                  Restaurar Cuenta
+                  Reactivar Cuenta
                 </LoadingButton>
               </div>
             ) : (
@@ -410,15 +410,15 @@ export default function UsersPage() {
       <Modal
         open={actionModal?.type === 'restore'}
         onClose={() => !actionLoading && setActionModal(null)}
-        title="Restaurar Cuenta"
+        title="Reactivar Cuenta"
         maxWidth="sm"
       >
         <div className="space-y-4">
           <p className="font-body-md text-on-surface-variant">
-            ¿Restaurar la cuenta de <strong>{actionModal?.user.first_name} {actionModal?.user.last_name}</strong>?
+            ¿Reactivar la cuenta de <strong>{actionModal?.user.first_name} {actionModal?.user.last_name}</strong>?
           </p>
           <p className="font-body-sm text-on-surface-variant">
-            El usuario podrá acceder nuevamente a su cuenta y la eliminación programada será cancelada.
+            El usuario podrá acceder nuevamente a su cuenta y la desactivación programada será cancelada.
           </p>
           <div className="flex gap-3 pt-2">
             <button
@@ -434,7 +434,7 @@ export default function UsersPage() {
               className="flex-1 py-2.5"
               variant="primary"
             >
-              Restaurar
+              Reactivar
             </LoadingButton>
           </div>
         </div>

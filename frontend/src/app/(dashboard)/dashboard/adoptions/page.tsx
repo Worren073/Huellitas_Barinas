@@ -200,6 +200,13 @@ export default function AdoptionsPage() {
                       <td className="p-stack-sm">
                         <div className="flex gap-1.5 flex-wrap">
                           <button
+                            onClick={() => { setSelectedAdoption(adoption); setShowDetail(true); }}
+                            className="px-2.5 py-1.5 rounded-lg bg-surface-gray/50 text-on-surface-variant hover:bg-surface-gray transition-all font-label-sm"
+                            title="Ver detalle completo"
+                          >
+                            <Icon name="description" className="w-4 h-4" />
+                          </button>
+                          <button
                             onClick={() => { setSelectedAdoption(adoption); setShowTimeline(true); }}
                             className="px-2.5 py-1.5 rounded-lg bg-surface-gray/50 text-on-surface-variant hover:bg-surface-gray transition-all font-label-sm"
                             title="Ver historial"
