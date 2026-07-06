@@ -6,7 +6,7 @@ Handles business logic for pet operations.
 from django.http import HttpResponse
 from docx import Document
 
-from .models import Pet
+from .models import Pet, PetImage
 
 
 class PetService:
@@ -112,3 +112,15 @@ class PetService:
         response["Content-Disposition"] = 'attachment; filename="mascotas.docx"'
         doc.save(response)
         return response
+
+
+class PetImageService:
+    """Service class for pet image operations."""
+
+    @staticmethod
+    def create_image(pet_id, validated_data):
+        """Create a pet image linked to a pet. WebP conversion via signal."""
+        pet_image = PetImage(pet_id=pet_id, **validated_data)
+        pet_image.full_clean()
+        pet_image.save()
+        return pet_image

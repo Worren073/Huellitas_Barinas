@@ -37,7 +37,9 @@ class AdoptionViewSet(viewsets.ModelViewSet):
         - POST /adoptions/{id}/complete/
     """
 
-    queryset = Adoption.objects.select_related("pet", "applicant", "center", "reviewed_by")
+    queryset = Adoption.objects.select_related("pet", "applicant", "center", "reviewed_by").prefetch_related(
+        "pet__images", "timeline__changed_by"
+    )
     serializer_class = AdoptionSerializer
 
     def get_permissions(self):
@@ -48,7 +50,9 @@ class AdoptionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = Adoption.objects.select_related("pet", "applicant", "center", "reviewed_by")
+        qs = Adoption.objects.select_related("pet", "applicant", "center", "reviewed_by").prefetch_related(
+            "pet__images", "timeline__changed_by"
+        )
         pet_id = self.request.query_params.get("pet")
         if pet_id:
             qs = qs.filter(pet_id=pet_id)

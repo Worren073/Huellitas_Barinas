@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .models import Pet, PetImage
 from .permissions import IsCenterAdminOrSuperAdmin
 from .serializers import PetCreateSerializer, PetImageSerializer, PetSerializer
-from .services import PetService
+from .services import PetImageService, PetService
 
 
 class PetViewSet(viewsets.ModelViewSet):
@@ -128,7 +128,7 @@ class PetViewSet(viewsets.ModelViewSet):
 
 
 class PetImageViewSet(viewsets.ModelViewSet):
-    """Manage pet images."""
+    """Manage pet images. Delegates to PetImageService."""
 
     queryset = PetImage.objects.all()
     serializer_class = PetImageSerializer
@@ -137,7 +137,7 @@ class PetImageViewSet(viewsets.ModelViewSet):
         public_actions = {"list", "retrieve"}
         if self.action in public_actions:
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+        return [IsCenterAdminOrSuperAdmin()]
 
     def get_queryset(self):
         queryset = PetImage.objects.all()
@@ -147,5 +147,7 @@ class PetImageViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        pet_id = self.kwargs.get("pet_pk")
-        serializer.save(pet_id=pet_id)
+        PetImageService.create_image(
+            pet_id=self.kwargs.get("pet_pk"),
+            validated_data=serializer.validated_data,
+        )
