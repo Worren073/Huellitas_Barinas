@@ -271,12 +271,12 @@ export default function RegisterPage() {
                 name="password"
                 type="password"
                 required
-                minLength={8}
+                minLength={7}
                 className={inputClass('password')}
                 onChange={() => clearField('password')}
               />
               <p className="font-body-xs text-on-surface-variant/60 mt-1">
-                La contraseña debe tener al menos 8 caracteres
+                Mínimo 8 caracteres
               </p>
               {fieldErrors.password && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.password}</p>}
             </div>

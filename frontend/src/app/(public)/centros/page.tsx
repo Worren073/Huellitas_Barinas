@@ -82,7 +82,7 @@ export default function CentrosPage() {
           </div>
         ) : (
           <div className="max-w-container-max mx-auto px-4 md:px-8 pb-stack-lg">
-            <div className="h-[500px] rounded-2xl overflow-hidden border border-outline-variant/20 shadow-sm">
+            <div className="h-[500px] rounded-2xl overflow-hidden border border-outline-variant/20 shadow-sm relative z-0">
               <MapContainer center={barinasCenter} zoom={12} className="w-full h-full" scrollWheelZoom={false}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
