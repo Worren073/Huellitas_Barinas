@@ -124,7 +124,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar variant="detail" />
+        <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
         </main>
@@ -136,7 +136,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   if (!pet) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar variant="detail" />
+        <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <Icon name="search_off" className="w-16 h-16 text-outline" />
           <p className="font-headline-sm text-on-surface">Mascota no encontrada</p>
@@ -154,7 +154,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar variant="detail" />
+      <Navbar />
 
       <main className="flex-1 max-w-container-max mx-auto w-full px-4 md:px-8 py-stack-lg">
         <div className="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-4">

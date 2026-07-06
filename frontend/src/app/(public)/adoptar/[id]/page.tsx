@@ -138,7 +138,7 @@ export default function AdoptarPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar variant="detail" />
+        <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
         </main>
@@ -150,7 +150,7 @@ export default function AdoptarPage() {
   if (success) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar variant="detail" />
+        <Navbar />
         <main className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
           <div className="w-20 h-20 rounded-full bg-primary-container/30 flex items-center justify-center">
             <Icon name="check_circle_solid" className="w-10 h-10 text-primary-container" />
@@ -177,7 +177,7 @@ export default function AdoptarPage() {
   if (!pet) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar variant="detail" />
+        <Navbar />
         <main className="flex-1 flex flex-col items-center justify-center gap-4">
           <Icon name="pets" className="w-16 h-16 text-outline" />
           <p className="font-headline-sm text-on-surface">{error || 'Mascota no encontrada'}</p>
@@ -195,7 +195,7 @@ export default function AdoptarPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar variant="detail" />
+      <Navbar />
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 md:px-8 py-stack-lg">
         <Link href={`/pets/${pet.id}`} className="flex items-center gap-1 font-label-md text-primary hover:underline mb-stack-md">
