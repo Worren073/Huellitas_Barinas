@@ -36,7 +36,7 @@ interface User {
   email: string;
   first_name: string;
   role?: string;
-  center?: number;
+  center?: { id: number; name: string };
 }
 
 export default function CentersPage() {
@@ -74,7 +74,7 @@ export default function CentersPage() {
       }
       setUserRole(profile.role);
       if (profile.role === 'center_admin' && profile.center) {
-        setUserCenter(profile.center);
+        setUserCenter(profile.center.id);
       }
     }).catch(() => router.push('/login'));
 
