@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { sileo } from 'sileo';
 import AdminLayout from '@/components/AdminLayout';
 import AdminMetricCard from '@/components/AdminMetricCard';
@@ -10,6 +9,7 @@ import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
 import LoadingButton from '@/components/LoadingButton';
 import CenterInfoModal from '@/components/CenterInfoModal';
+import CenterFormModal from '@/components/CenterFormModal';
 import { auth } from '@/lib/auth';
 import api from '@/lib/api';
 
@@ -39,44 +39,14 @@ interface User {
   center?: number;
 }
 
-interface CenterAdminUser {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  role: string;
-  center: number | null;
-}
-
 export default function CentersPage() {
   const router = useRouter();
   const [centers, setCenters] = useState<Center[]>([]);
-  const [centerAdmins, setCenterAdmins] = useState<CenterAdminUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [newCenter, setNewCenter] = useState({
-    name: '',
-    description: '',
-    address: '',
-    state: 'Barinas',
-    phone: '',
-    email: '',
-    max_capacity: 50,
-    latitude: '',
-    longitude: '',
-  });
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [selectedAdmin, setSelectedAdmin] = useState<number | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingCenter, setEditingCenter] = useState<Center | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userCenter, setUserCenter] = useState<number | null>(null);
-  const [loadingAdmins, setLoadingAdmins] = useState(false);
   const [selectedCenter, setSelectedCenter] = useState<Center | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -89,20 +59,6 @@ export default function CentersPage() {
       setCenters([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchCenterAdmins = async () => {
-    setLoadingAdmins(true);
-    try {
-      const r = await api.get<{ results: CenterAdminUser[] }>('/users/?role=center_admin');
-      // Filter to show only center_admins without a center assigned, or with the center we're creating
-      const availableAdmins = (r.data.results || r.data || []).filter(u => !u.center);
-      setCenterAdmins(availableAdmins);
-    } catch {
-      setCenterAdmins([]);
-    } finally {
-      setLoadingAdmins(false);
     }
   };
 
@@ -153,101 +109,6 @@ export default function CentersPage() {
     }
   };
 
-  const clearField = (field: string) => {
-    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
-  };
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setCreating(true);
-    setError('');
-    setFieldErrors({});
-
-    if (userRole === 'superadmin' && !selectedAdmin) {
-      setError('Debe seleccionar un administrador para el centro');
-      setCreating(false);
-      return;
-    }
-
-    try {
-      const fd = new FormData();
-      fd.append('name', newCenter.name);
-      fd.append('description', newCenter.description);
-      fd.append('address', newCenter.address);
-      fd.append('state', newCenter.state);
-      fd.append('phone', newCenter.phone);
-      fd.append('email', newCenter.email);
-      fd.append('max_capacity', String(newCenter.max_capacity));
-      if (newCenter.latitude) fd.append('latitude', newCenter.latitude);
-      if (newCenter.longitude) fd.append('longitude', newCenter.longitude);
-      if (logoFile) fd.append('logo', logoFile);
-      if (coverFile) fd.append('cover_image', coverFile);
-
-      const { data: createdCenter } = await api.post('/centers/', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      // If an admin is selected, assign them to this center
-      if (selectedAdmin && userRole === 'superadmin') {
-        await api.patch(`/users/${selectedAdmin}/`, {
-          role: 'center_admin',
-          center: createdCenter.id,
-        });
-      }
-
-      sileo.success({
-        title: 'Centro creado',
-        description: `${newCenter.name} ha sido creado correctamente${selectedAdmin ? ' y asignado a un administrador' : ''}.`,
-      });
-      setShowModal(false);
-      setNewCenter({
-        name: '',
-        description: '',
-        address: '',
-        state: 'Barinas',
-        phone: '',
-        email: '',
-        max_capacity: 50,
-        latitude: '',
-        longitude: '',
-      });
-      setLogoFile(null);
-      setCoverFile(null);
-      setLogoPreview(null);
-      setCoverPreview(null);
-      setSelectedAdmin(null);
-      fetchCenters();
-    } catch (err: unknown) {
-      const apiErr = err as { response?: { data?: Record<string, any> } };
-      const detail = apiErr?.response?.data;
-      if (detail) {
-        const mapped: Record<string, string> = {};
-        for (const [key, msgs] of Object.entries(detail)) {
-          const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
-          if (msg) mapped[key] = msg;
-        }
-        if (Object.keys(mapped).length > 0) setFieldErrors(mapped);
-        else setError(Object.values(detail).flat().join('. '));
-      } else {
-        setError('Error al crear centro');
-      }
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const handleOpenModal = async () => {
-    setShowModal(true);
-    if (userRole === 'superadmin') {
-      await fetchCenterAdmins();
-    }
-  };
-
-  const inputClass = (field: string = '') =>
-    `w-full bg-surface-container-lowest border rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
-      field && fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
-    }`;
-
   // Filter centers based on user role
   const displayedCenters =
     userRole === 'superadmin'
@@ -272,7 +133,7 @@ export default function CentersPage() {
           </div>
           {userRole === 'superadmin' && (
             <button
-              onClick={handleOpenModal}
+              onClick={() => setShowCreateModal(true)}
               className="bg-primary text-on-primary font-label-md py-2.5 px-5 rounded-lg hover:brightness-105 transition-all flex items-center gap-2 self-start mt-3 md:mt-0"
             >
               <Icon name="add" className="w-5 h-5" /> Nuevo Centro
@@ -376,28 +237,36 @@ export default function CentersPage() {
                       {c.pets_count} mascotas
                     </span>
                   </div>
-                  {userRole === 'superadmin' && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleToggleStatus(c); }}
-                        className={`px-3 py-1.5 rounded-lg font-label-sm transition-all ${
-                          c.status === 'active'
-                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                            : c.status === 'pending'
-                            ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                            : 'bg-green-100 text-green-700 hover:bg-green-200'
-                        }`}
-                      >
-                        {c.status === 'active' ? 'Desactivar' : c.status === 'pending' ? 'Aprobar' : 'Activar'}
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(c.id); }}
-                        className="px-3 py-1.5 rounded-lg font-label-sm bg-surface-container-high text-status-error hover:bg-red-100 transition-all"
-                      >
-                        <Icon name="delete" className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setEditingCenter(c); }}
+                      className="px-3 py-1.5 rounded-lg font-label-sm bg-amber-100 text-amber-700 hover:bg-amber-200 transition-all"
+                    >
+                      <Icon name="edit" className="w-4 h-4" />
+                    </button>
+                    {userRole === 'superadmin' && (
+                      <>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleToggleStatus(c); }}
+                          className={`px-3 py-1.5 rounded-lg font-label-sm transition-all ${
+                            c.status === 'active'
+                              ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                              : c.status === 'pending'
+                              ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                              : 'bg-green-100 text-green-700 hover:bg-green-200'
+                          }`}
+                        >
+                          {c.status === 'active' ? 'Desactivar' : c.status === 'pending' ? 'Aprobar' : 'Activar'}
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(c.id); }}
+                          className="px-3 py-1.5 rounded-lg font-label-sm bg-surface-container-high text-status-error hover:bg-red-100 transition-all"
+                        >
+                          <Icon name="delete" className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -405,242 +274,13 @@ export default function CentersPage() {
         )}
       </div>
 
-      {userRole === 'superadmin' && showModal && (
-        <div
-          className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
-          onClick={() => { setShowModal(false); setLogoFile(null); setCoverFile(null); setLogoPreview(null); setCoverPreview(null); }}
-        >
-          <div
-            className="bg-surface rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="p-stack-md border-b border-outline-variant/30 flex justify-between items-center sticky top-0 bg-surface rounded-t-2xl">
-              <h3 className="font-headline-sm text-on-surface">Nuevo Centro</h3>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setSelectedAdmin(null);
-                  setError('');
-                  setLogoFile(null);
-                  setCoverFile(null);
-                  setLogoPreview(null);
-                  setCoverPreview(null);
-                }}
-                className="text-on-surface-variant hover:text-on-surface"
-              >
-                <Icon name="close" className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleCreate} className="p-stack-md space-y-stack-md">
-              {error && (
-                <div className="bg-status-error/10 text-status-error font-body-sm p-3 rounded-lg">
-                  {error}
-                </div>
-              )}
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">Nombre</label>
-                <input
-                  className={inputClass('name')}
-                  value={newCenter.name}
-                  onChange={e => { setNewCenter(f => ({ ...f, name: e.target.value })); clearField('name'); }}
-                  required
-                />
-                {fieldErrors.name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.name}</p>}
-              </div>
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">Descripción</label>
-                <textarea
-                  rows={3}
-                  className={`${inputClass('description')} resize-none`}
-                  value={newCenter.description}
-                  onChange={e => { setNewCenter(f => ({ ...f, description: e.target.value })); clearField('description'); }}
-                  required
-                />
-                {fieldErrors.description && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.description}</p>}
-              </div>
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">Dirección</label>
-                <input
-                  className={inputClass('address')}
-                  value={newCenter.address}
-                  onChange={e => { setNewCenter(f => ({ ...f, address: e.target.value })); clearField('address'); }}
-                />
-              </div>
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">Estado</label>
-                <select
-                  className={inputClass('state')}
-                  value={newCenter.state}
-                  onChange={e => { setNewCenter(f => ({ ...f, state: e.target.value })); clearField('state'); }}
-                >
-                  {['Amazonas','Anzoátegui','Apure','Aragua','Barinas','Bolívar','Carabobo','Cojedes','Delta Amacuro','Distrito Capital','Falcón','Guárico','Lara','Mérida','Miranda','Monagas','Nueva Esparta','Portuguesa','Sucre','Táchira','Trujillo','La Guaira','Yaracuy','Zulia'].map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="font-label-md text-on-surface mb-1.5 block">Teléfono</label>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    className={inputClass('phone')}
-                    value={newCenter.phone}
-                    onChange={e => { setNewCenter(f => ({ ...f, phone: e.target.value })); clearField('phone'); }}
-                    required
-                  />
-                  {fieldErrors.phone && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.phone}</p>}
-                </div>
-                <div>
-                  <label className="font-label-md text-on-surface mb-1.5 block">Email</label>
-                  <input
-                    type="email"
-                    className={inputClass('email')}
-                    value={newCenter.email}
-                    onChange={e => { setNewCenter(f => ({ ...f, email: e.target.value })); clearField('email'); }}
-                    required
-                  />
-                  {fieldErrors.email && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.email}</p>}
-                </div>
-              </div>
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">
-                  Capacidad Máxima
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  className={inputClass('max_capacity')}
-                  value={newCenter.max_capacity || ''}
-                  onChange={e => {
-                    setNewCenter(f => ({ ...f, max_capacity: e.target.value === '' ? 0 : Number(e.target.value) }));
-                    clearField('max_capacity');
-                  }}
-                />
-                {fieldErrors.max_capacity && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.max_capacity}</p>}
-              </div>
-
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">Logo del Centro</label>
-                <div className="flex items-center gap-4">
-                  {logoPreview ? (
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-outline-variant">
-                      <Image src={logoPreview} alt="" fill className="object-cover" />
-                      <button type="button" onClick={() => { setLogoFile(null); setLogoPreview(null); }}
-                        className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center">
-                        <Icon name="close" className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center text-outline">
-                      <Icon name="photo_library" className="w-6 h-6" />
-                    </div>
-                  )}
-                  <label className="cursor-pointer bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-label-sm text-on-surface hover:bg-surface-gray transition-colors">
-                    Seleccionar archivo
-                    <input type="file" accept="image/*" className="hidden" onChange={e => {
-                      const f = e.target.files?.[0];
-                      if (f) { setLogoFile(f); setLogoPreview(URL.createObjectURL(f)); }
-                    }} />
-                  </label>
-                </div>
-              </div>
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">Imagen de Portada</label>
-                <div className="flex items-center gap-4">
-                  {coverPreview ? (
-                    <div className="relative w-28 h-16 rounded-lg overflow-hidden border border-outline-variant">
-                      <Image src={coverPreview} alt="" fill className="object-cover" />
-                      <button type="button" onClick={() => { setCoverFile(null); setCoverPreview(null); }}
-                        className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center">
-                        <Icon name="close" className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="w-28 h-16 rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center text-outline">
-                      <Icon name="photo_library" className="w-6 h-6" />
-                    </div>
-                  )}
-                  <label className="cursor-pointer bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-label-sm text-on-surface hover:bg-surface-gray transition-colors">
-                    Seleccionar archivo
-                    <input type="file" accept="image/*" className="hidden" onChange={e => {
-                      const f = e.target.files?.[0];
-                      if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }
-                    }} />
-                  </label>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="font-label-md text-on-surface mb-1.5 block">Latitud</label>
-                  <input
-                    type="number"
-                    step="any"
-                    className={inputClass('latitude')}
-                    placeholder="8.615"
-                    value={newCenter.latitude}
-                    onChange={e => { setNewCenter(f => ({ ...f, latitude: e.target.value })); clearField('latitude'); }}
-                  />
-                </div>
-                <div>
-                  <label className="font-label-md text-on-surface mb-1.5 block">Longitud</label>
-                  <input
-                    type="number"
-                    step="any"
-                    className={inputClass('longitude')}
-                    placeholder="-70.207"
-                    value={newCenter.longitude}
-                    onChange={e => { setNewCenter(f => ({ ...f, longitude: e.target.value })); clearField('longitude'); }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="font-label-md text-on-surface mb-1.5 block">
-                  Administrador del Centro
-                </label>
-                {loadingAdmins ? (
-                  <div className="flex items-center justify-center py-3">
-                    <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
-                  </div>
-                ) : centerAdmins.length === 0 ? (
-                  <div className="p-3 bg-surface-container-low rounded-lg text-center">
-                    <p className="font-body-sm text-on-surface-variant">
-                      No hay administradores de centro disponibles
-                    </p>
-                  </div>
-                ) : (
-                  <select
-                    className={inputClass('admin')}
-                    value={selectedAdmin || ''}
-                    onChange={e => { setSelectedAdmin(e.target.value ? parseInt(e.target.value) : null); clearField('admin'); }}
-                  >
-                    <option value="">Selecciona un administrador</option>
-                    {centerAdmins.map(admin => (
-                      <option key={admin.id} value={admin.id}>
-                        {admin.first_name} {admin.last_name} ({admin.email})
-                      </option>
-                    ))}
-                  </select>
-                )}
-                <p className="font-label-sm text-on-surface-variant mt-1.5">
-                  Solo se muestran usuarios sin centro asignado
-                </p>
-              </div>
-
-              <LoadingButton
-                type="submit"
-                loading={creating}
-                className="w-full py-3"
-                variant="primary"
-              >
-                Crear Centro
-              </LoadingButton>
-            </form>
-          </div>
-        </div>
-      )}
+      <CenterFormModal
+        open={showCreateModal || !!editingCenter}
+        onClose={() => { setShowCreateModal(false); setEditingCenter(null); }}
+        onSaved={() => { fetchCenters(); setShowCreateModal(false); setEditingCenter(null); }}
+        center={editingCenter || undefined}
+        userRole={userRole || ''}
+      />
 
       {selectedCenter && (
         <CenterInfoModal center={selectedCenter} onClose={() => setSelectedCenter(null)} />

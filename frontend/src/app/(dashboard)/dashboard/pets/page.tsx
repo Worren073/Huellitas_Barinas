@@ -6,8 +6,11 @@ import Image from 'next/image';
 import AdminLayout from '@/components/AdminLayout';
 import StatusBadge from '@/components/StatusBadge';
 import Icon from '@/components/Icon';
+import PetFormModal from '@/components/PetFormModal';
+import CenterFormModal from '@/components/CenterFormModal';
 import api from '@/lib/api';
 import { normalizeImageUrl } from '@/lib/utils';
+import { auth } from '@/lib/auth';
 
 interface Pet {
   id: number;
@@ -17,8 +20,30 @@ interface Pet {
   status: string;
   gender: string;
   age_months: number;
+  center: number;
   center_name: string;
-  images: { image: string }[];
+  size: string;
+  weight_kg: number;
+  description: string;
+  health_notes: string;
+  is_sterilized: boolean;
+  is_vaccinated: boolean;
+  is_dewormed: boolean;
+  images: { id: number; image: string; is_primary: boolean; order: number }[];
+}
+
+interface CenterInfo {
+  id: number;
+  name: string;
+  description: string;
+  address: string;
+  phone: string;
+  email: string;
+  status: string;
+  max_capacity: number;
+  current_capacity: number;
+  logo?: string | null;
+  cover_image?: string | null;
 }
 
 function downloadExport() {
@@ -37,6 +62,12 @@ export default function PetsPage() {
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [erroredImages, setErroredImages] = useState<Set<number>>(new Set());
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userCenter, setUserCenter] = useState<{ id: number; name: string } | null>(null);
+  const [centerInfo, setCenterInfo] = useState<CenterInfo | null>(null);
+  const [editingPet, setEditingPet] = useState<Pet | null>(null);
+  const [showPetModal, setShowPetModal] = useState(false);
+  const [showCenterModal, setShowCenterModal] = useState(false);
 
   const fetchPets = async () => {
     try {
@@ -46,6 +77,18 @@ export default function PetsPage() {
     } catch { setPets([]) }
     finally { setLoading(false) }
   };
+
+  useEffect(() => {
+    auth.getProfile().then(profile => {
+      setUserRole(profile.role);
+      if (profile.role === 'center_admin' && profile.center) {
+        setUserCenter(profile.center);
+        api.get<any>(`/centers/${profile.center.id}/`).then(r => {
+          setCenterInfo(r.data);
+        }).catch(() => {});
+      }
+    });
+  }, []);
 
   useEffect(() => { fetchPets() }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -64,9 +107,65 @@ export default function PetsPage() {
     } catch {}
   };
 
+  const openPetEdit = async (pet: Pet) => {
+    try {
+      const { data } = await api.get<any>(`/pets/${pet.id}/`);
+      setEditingPet(data);
+      setShowPetModal(true);
+    } catch {
+      setEditingPet(pet as any);
+      setShowPetModal(true);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="p-stack-lg max-w-7xl mx-auto">
+        {/* Center info card for center_admin */}
+        {userRole === 'center_admin' && centerInfo && (
+          <div className="bg-surface rounded-xl ambient-shadow border border-outline-variant p-stack-md mb-stack-lg">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  {centerInfo.logo ? (
+                    <div className="w-12 h-12 rounded-xl overflow-hidden relative shrink-0 border border-outline-variant">
+                      <Image src={normalizeImageUrl(centerInfo.logo)} alt="" fill className="object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center shrink-0">
+                      <Icon name="location" className="w-6 h-6 text-primary-container" />
+                    </div>
+                  )}
+                  <div>
+                    <h2 className="font-headline-sm text-on-surface">{centerInfo.name}</h2>
+                    <p className="font-body-sm text-on-surface-variant">{centerInfo.address}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-x-6 gap-y-1 font-body-sm text-on-surface-variant">
+                  <span className="flex items-center gap-1"><Icon name="call" className="w-4 h-4" />{centerInfo.phone}</span>
+                  <span className="flex items-center gap-1"><Icon name="mail" className="w-4 h-4" />{centerInfo.email}</span>
+                  <StatusBadge status={centerInfo.status} />
+                </div>
+                {centerInfo.max_capacity > 0 && (
+                  <div className="mt-3 max-w-xs">
+                    <p className="font-label-sm text-on-surface-variant mb-1">
+                      Capacidad: {centerInfo.current_capacity} / {centerInfo.max_capacity}
+                    </p>
+                    <div className="w-full bg-surface-container-high rounded-full h-2">
+                      <div className="bg-primary rounded-full h-2 transition-all"
+                        style={{ width: `${(centerInfo.current_capacity / centerInfo.max_capacity) * 100}%` }} />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <button onClick={() => setShowCenterModal(true)}
+                className="bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md py-2 px-4 rounded-lg hover:bg-surface-gray transition-all flex items-center gap-2 shrink-0">
+                <Icon name="edit" className="w-4 h-4" /> Editar Centro
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-stack-lg">
           <h1 className="font-montserrat text-headline-lg text-on-surface">Mascotas</h1>
           <div className="flex gap-2 self-start mt-3 md:mt-0">
@@ -127,6 +226,10 @@ export default function PetsPage() {
                       <td className="p-stack-sm"><StatusBadge status={pet.status} /></td>
                       <td className="p-stack-sm">
                         <div className="flex gap-1.5">
+                          <button onClick={() => openPetEdit(pet)}
+                            className="px-2.5 py-1.5 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 font-label-sm transition-all">
+                            <Icon name="edit" className="w-4 h-4" />
+                          </button>
                           {pet.status === 'available' && (
                             <button onClick={() => handleStatusChange(pet.id, 'mark_in_process')}
                               className="px-2.5 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 font-label-sm transition-all">
@@ -153,6 +256,26 @@ export default function PetsPage() {
           )}
         </div>
       </div>
+
+      <PetFormModal
+        open={showPetModal}
+        onClose={() => { setShowPetModal(false); setEditingPet(null); }}
+        onSaved={() => { fetchPets(); setShowPetModal(false); setEditingPet(null); }}
+        pet={editingPet || undefined}
+      />
+
+      {userRole === 'center_admin' && centerInfo && (
+        <CenterFormModal
+          open={showCenterModal}
+          onClose={() => setShowCenterModal(false)}
+          onSaved={() => {
+            api.get<any>(`/centers/${centerInfo.id}/`).then(r => setCenterInfo(r.data)).catch(() => {});
+            setShowCenterModal(false);
+          }}
+          center={centerInfo}
+          userRole={userRole}
+        />
+      )}
     </AdminLayout>
   );
 }

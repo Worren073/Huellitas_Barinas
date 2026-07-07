@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
             "center",
             "date_joined",
         )
-        read_only_fields = ("id", "date_joined", "is_verified")
+        read_only_fields = ("id", "date_joined", "is_verified", "phone", "country", "address")
 
     def get_full_name(self, obj):
         return obj.get_full_name()
@@ -109,10 +109,13 @@ class UserUpdateRoleSerializer(serializers.ModelSerializer):
         ("adoptante", "Adoptante"),
     ]
     role = serializers.ChoiceField(choices=ROLE_CHOICES)
+    country = serializers.ChoiceField(choices=User.Country.choices, required=False, allow_blank=True)
+    phone = serializers.CharField(required=False, allow_blank=True)
+    address = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ("id", "role", "center")
+        fields = ("id", "role", "center", "phone", "country", "address")
 
 
 class ChangePasswordSerializer(serializers.Serializer):

@@ -19,6 +19,8 @@ interface User {
   last_name: string;
   role: string;
   phone: string;
+  country: string;
+  address: string;
   is_active: boolean;
   is_verified: boolean;
   center_name: string;
@@ -39,6 +41,19 @@ const ROLE_OPTIONS = [
   { value: 'adoptante', label: 'Adoptante' },
 ];
 
+const COUNTRY_OPTIONS = [
+  { value: 'VE', label: 'Venezuela (+58)' },
+  { value: 'CO', label: 'Colombia (+57)' },
+  { value: 'EC', label: 'Ecuador (+593)' },
+  { value: 'PE', label: 'Perú (+51)' },
+  { value: 'CL', label: 'Chile (+56)' },
+  { value: 'AR', label: 'Argentina (+54)' },
+  { value: 'BR', label: 'Brasil (+55)' },
+  { value: 'MX', label: 'México (+52)' },
+  { value: 'ES', label: 'España (+34)' },
+  { value: 'US', label: 'Estados Unidos (+1)' },
+];
+
 function daysUntilDeletion(dateStr: string): number {
   const diff = new Date(dateStr).getTime() + 30 * 24 * 60 * 60 * 1000 - Date.now();
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
@@ -54,6 +69,10 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newRole, setNewRole] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [editPhone, setEditPhone] = useState('');
+  const [editCountry, setEditCountry] = useState('');
+  const [editAddress, setEditAddress] = useState('');
+  const [savingUserInfo, setSavingUserInfo] = useState(false);
   const [actionModal, setActionModal] = useState<{ type: 'deactivate' | 'restore'; user: User } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -135,6 +154,24 @@ export default function UsersPage() {
       sileo.error({ title: 'Error', description: 'Error al restaurar cuenta' });
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleSaveUserInfo = async () => {
+    if (!editingUser) return;
+    setSavingUserInfo(true);
+    try {
+      await api.patch(`/users/${editingUser.id}/`, {
+        phone: editPhone,
+        country: editCountry,
+        address: editAddress,
+      });
+      setUsers(users.map(u => u.id === editingUser.id ? { ...u, phone: editPhone, country: editCountry, address: editAddress } : u));
+      sileo.success({ title: 'Usuario actualizado', description: 'Información del usuario actualizada correctamente.' });
+    } catch (err: any) {
+      sileo.error({ title: 'Error', description: err.response?.data?.detail || 'Error al actualizar usuario' });
+    } finally {
+      setSavingUserInfo(false);
     }
   };
 
@@ -252,6 +289,9 @@ export default function UsersPage() {
                             onClick={() => {
                               setEditingUser(u);
                               setNewRole(u.role);
+                              setEditPhone(u.phone || '');
+                              setEditCountry(u.country || 'VE');
+                              setEditAddress(u.address || '');
                             }}
                             className="text-primary hover:text-primary-container font-label-sm transition-colors"
                           >
@@ -292,6 +332,53 @@ export default function UsersPage() {
                 )}
               </p>
             </div>
+
+            <hr className="border-outline-variant/20 mb-stack-md" />
+
+            <div className="space-y-stack-sm mb-stack-md">
+              <label className="block font-label-md text-on-surface mb-2">Teléfono</label>
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={editPhone}
+                onChange={e => setEditPhone(e.target.value)}
+                className="w-full px-4 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container"
+              />
+            </div>
+
+            <div className="space-y-stack-sm mb-stack-md">
+              <label className="block font-label-md text-on-surface mb-2">País</label>
+              <select
+                value={editCountry}
+                onChange={e => setEditCountry(e.target.value)}
+                className="w-full px-4 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container"
+              >
+                {COUNTRY_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-stack-sm mb-stack-md">
+              <label className="block font-label-md text-on-surface mb-2">Dirección</label>
+              <textarea
+                rows={2}
+                value={editAddress}
+                onChange={e => setEditAddress(e.target.value)}
+                className="w-full px-4 py-2 border border-outline-variant rounded-lg font-body-sm text-on-surface bg-surface-container-lowest focus:outline-none focus:border-primary-container resize-none"
+              />
+            </div>
+
+            <LoadingButton
+              onClick={handleSaveUserInfo}
+              loading={savingUserInfo}
+              className="w-full py-2 mb-stack-md"
+              variant="primary"
+            >
+              Guardar Información
+            </LoadingButton>
+
+            <hr className="border-outline-variant/20 mb-stack-md" />
 
             {/* Role Change */}
             <div className="space-y-stack-sm mb-stack-md">
