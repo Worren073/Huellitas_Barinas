@@ -1,0 +1,13 @@
+name: Keep Render Awake
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping API
+        run: curl -sSf --max-time 10 https://huellitas-api.onrender.com/api/health/
+      - name: Ping Web
+        run: curl -sSf --max-time 10 https://huellitasvenezuela-web.onrender.com/
