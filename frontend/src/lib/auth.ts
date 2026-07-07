@@ -54,6 +54,7 @@ export const auth = {
       phone?: string;
       country?: string;
       country_display?: string;
+      center?: { id: number; name: string };
     };
   },
 };
