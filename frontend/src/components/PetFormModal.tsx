@@ -179,7 +179,7 @@ export default function PetFormModal({ open, onClose, onSaved, pet }: PetFormMod
       let petId: number;
 
       if (isEdit && pet) {
-        const { data } = await api.patch<any>(`/pets/${pet.id}/`, payload);
+        await api.patch<any>(`/pets/${pet.id}/`, payload);
         petId = pet.id;
 
         for (const imgId of removedImageIds) {
@@ -229,8 +229,6 @@ export default function PetFormModal({ open, onClose, onSaved, pet }: PetFormMod
   const inputClass = (field: string) =>
     `${baseInputClass} ${fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'}`;
   const labelClass = 'font-label-md text-on-surface mb-1.5 block';
-
-  const centerSelectValue = userRole === 'center_admin' && userCenterId ? String(userCenterId) : form.center;
 
   return (
     <Modal open={open} onClose={onClose} title={isEdit ? 'Editar Mascota' : 'Nueva Mascota'} subtitle={isEdit ? pet?.name : undefined} maxWidth="lg">

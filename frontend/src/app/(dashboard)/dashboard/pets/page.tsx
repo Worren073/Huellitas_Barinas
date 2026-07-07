@@ -37,13 +37,18 @@ interface CenterInfo {
   name: string;
   description: string;
   address: string;
+  state: string;
   phone: string;
   email: string;
   status: string;
   max_capacity: number;
   current_capacity: number;
+  pets_count: number;
+  is_full: boolean;
   logo?: string | null;
   cover_image?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 function downloadExport() {
