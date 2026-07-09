@@ -64,19 +64,19 @@ export default function CentersPage() {
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
-      router.push('/login');
+      router.push('/login/');
       return;
     }
     auth.getProfile().then((profile: User) => {
       if (profile.role !== 'superadmin' && profile.role !== 'center_admin') {
-        router.push('/dashboard');
+        router.push('/dashboard/');
         return;
       }
       setUserRole(profile.role);
       if (profile.role === 'center_admin' && profile.center) {
         setUserCenter(profile.center.id);
       }
-    }).catch(() => router.push('/login'));
+    }).catch(() => router.push('/login/'));
 
     fetchCenters();
   }, [router]);

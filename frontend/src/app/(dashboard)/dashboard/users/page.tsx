@@ -78,16 +78,16 @@ export default function UsersPage() {
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
-      router.push('/login');
+      router.push('/login/');
       return;
     }
     auth.getProfile().then(profile => {
       if (profile.role !== 'superadmin') {
-        router.push('/dashboard');
+        router.push('/dashboard/');
         return;
       }
       setUserRole(profile.role);
-    }).catch(() => router.push('/login'));
+    }).catch(() => router.push('/login/'));
   }, [router]);
 
   const fetchUsers = async () => {

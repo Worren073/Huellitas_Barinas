@@ -119,7 +119,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   useEffect(() => {
     if (!auth.isAuthenticated()) {
-      router.push('/login');
+      router.push('/login/');
       return;
     }
     auth.getProfile()
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         setUser(profile);
         setVisibleLinks(adminLinks.filter(link => link.roles.includes(profile.role)));
       })
-      .catch(() => router.push('/login'));
+      .catch(() => router.push('/login/'));
   }, [router]);
 
   useEffect(() => {

@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
   const isAuth = authRoutes.some((route) => pathname.startsWith(route));
 
   if (isProtected && !tokenValid) {
-    const response = NextResponse.redirect(new URL('/login', request.url));
+    const response = NextResponse.redirect(new URL('/login/', request.url));
     if (token) {
       response.cookies.delete('access_token');
       response.cookies.delete('refresh_token');
@@ -31,12 +31,12 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuth && tokenValid) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/dashboard/', request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/register'],
+  matcher: ['/dashboard/:path*', '/login', '/login/', '/register', '/register/'],
 };

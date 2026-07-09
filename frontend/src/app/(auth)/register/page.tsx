@@ -75,7 +75,7 @@ export default function RegisterPage() {
         title: '¡Cuenta creada!',
         description: 'Tu cuenta ha sido creada. Ahora puedes iniciar sesión.',
       });
-      router.push('/login');
+      router.push('/login/');
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: Record<string, any> } };
       const errorData = apiErr?.response?.data;
