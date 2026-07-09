@@ -8,7 +8,7 @@ PORT="${PORT:-8000}"
 if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Waiting for database..."
     for i in $(seq 1 30); do
-        python manage.py check --database default 2>/dev/null && break
+        python manage.py check --database default 2>&1 && break
         echo "  Database not ready... ($i/30)"
         sleep 2
     done
