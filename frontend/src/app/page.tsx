@@ -19,6 +19,7 @@ interface Pet {
   status: string;
   images?: { id: number; image: string; is_primary: boolean }[];
   center_name?: string;
+  center_state?: string;
 }
 
 interface Center {

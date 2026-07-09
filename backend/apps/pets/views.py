@@ -74,6 +74,10 @@ class PetViewSet(viewsets.ModelViewSet):
         if gender:
             queryset = queryset.filter(gender=gender)
 
+        state = self.request.query_params.get("state")
+        if state:
+            queryset = queryset.filter(center__state__iexact=state)
+
         return queryset
 
     @action(detail=False, methods=["get"])

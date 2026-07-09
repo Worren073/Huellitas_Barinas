@@ -21,6 +21,7 @@ interface Pet {
   status: string;
   images?: { id: number; image: string; is_primary: boolean }[];
   center_name?: string;
+  center_state?: string;
 }
 
 interface PetCardProps {
@@ -82,7 +83,7 @@ export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
             </p>
             <div className="flex items-center justify-between">
               <span className="font-label-sm bg-surface-container-low px-2 py-1 rounded">
-                {pet.center_name || 'Centro'}
+                {pet.center_name || 'Centro'}{pet.center_state ? ` - ${pet.center_state}` : ''}
               </span>
               <button className="w-8 h-8 rounded-full bg-secondary-container/20 text-secondary-container hover:bg-secondary-container hover:text-on-secondary-container transition-colors flex items-center justify-center">
                 <Icon name="favorite" className="w-4 h-4" solid />
@@ -121,7 +122,7 @@ export default function PetCard({ pet, variant = 'full' }: PetCardProps) {
           </div>
           <p className="font-body-sm text-on-surface-variant mb-4 flex items-center gap-1">
             <Icon name="location" className="w-4 h-4 flex-shrink-0" />
-            {pet.center_name || 'Centro'}
+            {pet.center_name || 'Centro'}{pet.center_state ? ` - ${pet.center_state}` : ''}
           </p>
           <div className="flex flex-wrap gap-2 mb-5 mt-auto">
             <span className="bg-surface-gray text-on-surface-variant rounded-md px-2.5 py-1 font-label-sm flex items-center gap-1 flex-shrink-0">

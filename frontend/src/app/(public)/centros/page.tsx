@@ -10,7 +10,7 @@ import CenterInfoModal from '@/components/CenterInfoModal';
 import Icon from '@/components/Icon';
 import type { Center } from '@/lib/types';
 import api from '@/lib/api';
-import { normalizeImageUrl } from '@/lib/utils';
+import { normalizeImageUrl, VENEZUELAN_STATES } from '@/lib/utils';
 
 const MapContainer = dynamic(() => import('react-leaflet').then((m) => m.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import('react-leaflet').then((m) => m.TileLayer), { ssr: false });
@@ -41,12 +41,15 @@ export default function CentrosPage() {
   const [centers, setCenters] = useState<CenterWithPets[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCenter, setSelectedCenter] = useState<CenterWithPets | null>(null);
+  const [selectedState, setSelectedState] = useState('');
   const [erroredLogos, setErroredLogos] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchCenters = async () => {
+      setLoading(true);
       try {
-        const res = await api.get('/centers/');
+        const params = selectedState ? `?state=${encodeURIComponent(selectedState)}` : '';
+        const res = await api.get(`/centers/${params}`);
         const data = res.data.results || res.data;
         setCenters(Array.isArray(data) ? data : []);
       } catch {
@@ -56,7 +59,7 @@ export default function CentrosPage() {
       }
     };
     fetchCenters();
-  }, []);
+  }, [selectedState]);
 
   const mapCenters = centers.filter((c) => c.latitude && c.longitude);
   const barinasCenter: [number, number] = [8.615, -70.207];
@@ -119,7 +122,19 @@ export default function CentrosPage() {
 
         <div className="max-w-container-max mx-auto px-4 md:px-8 pb-stack-lg">
           <ScrollAnimation variant="slideUp">
-            <h2 className="font-headline-sm text-on-surface mb-4">Lista de Centros</h2>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+              <h2 className="font-headline-sm text-on-surface">Lista de Centros</h2>
+              <select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="font-label-md border border-outline-variant rounded-lg px-3 py-2 bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container"
+              >
+                <option value="">Todos los estados</option>
+                {VENEZUELAN_STATES.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
           </ScrollAnimation>
           {centers.length === 0 && !loading ? (
             <p className="font-body-md text-on-surface-variant">No hay centros registrados aún.</p>

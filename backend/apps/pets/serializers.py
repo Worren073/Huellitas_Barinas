@@ -21,6 +21,7 @@ class PetSerializer(serializers.ModelSerializer):
 
     images = PetImageSerializer(many=True, read_only=True)
     center_name = serializers.CharField(source="center.name", read_only=True)
+    center_state = serializers.CharField(source="center.state", read_only=True)
 
     class Meta:
         model = Pet
@@ -41,6 +42,7 @@ class PetSerializer(serializers.ModelSerializer):
             "status",
             "center",
             "center_name",
+            "center_state",
             "images",
             "created_at",
             "updated_at",

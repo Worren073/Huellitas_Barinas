@@ -9,6 +9,7 @@ interface Filters {
   size: string;
   gender: string;
   search: string;
+  state: string;
 }
 
 export default function MascotasControls({ filters }: { filters: Filters }) {
@@ -19,6 +20,7 @@ export default function MascotasControls({ filters }: { filters: Filters }) {
     if (newFilters.species) params.append('species', newFilters.species);
     if (newFilters.size) params.append('size', newFilters.size);
     if (newFilters.gender) params.append('gender', newFilters.gender);
+    if (newFilters.state) params.append('state', newFilters.state);
     if (newFilters.search) params.append('q', newFilters.search);
     const qs = params.toString();
     router.push(qs ? `/mascotas?${qs}` : '/mascotas');

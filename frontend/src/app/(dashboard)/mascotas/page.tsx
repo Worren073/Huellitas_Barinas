@@ -16,12 +16,13 @@ interface Pet {
   status: string;
   images?: { id: number; image: string; is_primary: boolean }[];
   center_name?: string;
+  center_state?: string;
 }
 
 export default async function MascotasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ species?: string; size?: string; gender?: string; q?: string }>;
+  searchParams: Promise<{ species?: string; size?: string; gender?: string; q?: string; state?: string }>;
 }) {
   const params = await searchParams;
 
@@ -33,6 +34,7 @@ export default async function MascotasPage({
     query.append('gender', genderMap[params.gender] || params.gender);
   }
   if (params.q) query.append('search', params.q);
+  if (params.state) query.append('state', params.state);
 
   let pets: Pet[] = [];
   try {
@@ -45,6 +47,7 @@ export default async function MascotasPage({
     size: params.size || '',
     gender: params.gender || '',
     search: params.q || '',
+    state: params.state || '',
   };
 
   return (

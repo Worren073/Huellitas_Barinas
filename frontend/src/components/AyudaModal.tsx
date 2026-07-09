@@ -6,18 +6,12 @@ import Modal from '@/components/ui/Modal';
 import Icon from '@/components/Icon';
 import { auth } from '@/lib/auth';
 import api from '@/lib/api';
+import { VENEZUELAN_STATES } from '@/lib/utils';
 
 interface AyudaModalProps {
   open: boolean;
   onClose: () => void;
 }
-
-const VENEZUELAN_STATES = [
-  'Amazonas', 'Anzoátegui', 'Apure', 'Aragua', 'Barinas', 'Bolívar',
-  'Carabobo', 'Cojedes', 'Delta Amacuro', 'Distrito Capital', 'Falcón',
-  'Guárico', 'Lara', 'Mérida', 'Miranda', 'Monagas', 'Nueva Esparta',
-  'Portuguesa', 'Sucre', 'Táchira', 'Trujillo', 'La Guaira', 'Yaracuy', 'Zulia',
-];
 
 export default function AyudaModal({ open, onClose }: AyudaModalProps) {
   const [step, setStep] = useState<'select' | 'donate' | 'volunteer' | 'become_center'>('select');

@@ -1,12 +1,14 @@
 'use client';
 
 import Icon from './Icon';
+import { VENEZUELAN_STATES } from '@/lib/utils';
 
 interface Filters {
   species: string;
   size: string;
   gender: string;
   search: string;
+  state: string;
 }
 
 interface FilterSidebarProps {
@@ -99,6 +101,25 @@ export default function FilterSidebar({ filters, onFilterChange }: FilterSidebar
                   {opt.label}
                 </span>
               </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <h3 className="font-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Estado</h3>
+          <div className="flex flex-wrap gap-2">
+            {VENEZUELAN_STATES.map((state) => (
+              <button
+                key={state}
+                onClick={() => handleChange('state', state)}
+                className={`px-3 py-1 rounded-full font-label-sm border transition-colors ${
+                  filters.state === state
+                    ? 'bg-primary text-on-primary border-primary'
+                    : 'bg-surface-gray text-on-surface-variant border-transparent'
+                }`}
+              >
+                {state}
+              </button>
             ))}
           </div>
         </div>

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Icon from '@/components/Icon';
 import LoadingButton from '@/components/LoadingButton';
 import api from '@/lib/api';
-import { normalizeImageUrl } from '@/lib/utils';
+import { normalizeImageUrl, VENEZUELAN_STATES } from '@/lib/utils';
 
 interface Center {
   id: number;
@@ -43,13 +43,6 @@ interface CenterFormModalProps {
   center?: Center;
   userRole: string;
 }
-
-const VENEZUELAN_STATES = [
-  'Amazonas','Anzoátegui','Apure','Aragua','Barinas','Bolívar','Carabobo',
-  'Cojedes','Delta Amacuro','Distrito Capital','Falcón','Guárico','Lara',
-  'Mérida','Miranda','Monagas','Nueva Esparta','Portuguesa','Sucre',
-  'Táchira','Trujillo','La Guaira','Yaracuy','Zulia',
-];
 
 export default function CenterFormModal({ open, onClose, onSaved, center, userRole }: CenterFormModalProps) {
   const isEdit = !!center;
