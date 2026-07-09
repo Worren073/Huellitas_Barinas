@@ -1,13 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
 });
 
 api.interceptors.response.use(
@@ -23,11 +20,7 @@ api.interceptors.response.use(
       }
       originalRequest._retry = true;
       try {
-        await axios.post(
-          `${API_BASE_URL}/api/v1/auth/refresh/`,
-          {},
-          { withCredentials: true }
-        );
+        await axios.post('/api/v1/auth/refresh/', {});
         return api(originalRequest);
       } catch {
         if (!window.location.pathname.startsWith('/login')) {
