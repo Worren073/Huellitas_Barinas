@@ -11,7 +11,7 @@ class HelpRequestService:
             if not help_request.email:
                 raise ValidationError("El email es requerido para registrar un centro")
 
-            name = f"{help_request.first_name} {help_request.last_name}".strip()
+            name = help_request.center_name.strip() or f"{help_request.first_name} {help_request.last_name}".strip()
             if not name:
                 raise ValidationError("El nombre es requerido para registrar un centro")
 
@@ -21,7 +21,7 @@ class HelpRequestService:
             phone = help_request.phone if help_request.phone else None
 
             address = f"Solicitud desde {help_request.state or 'Barinas'}"
-            desc = help_request.description or f"Solicitud de registro de {name}"
+            desc = help_request.description or f"Solicitud de registro de {name or help_request.first_name + ' ' + help_request.last_name}"
             ph = phone or "Sin teléfono"
             CenterService.create_center(
                 name=name,

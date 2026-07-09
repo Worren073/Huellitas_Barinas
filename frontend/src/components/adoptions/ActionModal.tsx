@@ -20,14 +20,16 @@ const ACTION_CONFIG: Record<string, { title: string }> = {
 export default function ActionModal({ adoption, action, onConfirm, onClose }: ActionModalProps) {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   if (!adoption) return null;
 
   const handleConfirm = async () => {
     setError('');
+    setFieldErrors({});
     if (action === 'reject' && !notes.trim()) {
-      setError('Debe proporcionar un motivo de rechazo');
+      setFieldErrors({ notes: 'Debe proporcionar un motivo de rechazo' });
       return;
     }
     setLoading(true);
@@ -35,7 +37,7 @@ export default function ActionModal({ adoption, action, onConfirm, onClose }: Ac
       await onConfirm(notes);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error al realizar la accion';
-      setError(msg);
+      setFieldErrors({ notes: msg });
     } finally {
       setLoading(false);
     }
@@ -56,11 +58,14 @@ export default function ActionModal({ adoption, action, onConfirm, onClose }: Ac
           <label className="font-label-md text-on-surface mb-1.5 block">Motivo de rechazo</label>
           <textarea
             rows={3}
-            className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:border-primary-container resize-none"
+            className={`w-full bg-surface-container-lowest border rounded-lg font-body-sm px-4 py-3 focus:outline-none resize-none ${
+              fieldErrors.notes ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
+            }`}
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e) => { setNotes(e.target.value); if (fieldErrors.notes) setFieldErrors({}); }}
             placeholder="Indica el motivo del rechazo..."
           />
+          {fieldErrors.notes && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.notes}</p>}
         </div>
       )}
       {action === 'approve' && (

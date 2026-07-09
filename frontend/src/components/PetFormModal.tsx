@@ -353,6 +353,7 @@ export default function PetFormModal({ open, onClose, onSaved, pet }: PetFormMod
             </button>
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageSelect} className="hidden" />
+          <p className="font-label-sm text-on-surface-variant/60">Formatos soportados: JPEG, PNG, GIF, WebP</p>
         </div>
 
         <div className="flex flex-wrap gap-6">

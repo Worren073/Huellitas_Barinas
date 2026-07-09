@@ -266,6 +266,7 @@ export default function CenterFormModal({ open, onClose, onSaved, center, userRo
                   if (f) { setLogoFile(f); setLogoPreview(URL.createObjectURL(f)); }
                 }} />
               </label>
+              <p className="font-label-sm text-on-surface-variant/60 mt-1">Formatos soportados: JPEG, PNG, GIF, WebP</p>
             </div>
           </div>
           <div>
@@ -291,6 +292,7 @@ export default function CenterFormModal({ open, onClose, onSaved, center, userRo
                   if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }
                 }} />
               </label>
+              <p className="font-label-sm text-on-surface-variant/60 mt-1">Formatos soportados: JPEG, PNG, GIF, WebP</p>
             </div>
           </div>
 

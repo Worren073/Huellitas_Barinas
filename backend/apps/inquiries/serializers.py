@@ -9,6 +9,7 @@ class HelpRequestSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "request_type",
+            "center_name",
             "first_name",
             "last_name",
             "email",
@@ -27,6 +28,7 @@ class HelpRequestCreateSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "request_type",
+            "center_name",
             "first_name",
             "last_name",
             "email",

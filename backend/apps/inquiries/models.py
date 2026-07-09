@@ -11,6 +11,7 @@ class HelpRequest(models.Model):
     request_type = models.CharField(
         max_length=20, choices=RequestType.choices, verbose_name="tipo de solicitud"
     )
+    center_name = models.CharField(max_length=200, blank=True, verbose_name="nombre del centro")
     first_name = models.CharField(max_length=100, verbose_name="nombre")
     last_name = models.CharField(max_length=100, verbose_name="apellido")
     email = models.EmailField(verbose_name="correo electrónico")

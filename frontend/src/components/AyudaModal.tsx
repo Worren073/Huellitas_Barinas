@@ -20,6 +20,7 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
   const [loadingCenters, setLoadingCenters] = useState(false);
 
   const [form, setForm] = useState({
+    center_name: '',
     first_name: '',
     last_name: '',
     email: '',
@@ -28,6 +29,7 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
     description: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -45,11 +47,16 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
     }
   }, [open]);
 
+  const clearField = (field: string) => {
+    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: '' }));
+  };
+
   const handleClose = () => {
     setStep('select');
     setSelectedState('Todas');
     setCenters([]);
-    setForm({ first_name: '', last_name: '', email: '', phone: '', state: '', description: '' });
+    setFieldErrors({});
+    setForm({ center_name: '', first_name: '', last_name: '', email: '', phone: '', state: '', description: '' });
     onClose();
   };
 
@@ -73,6 +80,7 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
 
   const handleSubmit = async (type: 'volunteer' | 'become_center') => {
     setSubmitting(true);
+    setFieldErrors({});
     try {
       await api.post('/help-requests/', {
         request_type: type,
@@ -83,15 +91,32 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
         description: 'Recibiremos tu solicitud y te contactaremos pronto.',
       });
       handleClose();
-    } catch {
-      sileo.error({ title: 'Error', description: 'No se pudo enviar la solicitud.' });
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { data?: Record<string, any> } };
+      const data = apiErr?.response?.data;
+      if (data) {
+        const mapped: Record<string, string> = {};
+        for (const [key, msgs] of Object.entries(data)) {
+          const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
+          if (msg) mapped[key] = msg;
+        }
+        if (Object.keys(mapped).length > 0) {
+          setFieldErrors(mapped);
+        } else {
+          sileo.error({ title: 'Error', description: 'No se pudo enviar la solicitud.' });
+        }
+      } else {
+        sileo.error({ title: 'Error', description: 'No se pudo enviar la solicitud.' });
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
-  const inputClass =
-    'w-full bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all';
+  const inputClass = (field?: string) =>
+    `w-full bg-surface-container-lowest border rounded-lg font-body-sm px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-container/20 transition-all ${
+      field && fieldErrors[field] ? 'border-red-400' : 'border-outline-variant focus:border-primary-container'
+    }`;
 
   const selectBtn = (label: string, selected: boolean, onClick: () => void) => (
     <button
@@ -202,20 +227,22 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
             <div>
               <label className="font-label-md text-on-surface mb-1.5 block">Nombre</label>
               <input
-                className={inputClass}
+                className={inputClass('first_name')}
                 value={form.first_name}
-                onChange={(e) => setForm((f) => ({ ...f, first_name: e.target.value }))}
+                onChange={(e) => { setForm((f) => ({ ...f, first_name: e.target.value })); clearField('first_name'); }}
                 required
               />
+              {fieldErrors.first_name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.first_name}</p>}
             </div>
             <div>
               <label className="font-label-md text-on-surface mb-1.5 block">Apellido</label>
               <input
-                className={inputClass}
+                className={inputClass('last_name')}
                 value={form.last_name}
-                onChange={(e) => setForm((f) => ({ ...f, last_name: e.target.value }))}
+                onChange={(e) => { setForm((f) => ({ ...f, last_name: e.target.value })); clearField('last_name'); }}
                 required
               />
+              {fieldErrors.last_name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.last_name}</p>}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -223,34 +250,50 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
               <label className="font-label-md text-on-surface mb-1.5 block">Email</label>
               <input
                 type="email"
-                className={inputClass}
+                className={inputClass('email')}
                 value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                onChange={(e) => { setForm((f) => ({ ...f, email: e.target.value })); clearField('email'); }}
                 required
               />
+              {fieldErrors.email && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.email}</p>}
             </div>
             <div>
               <label className="font-label-md text-on-surface mb-1.5 block">Teléfono</label>
               <input
-                className={inputClass}
+                className={inputClass('phone')}
                 value={form.phone}
-                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                onChange={(e) => { setForm((f) => ({ ...f, phone: e.target.value })); clearField('phone'); }}
               />
+              {fieldErrors.phone && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.phone}</p>}
             </div>
           </div>
           {step === 'become_center' && (
             <div>
+              <label className="font-label-md text-on-surface mb-1.5 block">Nombre del centro</label>
+              <input
+                className={inputClass('center_name')}
+                value={form.center_name}
+                onChange={(e) => { setForm((f) => ({ ...f, center_name: e.target.value })); clearField('center_name'); }}
+                placeholder="Ej: Fundación Huellitas Barinas"
+                required
+              />
+              {fieldErrors.center_name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.center_name}</p>}
+            </div>
+          )}
+          {step === 'become_center' && (
+            <div>
               <label className="font-label-md text-on-surface mb-1.5 block">Estado</label>
               <select
-                className={inputClass}
+                className={inputClass('state')}
                 value={form.state}
-                onChange={(e) => setForm((f) => ({ ...f, state: e.target.value }))}
+                onChange={(e) => { setForm((f) => ({ ...f, state: e.target.value })); clearField('state'); }}
               >
                 <option value="">Selecciona un estado</option>
                 {VENEZUELAN_STATES.map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
+              {fieldErrors.state && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.state}</p>}
             </div>
           )}
           <div>
@@ -259,15 +302,16 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
             </label>
             <textarea
               rows={4}
-              className={`${inputClass} resize-none`}
+              className={`${inputClass('description')} resize-none`}
               value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              onChange={(e) => { setForm((f) => ({ ...f, description: e.target.value })); clearField('description'); }}
               placeholder={
                 step === 'volunteer'
                   ? 'Cuéntanos sobre ti y por qué te gustaría ayudar...'
                   : 'Nombre del centro, misión, tipo de animales que atienden...'
               }
             />
+            {fieldErrors.description && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.description}</p>}
           </div>
           <div className="flex gap-3">
             <button
@@ -278,7 +322,7 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
             </button>
             <button
               onClick={() => handleSubmit(step)}
-              disabled={submitting || !form.first_name || !form.last_name || !form.email}
+              disabled={submitting}
               className="flex-1 bg-primary text-on-primary font-label-md py-2.5 rounded-lg hover:brightness-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {submitting && <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />}
