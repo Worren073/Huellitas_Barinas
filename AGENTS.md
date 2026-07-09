@@ -137,7 +137,7 @@ def convert_to_webp(image_file, quality=85, max_width=1200):
 - Calidad: 85%
 - Max width: 1200px
 - Max upload: 10MB
-- filesystem: filesystem (Render)
+- **Storage**: Local filesystem
 
 ### 8. Docker Commands
 
@@ -245,7 +245,7 @@ test(centers): add unit tests
 | Severidad | Cantidad | Área |
 |-----------|----------|------|
 | 🔴 CRÍTICO | 9 | Backend: WebP signal, entrypoint, SSL, inquiries, adoption orphan, dockerignore, render.yaml, Suspense, contacto form |
-| 🟡 MEDIO | 14 | Lógica movida a services, permisos, bugs inquiries, species, R2 URLs, Celery task, voluntario role |
+| 🟡 MEDIO | 14 | Lógica movida a services, permisos, bugs inquiries, species, normalización de URLs, Celery task, voluntario role |
 | 🟢 BAJO | 7 | Renombrar IsAdminUser, select_reduntante, Secure cookies, tests inquiries, AGENTS.md, dead code |
 | **Total** | **30** | |
 
@@ -292,7 +292,7 @@ test(centers): add unit tests
 | 18 | 🟡 | Voluntario no asignable vía API | `users/serializers.py:106` | Agregado `("voluntario", "Voluntario")` |
 | 19 | 🟡 | Celery task nunca llamada | `adoptions/tasks.py` | Notifications ahora delega a task async con fallback sync |
 | 20 | 🟡 | Species binario en dashboard | `pets/page.tsx:123` | Mapa `{dog: 'Perro', cat: 'Gato', other: 'Otro'}` |
-| 21 | 🟡 | normalizeImageUrl rompe R2 | `utils.ts:6-9` | URLs con `http` se devuelven sin modificar |
+| 21 | 🟡 | normalizeImageUrl para rutas relativas | `utils.ts:6-9` | URLs relativas se mantienen, Next.js rewrite proxy |
 | 22 | 🟡 | selectedCenter unused state | `centros/page.tsx:41` | Estado y onClick removidos |
 | 23 | 🟡 | Navbar variant prop muerta | `Navbar.tsx:16` | Prop `variant` removida |
 | 24 | 🟡 | Adoptar usa fetch en vez de axios | `adoptar/[id]/page.tsx:66` | Cambiado a `api.get()` |
@@ -309,6 +309,6 @@ test(centers): add unit tests
 - **Email**: worrenalexanderbz@gmail.com
 - **Deploy**: Render
 - **DB**: Render PostgreSQL
-- **filesystem**: Local filesystem (Render disk)
+- **Storage**: Local filesystem
 - **API**: https://huellitas-api.onrender.com
 - **Web**: https://huellitasvenezuela-web.onrender.com
