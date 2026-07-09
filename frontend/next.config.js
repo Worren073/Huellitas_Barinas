@@ -36,8 +36,16 @@ const nextConfig = {
     const apiUrl = process.env.API_SERVER_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     return [
       {
+        source: '/api/v1/:path*/',
+        destination: `${apiUrl}/api/v1/:path*/`,
+      },
+      {
         source: '/api/v1/:path*',
         destination: `${apiUrl}/api/v1/:path*`,
+      },
+      {
+        source: '/media/:path*/',
+        destination: `${apiUrl}/media/:path*/`,
       },
       {
         source: '/media/:path*',
