@@ -45,8 +45,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   hydrate: async () => {
     try {
-      const { data } = await api.get('/users/me/');
-      set({ user: data, isAuthenticated: true, isLoading: false });
+      const { data } = await api.get('/auth/status/');
+      if (data.authenticated) {
+        set({ user: data.user, isAuthenticated: true, isLoading: false });
+      } else {
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      }
     } catch {
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
@@ -56,7 +60,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await api.post('/auth/login/', { email, password });
-      await get().fetchProfile();
+      await get().hydrate();
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Error al iniciar sesión';
       set({ error: msg, isLoading: false });
@@ -91,8 +95,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   fetchProfile: async () => {
     try {
-      const { data } = await api.get('/users/me/');
-      set({ user: data, isAuthenticated: true, isLoading: false });
+      const { data } = await api.get('/auth/status/');
+      if (data.authenticated) {
+        set({ user: data.user, isAuthenticated: true, isLoading: false });
+      } else {
+        set({ isAuthenticated: false, isLoading: false });
+      }
     } catch {
       set({ isAuthenticated: false, isLoading: false });
     }

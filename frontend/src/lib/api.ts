@@ -13,7 +13,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (
-        originalRequest.url?.includes('/users/me/') ||
+        originalRequest.url?.includes('/auth/status/') ||
         originalRequest.url?.includes('/auth/logout/')
       ) {
         return Promise.reject(error);

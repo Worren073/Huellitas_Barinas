@@ -5,6 +5,7 @@ Auth URL patterns.
 from django.urls import path
 
 from ..views import (
+    AuthStatusView,
     ChangePasswordView,
     CookieTokenRefreshView,
     DeactivateAccountView,
@@ -20,6 +21,7 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("refresh/", CookieTokenRefreshView.as_view(), name="token_refresh"),
     path("logout/", LogoutView.as_view(), name="logout"),
+    path("status/", AuthStatusView.as_view(), name="auth_status"),
     path("change-password/", ChangePasswordView.as_view(), name="change_password"),
     path("deactivate/", DeactivateAccountView.as_view(), name="deactivate"),
 ]

@@ -280,6 +280,20 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response({"message": "Contraseña actualizada exitosamente."})
 
 
+class AuthStatusView(APIView):
+    """Return auth status. Always 200 — no 401 for unauthenticated users."""
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response({
+                "authenticated": True,
+                "user": UserSerializer(request.user).data,
+            })
+        return Response({"authenticated": False})
+
+
 class HealthCheckView(APIView):
     """Health check endpoint — returns 200 immediately (no DB dependency)."""
 
