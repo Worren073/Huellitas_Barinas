@@ -28,12 +28,12 @@ const adminLinks = [
 function SidebarContent({ visibleLinks, pathname, user, onClose }: { visibleLinks: typeof adminLinks; pathname: string; user: User; onClose?: () => void }) {
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sessionStorage.setItem('pendingToast', JSON.stringify({
       title: 'Sesión cerrada',
       description: 'Has cerrado sesión correctamente.',
     }));
-    auth.logout();
+    await auth.logout();
     window.location.href = '/';
   };
 

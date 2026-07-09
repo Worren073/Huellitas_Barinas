@@ -8,6 +8,9 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+MAX_FAILED_ATTEMPTS = 10
+LOCKOUT_DURATION_MINUTES = 30
+
 from apps.adoptions.services import AdoptionService
 
 User = get_user_model()
@@ -105,3 +108,21 @@ class UserService:
             )
             count += 1
         return count
+
+    @staticmethod
+    def record_failed_login(user):
+        """Increment failed login counter and lock if threshold reached."""
+        user.failed_login_attempts += 1
+        if user.failed_login_attempts >= MAX_FAILED_ATTEMPTS:
+            user.locked_until = timezone.now() + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+        user.save(update_fields=["failed_login_attempts", "locked_until"])
+        return user
+
+    @staticmethod
+    def reset_failed_login(user):
+        """Reset failed login counter and unlock."""
+        if user.failed_login_attempts > 0 or user.locked_until is not None:
+            user.failed_login_attempts = 0
+            user.locked_until = None
+            user.save(update_fields=["failed_login_attempts", "locked_until"])
+        return user

@@ -1,5 +1,13 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
+from django.utils import timezone
+
+phone_validator = RegexValidator(
+    r'^\+?[\d\s\-()]{7,20}$', 'Número de teléfono inválido'
+)
 
 
 class User(AbstractUser):
@@ -39,7 +47,7 @@ class User(AbstractUser):
         max_length=2, choices=Country.choices, default=Country.VENEZUELA, verbose_name="país"
     )
 
-    phone = models.CharField(max_length=20, blank=True, verbose_name="teléfono")
+    phone = models.CharField(max_length=20, blank=True, validators=[phone_validator], verbose_name="teléfono")
     address = models.TextField(blank=True, verbose_name="dirección")
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True, verbose_name="avatar")
     is_verified = models.BooleanField(default=False, verbose_name="verificado")
@@ -55,6 +63,19 @@ class User(AbstractUser):
     deletion_requested_at = models.DateTimeField(
         null=True, blank=True, verbose_name="fecha de solicitud de eliminación"
     )
+
+    failed_login_attempts = models.IntegerField(default=0, verbose_name="intentos fallidos")
+    locked_until = models.DateTimeField(null=True, blank=True, verbose_name="bloqueado hasta")
+
+    @property
+    def is_locked(self):
+        if self.locked_until and timezone.now() < self.locked_until:
+            return True
+        if self.locked_until and timezone.now() >= self.locked_until:
+            self.failed_login_attempts = 0
+            self.locked_until = None
+            self.save(update_fields=["failed_login_attempts", "locked_until"])
+        return False
 
     class Meta:
         verbose_name = "usuario"

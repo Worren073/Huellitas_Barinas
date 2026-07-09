@@ -70,6 +70,5 @@ class PetCreateSerializer(serializers.ModelSerializer):
             "is_vaccinated",
             "is_dewormed",
             "status",
-            "center",
         )
         read_only_fields = ("id",)

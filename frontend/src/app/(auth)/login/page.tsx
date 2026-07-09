@@ -31,8 +31,7 @@ function LoginForm() {
     const password = formData.get('password') as string;
 
     try {
-      const { access, refresh } = await auth.login(email, password);
-      auth.setTokens(access, refresh);
+      await auth.login(email, password);
 
       let destination = redirectTo;
       if (redirectTo === '/dashboard') {

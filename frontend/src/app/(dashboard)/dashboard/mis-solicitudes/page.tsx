@@ -68,7 +68,7 @@ export default function MisSolicitudesPage() {
     setDeleting(true);
     try {
       await api.post('/auth/deactivate/');
-      useAuthStore.getState().logout();
+      await useAuthStore.getState().logout();
       router.push('/');
     } catch {
       setDeleting(false);

@@ -1,4 +1,9 @@
+from django.core.validators import RegexValidator
 from django.db import models
+
+phone_validator = RegexValidator(
+    r'^\+?[\d\s\-()]{7,20}$', 'Número de teléfono inválido'
+)
 
 VENEZUELAN_STATES = [
     ("Amazonas", "Amazonas"),
@@ -42,7 +47,7 @@ class Center(models.Model):
     state = models.CharField(
         max_length=100, choices=VENEZUELAN_STATES, default="Barinas", verbose_name="estado"
     )
-    phone = models.CharField(max_length=20, verbose_name="teléfono")
+    phone = models.CharField(max_length=20, validators=[phone_validator], verbose_name="teléfono")
     email = models.EmailField(verbose_name="correo electrónico")
     logo = models.ImageField(upload_to="centers/logos/", blank=True, null=True, verbose_name="logo")
     cover_image = models.ImageField(

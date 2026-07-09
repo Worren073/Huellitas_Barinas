@@ -1,4 +1,9 @@
+from django.core.validators import RegexValidator
 from django.db import models
+
+phone_validator = RegexValidator(
+    r'^\+?[\d\s\-()]{7,20}$', 'Número de teléfono inválido'
+)
 
 from apps.centers.models import VENEZUELAN_STATES
 
@@ -15,7 +20,7 @@ class HelpRequest(models.Model):
     first_name = models.CharField(max_length=100, verbose_name="nombre")
     last_name = models.CharField(max_length=100, verbose_name="apellido")
     email = models.EmailField(verbose_name="correo electrónico")
-    phone = models.CharField(max_length=20, blank=True, verbose_name="teléfono")
+    phone = models.CharField(max_length=20, blank=True, validators=[phone_validator], verbose_name="teléfono")
     state = models.CharField(
         max_length=100, choices=VENEZUELAN_STATES, blank=True, verbose_name="estado"
     )

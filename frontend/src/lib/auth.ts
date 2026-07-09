@@ -4,8 +4,6 @@ export const auth = {
   async login(email: string, password: string) {
     const store = useAuthStore.getState();
     await store.login(email, password);
-    const { accessToken, refreshToken } = useAuthStore.getState();
-    return { access: accessToken!, refresh: refreshToken! };
   },
 
   async register(userData: {
@@ -23,16 +21,8 @@ export const auth = {
     return { id: 0, username: userData.username, email: userData.email };
   },
 
-  setTokens(access: string, refresh: string) {
-    useAuthStore.getState().setTokens(access, refresh);
-  },
-
-  logout() {
-    useAuthStore.getState().logout();
-  },
-
-  getAccessToken(): string | null {
-    return useAuthStore.getState().accessToken;
+  async logout() {
+    await useAuthStore.getState().logout();
   },
 
   isAuthenticated(): boolean {

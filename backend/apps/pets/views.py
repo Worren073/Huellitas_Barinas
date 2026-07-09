@@ -47,6 +47,20 @@ class PetViewSet(viewsets.ModelViewSet):
             return PetCreateSerializer
         return PetSerializer
 
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.is_authenticated and user.role == "center_admin" and user.center:
+            serializer.save(center=user.center)
+        else:
+            serializer.save()
+
+    def perform_update(self, serializer):
+        user = self.request.user
+        if user.is_authenticated and user.role == "center_admin" and user.center:
+            serializer.save(center=user.center)
+        else:
+            serializer.save()
+
     def get_queryset(self):
         queryset = Pet.objects.select_related("center").prefetch_related("images")
 
@@ -147,6 +161,9 @@ class PetImageViewSet(viewsets.ModelViewSet):
         pet_id = self.kwargs.get("pet_pk")
         if pet_id:
             queryset = queryset.filter(pet_id=pet_id)
+        user = self.request.user
+        if user.is_authenticated and user.role == "center_admin" and user.center:
+            queryset = queryset.filter(pet__center=user.center)
         return queryset
 
     def perform_create(self, serializer):

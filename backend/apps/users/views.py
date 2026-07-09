@@ -3,12 +3,15 @@ User views (View layer).
 Delegates to services (Presenter layer).
 """
 
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
+from django.utils import timezone
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from .permissions import IsSuperAdmin
 from .serializers import (
@@ -22,6 +25,37 @@ from .serializers import (
 from .services import UserService
 
 User = get_user_model()
+
+
+def _set_auth_cookies(response, access_token, refresh_token):
+    """Set httpOnly cookies for JWT tokens on the response."""
+    is_secure = not settings.DEBUG
+    samesite = "Lax"
+
+    response.set_cookie(
+        "access_token",
+        access_token,
+        httponly=True,
+        secure=is_secure,
+        samesite=samesite,
+        max_age=900,  # 15 min
+        path="/",
+    )
+    response.set_cookie(
+        "refresh_token",
+        refresh_token,
+        httponly=True,
+        secure=is_secure,
+        samesite=samesite,
+        max_age=604800,  # 7 days
+        path="/api/v1/auth/refresh/",
+    )
+
+
+def _clear_auth_cookies(response):
+    """Clear auth cookies on the response."""
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("refresh_token", path="/api/v1/auth/refresh/")
 
 
 class RegisterView(generics.CreateAPIView):
@@ -40,7 +74,7 @@ class RegisterView(generics.CreateAPIView):
 
 
 class LoginView(APIView):
-    """Login and obtain JWT tokens."""
+    """Login and obtain JWT tokens as httpOnly cookies."""
 
     permission_classes = [permissions.AllowAny]
     throttle_scope = "auth_login"
@@ -52,9 +86,27 @@ class LoginView(APIView):
         email = serializer.validated_data["email"]
         password = serializer.validated_data["password"]
 
+        # Check if user exists and is locked before authenticating
+        try:
+            user = User.objects.get(email=email)
+            if user.is_locked:
+                remaining = int((user.locked_until - timezone.now()).total_seconds() // 60)
+                return Response(
+                    {"error": f"Cuenta bloqueada. Intenta de nuevo en {remaining} minutos."},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS,
+                )
+        except User.DoesNotExist:
+            pass
+
         user = authenticate(email=email, password=password)
 
         if user is None:
+            # Record failed attempt
+            try:
+                user = User.objects.get(email=email)
+                UserService.record_failed_login(user)
+            except User.DoesNotExist:
+                pass
             return Response(
                 {"error": "Credenciales inválidas."}, status=status.HTTP_401_UNAUTHORIZED
             )
@@ -64,14 +116,58 @@ class LoginView(APIView):
                 {"error": "La cuenta está desactivada."}, status=status.HTTP_403_FORBIDDEN
             )
 
+        UserService.reset_failed_login(user)
         refresh = RefreshToken.for_user(user)
+        response = Response({"detail": "Inicio de sesión exitoso"})
+        _set_auth_cookies(response, str(refresh.access_token), str(refresh))
+        return response
 
-        return Response(
-            {
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-            }
+
+class LogoutView(APIView):
+    """Clear auth cookies to logout."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        response = Response({"detail": "Sesión cerrada exitosamente"})
+        _clear_auth_cookies(response)
+        return response
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    """
+    Refresh JWT access token.
+
+    Reads the refresh_token from httpOnly cookie if not provided in request body.
+    Sets new httpOnly cookies on success.
+    """
+
+    def post(self, request, *args, **kwargs):
+        # If refresh not in body, try reading from cookie
+        data = request.data.copy() if hasattr(request.data, "copy") else {}
+        if "refresh" not in data:
+            refresh_from_cookie = request.COOKIES.get("refresh_token")
+            if refresh_from_cookie:
+                data["refresh"] = refresh_from_cookie
+
+        serializer = self.get_serializer(data=data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception:
+            response = Response(
+                {"detail": "Token de actualización inválido o expirado."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+            _clear_auth_cookies(response)
+            return response
+
+        response = Response({"detail": "Token renovado exitosamente"})
+        _set_auth_cookies(
+            response,
+            str(serializer.validated_data["access"]),
+            str(serializer.validated_data["refresh"]),
         )
+        return response
 
 
 class DeactivateAccountView(APIView):

@@ -271,9 +271,8 @@ export default function RegisterPage() {
                 name="password"
                 type="password"
                 required
-                minLength={7}
+                minLength={8}
                 className={inputClass('password')}
-                onChange={() => clearField('password')}
               />
               <p className="font-body-xs text-on-surface-variant/60 mt-1">
                 Mínimo 8 caracteres

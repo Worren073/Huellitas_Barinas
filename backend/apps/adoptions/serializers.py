@@ -84,7 +84,6 @@ class AdoptionCreateSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "pet",
-            "center",
             "motivation",
             "experience",
             "home_type",

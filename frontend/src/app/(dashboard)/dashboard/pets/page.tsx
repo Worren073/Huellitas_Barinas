@@ -76,10 +76,14 @@ export default function PetsPage() {
 
   const fetchPets = async () => {
     try {
-      const params = filter ? `?status=${filter}` : '';
+      let params = filter ? `?status=${filter}` : '';
+      const profile = await auth.getProfile();
+      if (profile.role === 'center_admin' && profile.center) {
+        params += (params ? '&' : '?') + `center=${profile.center.id}`;
+      }
       const { data } = await api.get<any>(`/pets/${params}`);
       setPets(data.results || data || []);
-    } catch { setPets([]) }
+    } catch (err) { console.error('Error fetching pets:', err); setPets([]) }
     finally { setLoading(false) }
   };
 
@@ -102,14 +106,14 @@ export default function PetsPage() {
     try {
       await api.delete(`/pets/${id}/`);
       fetchPets();
-    } catch {}
+    } catch (err) { console.error('Error deleting pet:', err) }
   };
 
   const handleStatusChange = async (id: number, action: string) => {
     try {
       await api.post(`/pets/${id}/${action}/`);
       fetchPets();
-    } catch {}
+    } catch (err) { console.error('Error changing pet status:', err) }
   };
 
   const openPetEdit = async (pet: Pet) => {

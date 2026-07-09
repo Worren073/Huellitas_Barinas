@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import api from '@/lib/api';
-import { setCookie, removeCookie } from '@/lib/cookies';
 
 interface UserProfile {
   id: number;
@@ -15,8 +14,6 @@ interface UserProfile {
 
 interface AuthState {
   user: UserProfile | null;
-  accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -32,44 +29,33 @@ interface AuthState {
     country?: string;
     phone?: string;
   }) => Promise<void>;
-  logout: () => void;
-  setTokens: (_access: string, _refresh: string) => void;
+  logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
-  hydrate: () => void;
+  hydrate: () => Promise<void>;
   clearError: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  accessToken: null,
-  refreshToken: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
 
   clearError: () => set({ error: null }),
 
-  setTokens: (access: string, refresh: string) => {
-    localStorage.setItem('accessToken', access);
-    localStorage.setItem('refreshToken', refresh);
-    setCookie('access_token', access, 7);
-    setCookie('refresh_token', refresh, 7);
-    set({ accessToken: access, refreshToken: refresh, isAuthenticated: true });
-  },
-
-  hydrate: () => {
-    const access = localStorage.getItem('accessToken');
-    const refresh = localStorage.getItem('refreshToken');
-    if (access && refresh) {
-      set({ accessToken: access, refreshToken: refresh, isAuthenticated: true });
+  hydrate: async () => {
+    try {
+      const { data } = await api.get('/users/me/');
+      set({ user: data, isAuthenticated: true, isLoading: false });
+    } catch {
+      set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
   login: async (email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await api.post('/auth/login/', { email, password });
-      get().setTokens(data.access, data.refresh);
+      await api.post('/auth/login/', { email, password });
       await get().fetchProfile();
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Error al iniciar sesión';
@@ -94,21 +80,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    sessionStorage.clear();
-    removeCookie('access_token');
-    removeCookie('refresh_token');
-    set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false, error: null });
+  logout: async () => {
+    try {
+      await api.post('/auth/logout/');
+    } catch {
+      // Always clear local state even if API call fails
+    }
+    set({ user: null, isAuthenticated: false, error: null });
   },
 
   fetchProfile: async () => {
     try {
       const { data } = await api.get('/users/me/');
-      set({ user: data, isLoading: false });
+      set({ user: data, isAuthenticated: true, isLoading: false });
     } catch {
-      set({ isLoading: false });
+      set({ isAuthenticated: false, isLoading: false });
     }
   },
 }));

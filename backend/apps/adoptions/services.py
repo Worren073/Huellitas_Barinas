@@ -40,6 +40,12 @@ class AdoptionService:
                 raise ValidationError("Ya tienes una solicitud de adopción para esta mascota.")
 
             validated_data.pop("status", None)
+            validated_data.pop("center", None)
+            if pet and pet.center:
+                if pet.center.status != "active":
+                    raise ValidationError("El centro no está disponible para adopciones.")
+                validated_data["center"] = pet.center
+
             adoption = Adoption.objects.create(applicant=applicant, **validated_data)
             cls(adoption)._add_timeline("pending", "pending", notes="Solicitud creada")
 

@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import Icon from '@/components/Icon';
+import api from '@/lib/api';
 
 export default function ContactoPage() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -28,32 +29,23 @@ export default function ContactoPage() {
     };
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const res = await fetch(`${apiUrl}/api/v1/help-requests/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        if (errData && typeof errData === 'object') {
-          const mapped: Record<string, string> = {};
-          for (const [key, msgs] of Object.entries(errData)) {
-            const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
-            if (msg) mapped[key] = msg;
-          }
-          if (Object.keys(mapped).length > 0) {
-            setFieldErrors(mapped);
-            setStatus('idle');
-            return;
-          }
-        }
-        throw new Error('Error al enviar');
-      }
+      await api.post('/help-requests/', data);
       setStatus('sent');
       form.reset();
-    } catch {
+    } catch (err: any) {
+      const errData = err.response?.data;
+      if (errData && typeof errData === 'object') {
+        const mapped: Record<string, string> = {};
+        for (const [key, msgs] of Object.entries(errData)) {
+          const msg = Array.isArray(msgs) ? msgs[0] : typeof msgs === 'string' ? msgs : null;
+          if (msg) mapped[key] = msg;
+        }
+        if (Object.keys(mapped).length > 0) {
+          setFieldErrors(mapped);
+          setStatus('idle');
+          return;
+        }
+      }
       setStatus('error');
     }
   };

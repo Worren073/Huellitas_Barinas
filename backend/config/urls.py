@@ -11,6 +11,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from apps.users.permissions import IsSuperAdmin
 from apps.users.views import HealthCheckView
 
 urlpatterns = [
@@ -46,12 +47,21 @@ urlpatterns = [
     
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema', permission_classes=[IsSuperAdmin]), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema', permission_classes=[IsSuperAdmin]), name='redoc'),
 ]
 
-# Serve local media files (dev via runserver, prod via gunicorn — no reverse proxy on Render free tier)
-if settings.MEDIA_ROOT:
+# Serve media files
+if settings.DEBUG:
+    # Development: use Django's static serve (efficient enough for local dev)
+    if settings.MEDIA_ROOT:
+        urlpatterns += [
+            path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
+        ]
+else:
+    # Production: use secure custom view with path validation and security headers
+    from apps.media.views import serve_media_file
+
     urlpatterns += [
-        path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
+        path('media/<path:path>', serve_media_file, name='serve_media'),
     ]
