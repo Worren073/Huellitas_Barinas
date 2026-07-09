@@ -8,10 +8,20 @@ import { auth } from '@/lib/auth';
 import Icon from '@/components/Icon';
 import LoadingButton from '@/components/LoadingButton';
 
+function isSafeRedirect(path: string | null): boolean {
+  if (!path) return false;
+  if (!path.startsWith('/')) return false;
+  if (path.includes('//')) return false;
+  if (path.includes('@')) return false;
+  if (/[\x00-\x1f\x7f]/.test(path)) return false;
+  return true;
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/dashboard';
+  const rawRedirect = searchParams.get('redirect');
+  const redirectTo = isSafeRedirect(rawRedirect) ? rawRedirect! : '/dashboard';
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);

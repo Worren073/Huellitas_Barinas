@@ -28,5 +28,12 @@ COPY backend/ .
 
 RUN chmod +x entrypoint.sh entrypoint-worker.sh entrypoint-beat.sh
 
+# Create non-root user for security
+RUN groupadd -r -g 1001 appgroup && useradd -r -u 1001 -g appgroup -d /app appuser && \
+    mkdir -p /app/media /app/staticfiles && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
 EXPOSE 8000
 ENTRYPOINT ["./entrypoint.sh"]

@@ -48,14 +48,14 @@ def _set_auth_cookies(response, access_token, refresh_token):
         secure=is_secure,
         samesite=samesite,
         max_age=604800,  # 7 days
-        path="/api/v1/auth/refresh/",
+        path="/",
     )
 
 
 def _clear_auth_cookies(response):
     """Clear auth cookies on the response."""
     response.delete_cookie("access_token", path="/")
-    response.delete_cookie("refresh_token", path="/api/v1/auth/refresh/")
+    response.delete_cookie("refresh_token", path="/")
 
 
 class RegisterView(generics.CreateAPIView):
@@ -124,11 +124,19 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    """Clear auth cookies to logout."""
+    """Clear auth cookies and blacklist refresh token."""
 
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except Exception:
+                pass
+
         response = Response({"detail": "Sesión cerrada exitosamente"})
         _clear_auth_cookies(response)
         return response
