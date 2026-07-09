@@ -4,8 +4,8 @@ import Footer from '@/components/Footer';
 import ScrollAnimation from '@/components/ScrollAnimation';
 
 export const metadata: Metadata = {
-  title: 'Términos y Condiciones - Huellitas Barinas',
-  description: 'Términos y condiciones de uso de la plataforma Huellitas Barinas.',
+  title: 'Términos y Condiciones - Huellitas de Venezuela',
+  description: 'Términos y condiciones de uso de la plataforma Huellitas de Venezuela.',
 };
 
 export default function TerminosPage() {
@@ -20,11 +20,11 @@ export default function TerminosPage() {
         <div className="prose max-w-none font-body-md text-on-surface-variant space-y-4">
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">1. Aceptación de los Términos</h2>
-            <p>Al acceder y utilizar la plataforma Huellitas Barinas, aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no debes usar este sitio.</p>
+            <p>Al acceder y utilizar la plataforma Huellitas de Venezuela, aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no debes usar este sitio.</p>
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">2. Propósito de la Plataforma</h2>
-            <p>Huellitas Barinas es una plataforma que conecta centros de adopción con personas interesadas en adoptar mascotas en Barinas, Venezuela. Facilitamos el proceso de adopción pero no somos responsables directos de las adopciones realizadas.</p>
+            <p>Huellitas de Venezuela es una plataforma que conecta centros de adopción con personas interesadas en adoptar mascotas en Barinas, Venezuela. Facilitamos el proceso de adopción pero no somos responsables directos de las adopciones realizadas.</p>
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">3. Responsabilidades del Usuario</h2>
@@ -48,11 +48,11 @@ export default function TerminosPage() {
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">8. Proceso de Adopción</h2>
-            <p>Huellitas Barinas actúa como intermediario entre centros de adopción y adoptantes. Cada centro de adopción establece sus propios requisitos y procesos de adopción. No garantizamos la aprobación de ninguna solicitud de adopción.</p>
+            <p>Huellitas de Venezuela actúa como intermediario entre centros de adopción y adoptantes. Cada centro de adopción establece sus propios requisitos y procesos de adopción. No garantizamos la aprobación de ninguna solicitud de adopción.</p>
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">9. Limitación de Responsabilidad</h2>
-            <p>Huellitas Barinas no se hace responsable por daños directos o indirectos derivados del uso de la plataforma, incluyendo pero no limitado a adopciones fallidas, información incorrecta proporcionada por centros o usuarios, o disputas entre centros y adoptantes.</p>
+            <p>Huellitas de Venezuela no se hace responsable por daños directos o indirectos derivados del uso de la plataforma, incluyendo pero no limitado a adopciones fallidas, información incorrecta proporcionada por centros o usuarios, o disputas entre centros y adoptantes.</p>
           </section>
           <section>
             <h2 className="font-headline-sm text-on-surface mt-6 mb-2">10. Contacto</h2>

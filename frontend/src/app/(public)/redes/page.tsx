@@ -5,13 +5,13 @@ import ScrollAnimation from '@/components/ScrollAnimation';
 import Icon from '@/components/Icon';
 
 export const metadata: Metadata = {
-  title: 'Redes Sociales - Huellitas Barinas',
-  description: 'Sigue a Huellitas Barinas en todas nuestras redes sociales.',
+  title: 'Redes Sociales - Huellitas de Venezuela',
+  description: 'Sigue a Huellitas de Venezuela en todas nuestras redes sociales.',
 };
 
 const socialLinks = [
   { name: 'Instagram', icon: 'instagram' as const, handle: '@huellitasbarinas', url: 'https://instagram.com/huellitasbarinas' },
-  { name: 'Facebook', icon: 'facebook' as const, handle: 'Huellitas Barinas', url: 'https://facebook.com/huellitasbarinas' },
+  { name: 'Facebook', icon: 'facebook' as const, handle: 'Huellitas de Venezuela', url: 'https://facebook.com/huellitasbarinas' },
   { name: 'Twitter / X', icon: 'twitter' as const, handle: '@huellitasbarinas', url: 'https://twitter.com/huellitasbarinas' },
   { name: 'WhatsApp', icon: 'whatsapp' as const, handle: '+58 412-1234567', url: 'https://wa.me/584121234567' },
 ];

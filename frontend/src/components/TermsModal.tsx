@@ -12,11 +12,11 @@ interface TermsModalProps {
 const TERMS_SECTIONS = [
   {
     title: '1. Aceptación de los Términos',
-    content: 'Al acceder y utilizar la plataforma Huellitas Barinas, aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no debes usar este sitio.',
+    content: 'Al acceder y utilizar la plataforma Huellitas de Venezuela, aceptas cumplir con estos términos y condiciones. Si no estás de acuerdo, no debes usar este sitio.',
   },
   {
     title: '2. Propósito de la Plataforma',
-    content: 'Huellitas Barinas es una plataforma que conecta centros de adopción con personas interesadas en adoptar mascotas en Venezuela. Facilitamos el proceso de adopción pero no somos responsables directos de las adopciones realizadas.',
+    content: 'Huellitas de Venezuela es una plataforma que conecta centros de adopción con personas interesadas en adoptar mascotas en Venezuela. Facilitamos el proceso de adopción pero no somos responsables directos de las adopciones realizadas.',
   },
   {
     title: '3. Responsabilidades del Usuario',
@@ -40,11 +40,11 @@ const TERMS_SECTIONS = [
   },
   {
     title: '8. Proceso de Adopción',
-    content: 'Huellitas Barinas actúa como intermediario entre centros de adopción y adoptantes. Cada centro de adopción establece sus propios requisitos y procesos de adopción. No garantizamos la aprobación de ninguna solicitud de adopción.',
+    content: 'Huellitas de Venezuela actúa como intermediario entre centros de adopción y adoptantes. Cada centro de adopción establece sus propios requisitos y procesos de adopción. No garantizamos la aprobación de ninguna solicitud de adopción.',
   },
   {
     title: '9. Limitación de Responsabilidad',
-    content: 'Huellitas Barinas no se hace responsable por daños directos o indirectos derivados del uso de la plataforma, incluyendo pero no limitado a adopciones fallidas, información incorrecta proporcionada por centros o usuarios, o disputas entre centros y adoptantes.',
+    content: 'Huellitas de Venezuela no se hace responsable por daños directos o indirectos derivados del uso de la plataforma, incluyendo pero no limitado a adopciones fallidas, información incorrecta proporcionada por centros o usuarios, o disputas entre centros y adoptantes.',
   },
   {
     title: '10. Contacto',

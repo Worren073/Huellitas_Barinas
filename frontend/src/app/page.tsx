@@ -92,7 +92,7 @@ export default async function HomePage() {
                 Quiénes Somos
               </h2>
               <p className="font-body-lg text-on-surface-variant max-w-3xl mx-auto text-center mb-stack-lg">
-                Huellitas Barinas es un proyecto sin fines de lucro que centraliza información de animales que buscan adopción en Venezuela. Nuestra misión es formar alianzas con centros de adopción para ofrecer toda la información y procesos adecuados para la adopción de nuevos integrantes a la familia.
+                Huellitas de Venezuela es un proyecto sin fines de lucro que centraliza información de animales que buscan adopción en Venezuela. Nuestra misión es formar alianzas con centros de adopción para ofrecer toda la información y procesos adecuados para la adopción de nuevos integrantes a la familia.
               </p>
             </ScrollAnimation>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

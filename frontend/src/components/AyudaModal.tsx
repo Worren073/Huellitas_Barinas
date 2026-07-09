@@ -274,7 +274,7 @@ export default function AyudaModal({ open, onClose }: AyudaModalProps) {
                 className={inputClass('center_name')}
                 value={form.center_name}
                 onChange={(e) => { setForm((f) => ({ ...f, center_name: e.target.value })); clearField('center_name'); }}
-                placeholder="Ej: Fundación Huellitas Barinas"
+                placeholder="Ej: Fundación Huellitas de Venezuela"
                 required
               />
               {fieldErrors.center_name && <p className="text-red-500 font-body-sm mt-1">{fieldErrors.center_name}</p>}

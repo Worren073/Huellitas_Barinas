@@ -90,7 +90,7 @@ function LoginForm() {
             Iniciar Sesión
           </h2>
           <p className="mt-2 font-body-sm text-on-surface-variant">
-            Huellitas Barinas
+            Huellitas de Venezuela
           </p>
         </div>
 

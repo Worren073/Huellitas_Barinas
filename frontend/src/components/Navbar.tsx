@@ -51,14 +51,14 @@ export default function Navbar() {
           <div className="w-10 h-10 overflow-hidden flex items-start shrink-0">
             <Image
               src="/Huellitas png.png"
-              alt="Huellitas Barinas"
+              alt="Huellitas de Venezuela"
               width={35}
               height={35}
               className="object-contain"
             />
           </div>
           <span className="font-montserrat text-headline-md font-bold text-primary hidden sm:block">
-            Huellitas Barinas
+            Huellitas de Venezuela
           </span>
         </Link>
 

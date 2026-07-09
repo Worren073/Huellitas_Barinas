@@ -4,8 +4,8 @@ import Footer from '@/components/Footer';
 import ScrollAnimation from '@/components/ScrollAnimation';
 
 export const metadata: Metadata = {
-  title: 'Política de Privacidad - Huellitas Barinas',
-  description: 'Política de privacidad y protección de datos de Huellitas Barinas.',
+  title: 'Política de Privacidad - Huellitas de Venezuela',
+  description: 'Política de privacidad y protección de datos de Huellitas de Venezuela.',
 };
 
 export default function PrivacidadPage() {

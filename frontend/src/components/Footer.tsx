@@ -9,15 +9,15 @@ export default function Footer() {
           <div className="flex items-center gap-2">
             <Image
               src="/Huellitas png.png"
-              alt="Huellitas Barinas"
+              alt="Huellitas de Venezuela"
               width={28}
               height={28}
               className="object-contain"
             />
-            <span className="font-montserrat font-headline-sm text-on-surface">Huellitas Barinas</span>
+            <span className="font-montserrat font-headline-sm text-on-surface">Huellitas de Venezuela</span>
           </div>
           <p className="font-body-sm text-secondary">
-            {new Date().getFullYear()} Huellitas Barinas. Compasion en cada adopcion.
+            {new Date().getFullYear()} Huellitas de Venezuela. Compasion en cada adopcion.
           </p>
         </div>
         <div className="flex flex-col gap-2 md:col-span-2 md:items-end justify-center">

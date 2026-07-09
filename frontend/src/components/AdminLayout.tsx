@@ -42,14 +42,14 @@ function SidebarContent({ visibleLinks, pathname, user, onClose }: { visibleLink
       <Link href="/" className="flex items-center gap-3 px-3 mb-8" onClick={onClose}>
         <Image
           src="/Huellitas png.png"
-          alt="Huellitas Barinas"
+          alt="Huellitas de Venezuela"
           width={28}
           height={28}
           className="object-contain"
         />
         <div>
           <h2 className="font-headline-sm text-primary tracking-tight">Admin Panel</h2>
-          <p className="font-label-sm text-on-surface-variant">Huellitas Barinas</p>
+          <p className="font-label-sm text-on-surface-variant">Huellitas de Venezuela</p>
         </div>
       </Link>
 
@@ -170,7 +170,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Icon name="menu" className="w-6 h-6" />
           </button>
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/Huellitas png.png" alt="Huellitas Barinas" width={24} height={24} className="object-contain" />
+            <Image src="/Huellitas png.png" alt="Huellitas de Venezuela" width={24} height={24} className="object-contain" />
             <span className="font-montserrat font-headline-sm text-primary">Admin</span>
           </Link>
           <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-label-md">
