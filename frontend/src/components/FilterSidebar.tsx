@@ -67,7 +67,7 @@ export default function FilterSidebar({ filters, onFilterChange }: FilterSidebar
         </div>
 
         <div className="mb-6">
-          <h3 className="font-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Tamano</h3>
+          <h3 className="font-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Tamaño</h3>
           <div className="flex flex-wrap gap-2">
             {sizeOptions.map((opt) => (
               <button
@@ -107,21 +107,16 @@ export default function FilterSidebar({ filters, onFilterChange }: FilterSidebar
 
         <div className="mt-6">
           <h3 className="font-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Estado</h3>
-          <div className="flex flex-wrap gap-2">
-            {VENEZUELAN_STATES.map((state) => (
-              <button
-                key={state}
-                onClick={() => handleChange('state', state)}
-                className={`px-3 py-1 rounded-full font-label-sm border transition-colors ${
-                  filters.state === state
-                    ? 'bg-primary text-on-primary border-primary'
-                    : 'bg-surface-gray text-on-surface-variant border-transparent'
-                }`}
-              >
-                {state}
-              </button>
+          <select
+            value={filters.state}
+            onChange={(e) => handleChange('state', e.target.value)}
+            className="w-full font-label-md border border-outline-variant rounded-lg px-3 py-2 bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container"
+          >
+            <option value="">Todos los estados</option>
+            {VENEZUELAN_STATES.map((s) => (
+              <option key={s} value={s}>{s}</option>
             ))}
-          </div>
+          </select>
         </div>
       </div>
     </aside>
