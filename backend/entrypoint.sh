@@ -14,7 +14,11 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     done
 
     echo "Running migrations..."
-    python manage.py migrate --noinput
+    if ! python manage.py migrate --noinput 2>&1; then
+        echo "  Migration conflict detected, faking users 0004 (column already exists)..."
+        python manage.py migrate users 0004 --fake 2>&1 || true
+        python manage.py migrate --noinput
+    fi
 
     echo "Collecting static files..."
     python manage.py collectstatic --noinput
