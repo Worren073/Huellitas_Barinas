@@ -30,7 +30,7 @@ User = get_user_model()
 def _set_auth_cookies(response, access_token, refresh_token):
     """Set httpOnly cookies for JWT tokens on the response."""
     is_secure = not settings.DEBUG
-    samesite = "Lax"
+    samesite = "None"
 
     response.set_cookie(
         "access_token",
