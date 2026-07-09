@@ -10,13 +10,17 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Response interceptor: refresh token on 401
-// Backend reads refresh_token from httpOnly cookie automatically
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (
+        originalRequest.url?.includes('/users/me/') ||
+        originalRequest.url?.includes('/auth/logout/')
+      ) {
+        return Promise.reject(error);
+      }
       originalRequest._retry = true;
       try {
         await axios.post(
@@ -26,7 +30,9 @@ api.interceptors.response.use(
         );
         return api(originalRequest);
       } catch {
-        window.location.href = '/login';
+        if (!window.location.pathname.startsWith('/login')) {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);
